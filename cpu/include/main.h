@@ -7,7 +7,7 @@
 #include <unistd.h>
 #include <stdint.h>
 #include <readline/readline.h>
+#include "ConfiguracionCPU.h"
 #include <commons/collections/list.h>
-#include <commons/config.h>
 
 #endif
