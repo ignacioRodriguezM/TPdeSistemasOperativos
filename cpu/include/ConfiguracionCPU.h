@@ -12,7 +12,7 @@
 
 }APP_config;
 
-void cargar_configuracion (void);
+void cargar_configuracion (APP_config);
     
 
 #endif
