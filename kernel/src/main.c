@@ -2,8 +2,7 @@
 
 
 int main() {
-    printf ("Hola mundo");
-    
-  
+    APP_config config_valores;
+    cargar_configuracion(config_valores);
     return 0;
 }

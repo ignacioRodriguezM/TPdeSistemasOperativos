@@ -2,7 +2,7 @@
 #include "../include/configuracion_kernel.h"
 
 
-void cargar_configuracion (void)
+void cargar_configuracion (APP_config config_valores)
 {
     t_config* config = config_create ("../kernel.config"); //leo el archivo de configuracion
     if (config == NULL){
