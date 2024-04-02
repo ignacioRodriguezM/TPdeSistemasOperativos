@@ -20,8 +20,8 @@ void cargar_configuracion (void)
 
     config_valores.algoritmo_planificacion          =       config_get_string_value (config,"ALGORITMO_PLANIFICACION");
     config_valores.quantum                          =       config_get_int_value (config,"QUANTUM");
-    //config_valores.recursos                         =       config_get_array_value (config,"RECURSOS");
-    //config_valores.instancias_recursos              =       config_get_array_value (config,"INSTANCIAS_RECURSOS");
+    config_valores.recursos                         =       config_get_array_value (config,"RECURSOS");
+    config_valores.instancias_recursos              =       config_get_array_value (config,"INSTANCIAS_RECURSOS");
     config_valores.grado_multiprogramacion          =       config_get_int_value (config,"GRADO_MULTIPROGRAMACION");
 
     //config destroy(config);

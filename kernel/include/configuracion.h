@@ -11,8 +11,8 @@
     uint16_t puerto_cpu_interrupt;      //Puerto de interrupt al cual se deberá conectar con la CPU
     char* algoritmo_planificacion;      //Define el algoritmo de planificación de corto plazo. (FIFO / RR / VRR)
     uint16_t quantum;                   //Tiempo en milisegundos del quantum para utilizar bajo el algoritmo RR
-    //_list recursos;                    //Lista ordenada de los nombres de los recursos compartidos del sistema
-   // t_list instancias_recursos;         //Lista ordenada de la cantidad de unidades por recurso
+    char** recursos;                    //Lista ordenada de los nombres de los recursos compartidos del sistema
+    char** instancias_recursos;         //Lista ordenada de la cantidad de unidades por recurso
     uint16_t grado_multiprogramacion;   //Grado de multiprogramación del módulo
 
 }APP_config;
