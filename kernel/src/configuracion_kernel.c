@@ -1,13 +1,15 @@
 #include "../include/main.h"
-#include "../include/configuracion.h"
+#include "../include/configuracion_kernel.h"
 
-APP_config config_valores;
-void cargar_configuracion (void)
-{
-    t_config* config = config_create ("../kernel.config"); //leo el archivo de configuracion
+
+APP_config cargar_configuracion (void)
+{   
+    APP_config config_valores;
+    
+
+    t_config* config = config_create ("kernel.config"); //leo el archivo de configuracion
     if (config == NULL){
         perror("Archivo de configuracion de APP no encontrado");
-        return;
     }
 
     //config_valores.ruta_logger                    =       config_get_x (config, "texto anterior")
@@ -24,7 +26,7 @@ void cargar_configuracion (void)
     config_valores.instancias_recursos              =       config_get_array_value (config,"INSTANCIAS_RECURSOS");
     config_valores.grado_multiprogramacion          =       config_get_int_value (config,"GRADO_MULTIPROGRAMACION");
 
-    //config destroy(config);
-
+    config_destroy(config);
+    return config_valores;
 }
 
