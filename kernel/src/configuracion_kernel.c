@@ -1,7 +1,7 @@
 #include "../include/main.h"
-#include "../include/configuracion.h"
+#include "../include/configuracion_kernel.h"
 
-APP_config config_valores;
+
 void cargar_configuracion (void)
 {
     t_config* config = config_create ("../kernel.config"); //leo el archivo de configuracion

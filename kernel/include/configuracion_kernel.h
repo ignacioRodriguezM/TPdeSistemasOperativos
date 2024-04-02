@@ -1,5 +1,5 @@
-#ifndef CONFIGURACION_H_
-#define CONFIGURACION_H_
+#ifndef CONFIGURACION_KERNEL_H_
+#define CONFIGURACION_KERNEL_H_
 #include <commons/collections/list.h>
   typedef struct
 {
@@ -17,6 +17,7 @@
 
 }APP_config;
 
+APP_config config_valores;
 void cargar_configuracion (void);
     
 
