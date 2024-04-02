@@ -1,5 +1,8 @@
 {
     "files.associations": {
+        "list.h": "c",
+        "readline.h": "c",
+        "configuracion.h": "c",
         "main.h": "c"
     }
 }

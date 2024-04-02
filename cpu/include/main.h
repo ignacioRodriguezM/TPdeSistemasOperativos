@@ -9,6 +9,5 @@
 #include <readline/readline.h>
 #include "ConfiguracionCPU.h"
 #include <commons/collections/list.h>
-#include <commons/config.h>
 
 #endif
