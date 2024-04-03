@@ -9,5 +9,6 @@
 #include <readline/readline.h>
 #include <commons/collections/list.h>
 #include <commons/config.h>
+#include "Configuracion_Memoria.h"
 
 #endif
