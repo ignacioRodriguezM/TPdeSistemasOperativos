@@ -17,7 +17,7 @@
 
 }APP_config;
 
-APP_config cargar_configuracion (void);
+APP_config cargar_configuracion_kernel (void);
     
 
 #endif

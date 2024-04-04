@@ -1,8 +1,9 @@
 #include "../include/main.h"
-#include "../include/ConfiguracionCPU.h"
+#include "../include/configuracion_cpu.h"
 
-void cargar_configuracion (APP_config config_valores)
+APP_config cargar_configuracion_cpu (void)
 {
+    APP_config config_valores;
     t_config* config = config_create ("../CPU.config"); //leo el archivo de configuracion
     if (config == NULL){
         perror("Archivo de configuracion de APP no encontrado");
@@ -17,6 +18,7 @@ void cargar_configuracion (APP_config config_valores)
     config_valores.cantidad_entradas_TLB            =       config_get_int_value (config,"CANTIDAD_ENTRADAS_TLB");
     config_valores.algoritmo_TLB                    =       config_get_string_value (config,"ALGORITMO_TLB");
     
-    //config destroy(config);
+    config_destroy(config);
+    return config_valores;
 
 }

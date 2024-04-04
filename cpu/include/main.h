@@ -3,11 +3,14 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <commons/txt.h>
-#include <unistd.h>
 #include <stdint.h>
+#include <pthread.h>
+#include <unistd.h>
 #include <readline/readline.h>
-#include "ConfiguracionCPU.h"
+#include <commons/txt.h>
+#include <commons/config.h>
 #include <commons/collections/list.h>
+
+#include "./configuracion_cpu.h"
 
 #endif
