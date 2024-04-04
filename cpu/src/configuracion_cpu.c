@@ -4,7 +4,7 @@
 APP_config cargar_configuracion_cpu (void)
 {
     APP_config config_valores;
-    t_config* config = config_create ("../CPU.config"); //leo el archivo de configuracion
+    t_config* config = config_create ("cpu.config"); //leo el archivo de configuracion
     if (config == NULL){
         perror("Archivo de configuracion de APP no encontrado");
         return;
