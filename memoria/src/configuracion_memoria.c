@@ -1,13 +1,12 @@
 #include "../include/main.h"
 #include "../include/configuracion_memoria.h"
 
-APP_config cargar_configuracion_kernel (void)
+APP_config cargar_configuracion_memoria (void)
 {
     APP_config config_valores;
     t_config* config = config_create ("memoria.config"); //leo el archivo de configuracion
     if (config == NULL){
         perror("Archivo de configuracion de APP no encontrado");
-        return;
     }
 
     //config_valores.ruta_logger                    =       config_get_x (config, "texto anterior")
