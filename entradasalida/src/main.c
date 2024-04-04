@@ -2,11 +2,8 @@
 
 
 int main() {
-    APP_config config_valores = cargar_configuracion();
-    // Imprime los valores utilizando printf y los especificadores de formato adecuados
-    printf("Puerto CPU Dispatch: %d\n", config_valores.puerto_cpu_dispatch);
-    printf("Algoritmo de planificación: %s\n", config_valores.algoritmo_planificacion);    
-    printf("IP de Memoria: %s\n", config_valores.ip_memoria);
-    
+    APP_config config_valores = cargar_configuracion_entrada_salida ();
+    printf("Tiempo unidad de trabajo: %d\n", config_valores.tiempo_unidad_trabajo);//linea solo para testear funcionamienito, dsp borrar
+ 
     return 0;
 }

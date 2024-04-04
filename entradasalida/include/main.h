@@ -1,5 +1,5 @@
-#ifndef KERNEL_MAIN_H_
-#define KERNEL_MAIN_H_
+#ifndef ENTRADA_SALIDA_MAIN_H_
+#define ENTRADA_SALIDA_MAIN_H_
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -11,6 +11,6 @@
 #include <commons/config.h>
 #include <commons/collections/list.h>
 
-#include "./configuracion_kernel.h"
+#include "./configuracion_entrada_salida.h"
 
 #endif
