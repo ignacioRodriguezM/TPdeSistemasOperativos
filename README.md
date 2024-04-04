@@ -1,3 +1,9 @@
+# nombres-integrantes
+Ignacio Rodriguez
+Nicolas Rey
+Nicolas Reinoso
+Juan Cruz Scollo
+Ignacio Vila
 # tp-scaffold
 
 Esta es una plantilla de proyecto diseñada para generar un TP de Sistemas
