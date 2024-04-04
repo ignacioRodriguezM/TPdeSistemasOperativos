@@ -1,8 +1,9 @@
 #include "../include/main.h"
-#include "../include/Configuracion_Memoria.h"
+#include "../include/configuracion_memoria.h"
 
-void cargar_configuracion (APP_config config_valores)
+APP_config cargar_configuracion_kernel (void);
 {
+    APP_config config_valores;
     t_config* config = config_create ("../CPU.config"); //leo el archivo de configuracion
     if (config == NULL){
         perror("Archivo de configuracion de APP no encontrado");
@@ -16,6 +17,6 @@ void cargar_configuracion (APP_config config_valores)
     config_valores.retardo_respuesta                =       config_get_int_value (config, "RETARDO_RESPUESTA");
     config_valores.path_instrucciones               =       config_get_string_value (config,"PATH_INSTRUCCIONES");
     
-    //config destroy(config);
-
+    config_destroy(config);
+    return config_valores;
 }

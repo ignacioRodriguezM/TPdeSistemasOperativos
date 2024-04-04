@@ -2,7 +2,7 @@
 #include "../include/configuracion_kernel.h"
 
 
-APP_config cargar_configuracion (void)
+APP_config cargar_configuracion_kernel (void)
 {   
     APP_config config_valores;
     

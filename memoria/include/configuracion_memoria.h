@@ -1,5 +1,5 @@
-#ifndef ConfiguracionMemoria_H_
-#define ConfiguracionMemoria_H_
+#ifndef CONFIGURACION_MEMORIA_H_
+#define CONFIGURACION_MEMORIA_H_
 #include <commons/collections/list.h>
   typedef struct
 {
@@ -11,7 +11,7 @@
 
 }APP_config;
 
-void cargar_configuracion (APP_config);
+APP_config cargar_configuracion_memoria (void);
     
 
 #endif

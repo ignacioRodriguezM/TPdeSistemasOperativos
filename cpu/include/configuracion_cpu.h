@@ -1,5 +1,5 @@
-#ifndef ConfiguracionCPU_H_
-#define ConfiguracionCPU_H_
+#ifndef CONFIGURACION_CPU_H_
+#define CONFIGURACION_CPU_H_
 #include <commons/collections/list.h>
   typedef struct
 {
@@ -12,7 +12,7 @@
 
 }APP_config;
 
-void cargar_configuracion (APP_config);
+APP_config cargar_configuracion_cpu (void);
     
 
 #endif
