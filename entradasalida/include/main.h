@@ -1,6 +1,8 @@
 #ifndef ENTRADA_SALIDA_MAIN_H_
 #define ENTRADA_SALIDA_MAIN_H_
 
+#include "shared.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>

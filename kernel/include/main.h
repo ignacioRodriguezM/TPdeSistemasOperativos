@@ -1,6 +1,8 @@
 #ifndef KERNEL_MAIN_H_
 #define KERNEL_MAIN_H_
 
+#include "shared.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>

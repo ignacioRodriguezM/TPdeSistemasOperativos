@@ -17,6 +17,10 @@
         "assert.h": "c",
         "unistd.h": "c",
         "config.h": "c",
-        "types.h": "c"
-    }
+        "types.h": "c",
+        "stdio.h": "c",
+        "txt.h": "c"
+ 
+   }
+   
 }
