@@ -1,7 +1,7 @@
 #ifndef ENTRADA_SALIDA_MAIN_H_
 #define ENTRADA_SALIDA_MAIN_H_
 
-#include "shared.h"
+#include "/home/utnso/Desktop/tp-2024-1c-SOn-mbulos/utils/src/utils/shared.h"
 
 #include <stdint.h>
 #include <pthread.h>

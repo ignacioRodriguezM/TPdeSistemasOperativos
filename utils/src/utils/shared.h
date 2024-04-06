@@ -39,10 +39,11 @@ typedef struct
 } t_paquete;
 
 
-int crear_conexion(char *ip, char* puerto);
-int iniciar_servidor(char* puerto, t_log* un_log, char* msj_server);
-int esperar_cliente(int socket_servidor, t_log* un_log);
-int recibir_operacion(int socket_cliente);
-void inicializar_logger (t_log** logger);
+//int crear_conexion(char *ip, char* puerto);
+//int iniciar_servidor(char* puerto, t_log* un_log, char* msj_server);
+//int esperar_cliente(int socket_servidor, t_log* un_log);
+//int recibir_operacion(int socket_cliente);
+void inicializar_logger (t_log* logger);
+void inicializar_logger_debug (t_log* logger);
 
 #endif

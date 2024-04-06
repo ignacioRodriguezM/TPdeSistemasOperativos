@@ -1,4 +1,7 @@
-#include "../include/main.h"
+#include <stdint.h>
+#include <commons/config.h>
+#include <stdlib.h>
+#include <stdio.h>
 #include "../include/configuracion_cpu.h"
 
 APP_config cargar_configuracion_cpu (void)

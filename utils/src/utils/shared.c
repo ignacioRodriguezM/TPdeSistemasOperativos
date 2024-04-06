@@ -1,5 +1,5 @@
-#include <utils/include/shared.h>
-
+#include "/home/utnso/Desktop/tp-2024-1c-SOn-mbulos/utils/src/utils/shared.h"
+/*
 int crear_conexion(char *ip, char* puerto)
 {
 	struct addrinfo hints;
@@ -28,9 +28,9 @@ int crear_conexion(char *ip, char* puerto)
 
 int iniciar_servidor(char* puerto, t_log* un_log, char* msj_server)
 {
-	int socket_servidor;
 
-	struct addrinfo hints, *servinfo, *p;
+	struct addrinfo hints, *servinfo;
+	//struct addrinfo*p;
 
 	memset(&hints, 0, sizeof(hints));
 	hints.ai_family = AF_INET;
@@ -72,9 +72,17 @@ int recibir_operacion(int socket_cliente)
 		return -1;
 	}
 }
-void inicializar_logger (t_log** logger){
-    *logger = log_create ("cliente.log","CL_LOG", 1, LOG_LEVEL_INFO);
-    if (*logger == NULL){
+*/
+void inicializar_logger (t_log* logger){
+    logger = log_create ("cliente1.log","CL_LOG", 1, LOG_LEVEL_INFO);
+    if (logger == NULL){
+        perror ("No se pudo crear el log");
+        exit (EXIT_FAILURE);
+    }
+}
+void inicializar_logger_debug (t_log* logger){
+    logger = log_create ("cliente2.log","CL_LOG", 1, LOG_LEVEL_TRACE);
+    if (logger == NULL){
         perror ("No se pudo crear el log");
         exit (EXIT_FAILURE);
     }
