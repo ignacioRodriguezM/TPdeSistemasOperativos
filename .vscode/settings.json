@@ -6,6 +6,22 @@
         "main.h": "c",
         "configuracion_memoria.h": "c",
         "configuracion_cpu.h": "c",
-        "configuracion_entrada_salida.h": "c"
+        "configuracion_entrada_salida.h": "c",
+        "shared.h": "c",
+        "stdlib.h": "c",
+        "socket.h": "c",
+        "client.h": "c",
+        "string.h": "c",
+        "log.h": "c",
+        "netdb.h": "c",
+        "assert.h": "c",
+        "unistd.h": "c",
+        "config.h": "c",
+        "types.h": "c",
+        "stdio.h": "c",
+        "txt.h": "c",
+        "logs.h": "c",
+        "pthread.h": "c"
     }
+   
 }
