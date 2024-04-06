@@ -19,8 +19,9 @@
         "config.h": "c",
         "types.h": "c",
         "stdio.h": "c",
-        "txt.h": "c"
- 
-   }
+        "txt.h": "c",
+        "logs.h": "c",
+        "pthread.h": "c"
+    }
    
 }

@@ -3,16 +3,15 @@
 
 #include "shared.h"
 
-#include <stdio.h>
-#include <stdlib.h>
 #include <stdint.h>
 #include <pthread.h>
-#include <unistd.h>
-#include <readline/readline.h>
 #include <commons/txt.h>
-#include <commons/config.h>
 #include <commons/collections/list.h>
 
 #include "./configuracion_kernel.h"
+
+//Variables GLOBALES
+t_log* kernel_logger;
+t_log* kernel_log_debug;
 
 #endif
