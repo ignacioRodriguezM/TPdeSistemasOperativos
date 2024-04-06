@@ -29,7 +29,7 @@ APP_config cargar_configuracion_kernel (void)
     config_valores.instancias_recursos              =       config_get_array_value (config,"INSTANCIAS_RECURSOS");
     config_valores.grado_multiprogramacion          =       config_get_int_value (config,"GRADO_MULTIPROGRAMACION");
 
-    config_destroy(config);
+    //config_destroy(config);
     return config_valores;
 }
 

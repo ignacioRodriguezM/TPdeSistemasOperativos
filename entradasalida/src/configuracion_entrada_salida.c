@@ -27,7 +27,7 @@ APP_config cargar_configuracion_entrada_salida (void)
     config_valores.block_size                       =       config_get_int_value(config,"BLOCK_SIZE");
     config_valores.block_count                      =       config_get_int_value(config,"BLOCK_COUNT");
 
-    config_destroy(config);
+    //config_destroy(config);
     return config_valores;
 }
 
