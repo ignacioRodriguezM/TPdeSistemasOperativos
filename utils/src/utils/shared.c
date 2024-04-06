@@ -30,7 +30,7 @@ int iniciar_servidor(char* puerto, t_log* un_log, char* msj_server)
 {
 
 	struct addrinfo hints, *servinfo;
-	//struct addrinfo*p;
+	//struct addrinfo *p;
 
 	memset(&hints, 0, sizeof(hints));
 	hints.ai_family = AF_INET;
