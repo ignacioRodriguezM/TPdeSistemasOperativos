@@ -74,14 +74,14 @@ int recibir_operacion(int socket_cliente)
 }
 */
 void inicializar_logger (t_log* logger){
-    logger = log_create ("cliente1.log","CL_LOG", 1, LOG_LEVEL_INFO);
+    logger = log_create ("cliente.log","CL_LOG", 1, LOG_LEVEL_INFO);
     if (logger == NULL){
         perror ("No se pudo crear el log");
         exit (EXIT_FAILURE);
     }
 }
 void inicializar_logger_debug (t_log* logger){
-    logger = log_create ("cliente2.log","CL_LOG", 1, LOG_LEVEL_TRACE);
+    logger = log_create ("cliente.log","CL_LOG", 1, LOG_LEVEL_TRACE);
     if (logger == NULL){
         perror ("No se pudo crear el log");
         exit (EXIT_FAILURE);
