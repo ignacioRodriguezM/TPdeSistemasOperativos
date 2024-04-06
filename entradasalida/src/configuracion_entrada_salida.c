@@ -18,8 +18,8 @@ APP_config cargar_configuracion_entrada_salida (void)
     //config_valores.ruta_logger                    =       config_get_x (config, "texto anterior")
     config_valores.tipo_interfaz                    =       config_get_string_value(config,"TIPO_INTERFAZ");
     config_valores.tiempo_unidad_trabajo            =       config_get_int_value(config,"TIEMPO_UNIDAD_TRABAJO");
-    config_valores.ip_kernel                        =       config_get_int_value(config,"IP_KERNEL");
-    config_valores.puerto_kernel                    =       config_get_string_value(config,"PUERTO_KERNEL");
+    config_valores.ip_kernel                        =       config_get_string_value(config,"IP_KERNEL");
+    config_valores.puerto_kernel                    =       config_get_int_value(config,"PUERTO_KERNEL");
     config_valores.ip_memoria                       =       config_get_string_value(config,"IP_MEMORIA");
 
     config_valores.puerto_memoria                   =       config_get_int_value(config,"PUERTO_MEMORIA");
