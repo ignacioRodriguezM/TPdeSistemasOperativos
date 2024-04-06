@@ -12,5 +12,6 @@ int main() {
     log_debug (cpu_log_debug,"PUERTO_MEMORIA : %d", config_valores.puerto_memoria );
     log_warning (cpu_log_debug,"puerto_escucha_dispatch: %d", config_valores.puerto_escucha_dispach );
     log_trace (cpu_log_debug,"ALGORITMO TLB : %s", config_valores.algoritmo_TLB );
+
     return 0;
 }
