@@ -22,7 +22,8 @@
         "txt.h": "c",
         "logs.h": "c",
         "pthread.h": "c",
-        "m_gestor.h": "c"
+        "m_gestor.h": "c",
+        "es_gestor.h": "c"
     }
    
 }
