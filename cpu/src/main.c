@@ -2,16 +2,20 @@
 
 
 int main() {
+    //Inicializo cpu
     inicializar_logger (&cpu_logger); //loggers obligatorios
     inicializar_logger_debug (&cpu_log_debug); //loggers para debug
-
     APP_config config_valores = cargar_configuracion_cpu();
-    printf("Puerto Memoria: %d\n", config_valores.puerto_memoria); //lineas solo para testear funcionamienito, dsp borrar
-    
-    log_info (cpu_logger,"IP_MEMORIA : %s", config_valores.ip_memoria );
-    log_debug (cpu_log_debug,"PUERTO_MEMORIA : %d", config_valores.puerto_memoria );
-    log_warning (cpu_log_debug,"puerto_escucha_dispatch: %d", config_valores.puerto_escucha_dispach );
-    log_trace (cpu_log_debug,"ALGORITMO TLB : %s", config_valores.algoritmo_TLB );
+   
+    //Conectarse como cliente a memoria
+    log_info(cpu_logger, "Conectandose a memoria...");
+    fd_cpu = crear_conexion (config_valores.ip_memoria, config_valores.puerto_memoria);
+
+    //iniciar servidor de cpu dispach
+    fd_cpu = iniciar_servidor (config_valores.puerto_escucha_dispach, cpu_logger, "CPU DISPACH INCIADO !!!");
+    //Esperiar conexion de kernel a dispach
+    log_info(cpu_logger, "Esperando a kernel en dispach...");
+    fd_kernel = esperar_cliente (fd_cpu, cpu_logger, "KERNEL EN DISPACH");
 
     return 0;
 }
