@@ -13,7 +13,7 @@ APP_config cargar_configuracion_memoria (void)
     }
 
     //config_valores.ruta_logger                    =       config_get_x (config, "texto anterior")
-    config_valores.puerto_escucha                   =       config_get_int_value (config,"PUERTO_ESCUCHA");
+    config_valores.puerto_escucha                   =       config_get_string_value (config,"PUERTO_ESCUCHA");
     config_valores.tam_memoria                      =       config_get_int_value (config,"TAM_MEMORIA");
     config_valores.tam_pagina                       =       config_get_int_value (config, "TAM_PAGINA");
     config_valores.retardo_respuesta                =       config_get_int_value (config, "RETARDO_RESPUESTA");

@@ -49,15 +49,15 @@ int iniciar_servidor(char* puerto, t_log* un_log, char* msj_server)
     listen (socket_servidor, SOMAXCONN);
 
 	freeaddrinfo(servinfo);
-	log_trace(un_log, "SERVER: %s" , msj_server);
+	log_info(un_log, "SERVER: %s" , msj_server);
 
 	return socket_servidor;
 }
-int esperar_cliente(int socket_servidor, t_log* un_log)
+int esperar_cliente(int socket_servidor, t_log* un_log, char* nombre_cliente)
 {
 	// Aceptamos un nuevo cliente
 	int socket_cliente = accept (socket_servidor, NULL, NULL);
-	log_info(un_log, "Se conecto un cliente!");
+	log_info(un_log, "Se conecto el cliente: %s !!!", nombre_cliente);
 
 	return socket_cliente;
 }
