@@ -1,5 +1,5 @@
 #include "/home/utnso/Desktop/tp-2024-1c-SOn-mbulos/utils/src/utils/shared.h"
-/*
+
 int crear_conexion(char *ip, char* puerto)
 {
 	struct addrinfo hints;
@@ -72,7 +72,7 @@ int recibir_operacion(int socket_cliente)
 		return -1;
 	}
 }
-*/
+
 void inicializar_logger (t_log** logger){
     *logger = log_create ("cpu_logs.log","CL_LOG", 1, LOG_LEVEL_INFO);
     if (*logger == NULL){
