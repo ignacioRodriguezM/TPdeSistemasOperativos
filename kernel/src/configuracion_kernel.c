@@ -33,3 +33,21 @@ APP_config cargar_configuracion_kernel (void)
     return config_valores;
 }
 
+uint16_t* convertirArrayCharAUInt16(char** array_char) {
+    int longitud = 0;
+    while (array_char[longitud] != NULL) {
+        longitud++;
+    }
+    
+    uint16_t* array_uint16 = malloc(sizeof(uint16_t) * longitud);
+    if (array_uint16 == NULL) {
+        perror("Error al asignar memoria para el array de enteros");
+        exit(EXIT_FAILURE);
+    }
+    
+    for (int i = 0; i < longitud; i++) {
+        array_uint16[i] = (uint16_t)atoi(array_char[i]);
+    }
+    
+    return array_uint16;
+}
