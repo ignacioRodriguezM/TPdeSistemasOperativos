@@ -14,9 +14,10 @@ int main() {
     fd_cpu_interrupt = iniciar_servidor (config_valores.puerto_escucha_interrupt, cpu_logger, "CPU INTERRUPT INCIADO !!!");
 
     //Conectarse como cliente a memoria
-    log_info(cpu_logger, "Conectandose a memoria");
+    log_info(cpu_logger, "Conectandose a memoria...");
     fd_memoria = crear_conexion (config_valores.ip_memoria, config_valores.puerto_memoria);
-
+    log_info(cpu_logger, "Conexion a memoria Exitosa");
+    
     //Esperiar conexion de kernel a dispach
     log_info(cpu_logger, "Esperando a kernel en dispach...");
     fd_kernel_dispatch = esperar_cliente (fd_cpu_dispatch, cpu_logger, "KERNEL EN DISPACH");
