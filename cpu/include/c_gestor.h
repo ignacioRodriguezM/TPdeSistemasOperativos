@@ -14,7 +14,9 @@
 extern t_log* kernel_logger;
 extern t_log* kernel_log_debug;
 
-extern int fd_cpu;
-extern int fd_kernel;
+extern int fd_cpu_dispatch;
+extern int fd_cpu_interrupt;
+extern int fd_kernel_dispatch;
+extern int fd_kernel_interrupt;
 extern int fd_memoria;         
 #endif

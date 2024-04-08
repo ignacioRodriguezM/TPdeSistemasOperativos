@@ -10,7 +10,9 @@
 t_log* cpu_logger;
 t_log* cpu_log_debug;
 
-int fd_cpu;
-int fd_kernel;
+int fd_cpu_dispatch;
+int fd_cpu_interrupt;
+int fd_kernel_dispatch;
+int fd_kernel_interrupt;
 int fd_memoria;   
 #endif
