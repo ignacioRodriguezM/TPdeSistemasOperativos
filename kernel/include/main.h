@@ -12,6 +12,7 @@ t_log* kernel_log_debug;
 
 int fd_kernel;
 int fd_memoria;         
-int fd_enrada_salida;
-int fd_cpu;
+int fd_entrada_salida;
+int fd_cpu_dispatch;
+int fd_cpu_interrupt;
 #endif
