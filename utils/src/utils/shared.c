@@ -1,4 +1,4 @@
-#include "/home/utnso/Desktop/tp-2024-1c-SOn-mbulos/utils/src/utils/shared.h"
+#include <utils/shared.h>
 
 int crear_conexion(char *ip, char* puerto)
 {

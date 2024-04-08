@@ -23,7 +23,8 @@
         "logs.h": "c",
         "pthread.h": "c",
         "m_gestor.h": "c",
-        "es_gestor.h": "c"
+        "es_gestor.h": "c",
+        "stdint.h": "c"
     }
    
 }

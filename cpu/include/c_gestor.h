@@ -1,7 +1,7 @@
 #ifndef C_GESTOR_H_
 #define C_GESTOR_H_
 
-#include "/home/utnso/Desktop/tp-2024-1c-SOn-mbulos/utils/src/utils/shared.h"
+#include <utils/shared.h>
 
 #include <stdint.h>
 #include <pthread.h>
