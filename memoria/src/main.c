@@ -3,8 +3,8 @@
 
 int main() {
     //Inicializar memmoria
-    inicializar_logger (&memoria_logger);
-    inicializar_logger_debug (&memoria_log_debug);
+    inicializar_logger (&memoria_logger, "memoria_logs.log");
+    inicializar_logger_debug (&memoria_log_debug, "memoria_debug.log");
     APP_config config_valores = cargar_configuracion_memoria();
 
     //iniciar servidor de memoria
