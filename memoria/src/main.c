@@ -20,9 +20,24 @@ int main() {
 
     //Esperiar conexion de i/o
     log_info(memoria_logger, "Esperando a entrada_salida...");
-    fd_enrada_salida = esperar_cliente (fd_memoria, memoria_logger, "ENTRADA SALIDA");
+    fd_entrada_salida = esperar_cliente (fd_memoria, memoria_logger, "ENTRADA SALIDA");
 
-    //Finalizar Memoria
+    
+    //Atender los mensajes de CPU
+    pthread_t hilo_cpu;
+    pthread_create(&hilo_cpu, NULL, (void*) atender_memoria_cpu, NULL);
+    pthread_detach (hilo_cpu);
+
+    //Atender los mensajes de KERNEL
+    pthread_t hilo_kernel;
+    pthread_create(&hilo_kernel, NULL, (void*) atender_memoria_kernel, NULL);
+    pthread_detach (hilo_kernel);
+
+    //Atender los mensajes de I/O
+    pthread_t hilo_entrada_salida;
+    pthread_create(&hilo_entrada_salida, NULL, (void*) atender_memoria_entrada_salida, NULL);
+    pthread_join(hilo_entrada_salida, NULL);
+
 
     return 0;
 }
