@@ -27,28 +27,21 @@ int main() {
     fd_kernel_interrupt = esperar_cliente (fd_cpu_interrupt, cpu_logger, "KERNEL EN INTERRUPT");
 
     //Atender los mensajes de Kernel - Dispatch
-    while (1) {
-		int cod_op = recibir_operacion(fd_kernel_dispatch);
-		switch (cod_op) {
-            case MENSAJE:
-                //
-            case PAQUETE:
-                //
-            case -1:
-                log_error(cpu_logger, "el Kernel se desconecto de dispatch. Terminando servidor");
-                return EXIT_FAILURE;
-            default:
-                log_warning(cpu_logger,"Operacion desconocida. No quieras meter la pata");
-                break;
-            }
-	}
+    pthread_t hilo_kernel_dispatch;
+    pthread_create(&hilo_kernel_dispatch, NULL, (void*) atender_cpu_kernel_dispatch, NULL);
+    atender_cpu_kernel_dispatch ();
+    pthread_detach (hilo_kernel_dispatch);
+
     //Atender los mensajes de Kernel - Interrupt
+    pthread_t hilo_kernel_interrupt;
+    pthread_create(&hilo_kernel_interrupt, NULL, (void*) atender_cpu_kernel_interrupt, NULL);
+    pthread_detach (hilo_kernel_interrupt);
 
     //Atender mensajes de Memoria
-
-
-
-
+    pthread_t hilo_memoria;
+    pthread_create(&hilo_memoria, NULL, (void*) atender_cpu_memoria, NULL);
+    pthread_join(hilo_memoria, NULL);
+  
 
     return 0;
 }
