@@ -3,8 +3,8 @@
 
 int main() {
     //Inicializo cpu
-    inicializar_logger (&cpu_logger); //loggers obligatorios
-    inicializar_logger_debug (&cpu_log_debug); //loggers para debug
+    inicializar_logger (&cpu_logger, "cpu_logs.log"); //loggers obligatorios
+    inicializar_logger_debug (&cpu_log_debug, "cpu_debug.log"); //loggers para debug
     APP_config config_valores = cargar_configuracion_cpu();
    
     //iniciar servidor de cpu dispach

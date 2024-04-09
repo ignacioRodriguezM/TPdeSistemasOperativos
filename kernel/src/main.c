@@ -3,8 +3,8 @@
 
 int main() {
     //incializo kerne;
-    inicializar_logger (&kernel_logger);
-    inicializar_logger_debug (&kernel_log_debug);
+    inicializar_logger (&kernel_logger, "kernel_logs.log");
+    inicializar_logger_debug (&kernel_log_debug, "kernel_debug.log");
     APP_config config_valores = cargar_configuracion_kernel();
     // POR SI NECESITO PASAR EL ARRAY DE STRINGS A ARRAY DE INTS: uint16_t* instancias_Recursos = convertirArrayCharAUInt16 (config_valores.instancias_recursos);
    

@@ -3,8 +3,8 @@
 
 int main() {
     //Inicializar entrada salida
-    inicializar_logger (&entrada_salida_logger);
-    inicializar_logger_debug (&entrada_salida_log_debug);
+    inicializar_logger (&entrada_salida_logger, "entrada_salida_logs.log");
+    inicializar_logger_debug (&entrada_salida_log_debug, "entrada_salida_debug.log");
     APP_config config_valores = cargar_configuracion_entrada_salida ();
     
     //Conectarse como cliente a memoria

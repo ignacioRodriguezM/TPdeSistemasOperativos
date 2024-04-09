@@ -77,15 +77,15 @@ int recibir_operacion(int socket_cliente)
 	}
 }
 
-void inicializar_logger (t_log** logger){
-    *logger = log_create ("cpu_logs.log","CL_LOG", 1, LOG_LEVEL_INFO);
+void inicializar_logger (t_log** logger, char* nombre){
+    *logger = log_create (nombre,"CL_LOG", 1, LOG_LEVEL_INFO);
     if (*logger == NULL){
         perror ("No se pudo crear el log");
         exit (EXIT_FAILURE);
     }
 }
-void inicializar_logger_debug (t_log** logger){
-    *logger = log_create ("cpu_debug_logs.log","CL_LOG", 1, LOG_LEVEL_TRACE);
+void inicializar_logger_debug (t_log** logger, char* nombre){
+    *logger = log_create (nombre,"CL_LOG", 1, LOG_LEVEL_TRACE);
     if (*logger == NULL){
         perror ("No se pudo crear el log");
         exit (EXIT_FAILURE);
