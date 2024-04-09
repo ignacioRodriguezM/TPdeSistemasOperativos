@@ -20,10 +20,12 @@ int main() {
     log_info(kernel_logger, "Conectandose a cpu dispatch...");
     fd_cpu_dispatch = crear_conexion (config_valores.ip_cpu, config_valores.puerto_cpu_dispatch);
     log_info(kernel_logger, "Conexion a cpu dispatch Exitosa");
+
     //Conectarse como cliente a cpu interrupt
     log_info(kernel_logger, "Conectandose a cpu interrupt...");
     fd_cpu_interrupt = crear_conexion (config_valores.ip_cpu, config_valores.puerto_cpu_interrupt);
     log_info(kernel_logger, "Conexion a cpu interrupt Exitosa");
+    
     //Esperiar conexion de i/o
     log_info(kernel_logger, "Esperando a entrada_salida...");
     fd_entrada_salida = esperar_cliente (fd_kernel, kernel_logger, "ENTRADA SALIDA");
