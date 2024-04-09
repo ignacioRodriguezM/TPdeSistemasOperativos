@@ -4,6 +4,9 @@
 #include "./es_gestor.h"
 
 #include "./configuracion_entrada_salida.h"
+#include "./entrada_salida_kernel.h"
+#include "./entrada_salida_memoria.h"
+
 
 //Variables GLOBALES
 t_log* entrada_salida_logger;
