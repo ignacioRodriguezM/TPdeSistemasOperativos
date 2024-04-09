@@ -11,6 +11,10 @@ int main() {
     //iniciar servidor de kernel
     fd_kernel = iniciar_servidor (config_valores.puerto_escucha, kernel_logger, "KERNEL INCIADO !!!");
 
+    //Esperiar conexion de i/o
+    log_info(kernel_logger, "Esperando a entrada_salida...");
+    fd_entrada_salida = esperar_cliente (fd_kernel, kernel_logger, "ENTRADA SALIDA");
+    
     //Conectarse como cliente a memoria
     log_info(kernel_logger, "Conectandose a memoria...");
     fd_memoria = crear_conexion (config_valores.ip_memoria, config_valores.puerto_memoria);
@@ -26,9 +30,6 @@ int main() {
     fd_cpu_interrupt = crear_conexion (config_valores.ip_cpu, config_valores.puerto_cpu_interrupt);
     log_info(kernel_logger, "Conexion a cpu interrupt Exitosa");
     
-    //Esperiar conexion de i/o
-    log_info(kernel_logger, "Esperando a entrada_salida...");
-    fd_entrada_salida = esperar_cliente (fd_kernel, kernel_logger, "ENTRADA SALIDA");
 
     //atender memoria
     pthread_t hilo_kernel_memoria;

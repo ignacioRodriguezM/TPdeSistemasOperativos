@@ -10,17 +10,18 @@ int main() {
     //iniciar servidor de memoria
     fd_memoria = iniciar_servidor (config_valores.puerto_escucha, memoria_logger, "MEMORIA INCIADA !!!");
    
-    //Esperar conexion CPU
-    log_info(memoria_logger, "Esperando a CPU...");
-    fd_cpu = esperar_cliente (fd_memoria, memoria_logger, "CPU");
+    //Esperiar conexion de i/o
+    log_info(memoria_logger, "Esperando a entrada_salida...");
+    fd_entrada_salida = esperar_cliente (fd_memoria, memoria_logger, "ENTRADA SALIDA");
+
 
     //Esperar conexion KERNEL
     log_info(memoria_logger, "Esperando a KERNEL...");
     fd_kernel = esperar_cliente (fd_memoria, memoria_logger, "KERNEL");
 
-    //Esperiar conexion de i/o
-    log_info(memoria_logger, "Esperando a entrada_salida...");
-    fd_entrada_salida = esperar_cliente (fd_memoria, memoria_logger, "ENTRADA SALIDA");
+    //Esperar conexion CPU
+    log_info(memoria_logger, "Esperando a CPU...");
+    fd_cpu = esperar_cliente (fd_memoria, memoria_logger, "CPU");
 
     
     //Atender los mensajes de CPU

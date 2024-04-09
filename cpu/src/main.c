@@ -13,18 +13,18 @@ int main() {
     //iniciar servidor dde cpu interrupt
     fd_cpu_interrupt = iniciar_servidor (config_valores.puerto_escucha_interrupt, cpu_logger, "CPU INTERRUPT INCIADO !!!");
 
+    //Esperiar conexion de kernel a dispatch
+    log_info(cpu_logger, "Esperando a kernel en dispatch...");
+    fd_kernel_dispatch = esperar_cliente (fd_cpu_dispatch, cpu_logger, "KERNEL EN DISPACH");
+    
+    //Esperiar conexion de kernel a interrupt
+    log_info(cpu_logger, "Esperando a kernel en interrupt...");
+    fd_kernel_interrupt = esperar_cliente (fd_cpu_interrupt, cpu_logger, "KERNEL EN INTERRUPT");
+    
     //Conectarse como cliente a memoria
     log_info(cpu_logger, "Conectandose a memoria...");
     fd_memoria = crear_conexion (config_valores.ip_memoria, config_valores.puerto_memoria);
     log_info(cpu_logger, "Conexion a memoria Exitosa");
-    
-    //Esperiar conexion de kernel a dispatch
-    log_info(cpu_logger, "Esperando a kernel en dispatch...");
-    fd_kernel_dispatch = esperar_cliente (fd_cpu_dispatch, cpu_logger, "KERNEL EN DISPACH");
-
-    //Esperiar conexion de kernel a interrupt
-    log_info(cpu_logger, "Esperando a kernel en interrupt...");
-    fd_kernel_interrupt = esperar_cliente (fd_cpu_interrupt, cpu_logger, "KERNEL EN INTERRUPT");
 
     //Atender los mensajes de Kernel - Dispatch
     pthread_t hilo_kernel_dispatch;
