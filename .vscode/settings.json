@@ -21,7 +21,10 @@
         "stdio.h": "c",
         "txt.h": "c",
         "logs.h": "c",
-        "pthread.h": "c"
+        "pthread.h": "c",
+        "m_gestor.h": "c",
+        "es_gestor.h": "c",
+        "stdint.h": "c"
     }
    
 }

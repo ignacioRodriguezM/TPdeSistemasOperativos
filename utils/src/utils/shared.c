@@ -1,5 +1,5 @@
-#include "/home/utnso/Desktop/tp-2024-1c-SOn-mbulos/utils/src/utils/shared.h"
-/*
+#include <utils/shared.h>
+
 int crear_conexion(char *ip, char* puerto)
 {
 	struct addrinfo hints;
@@ -19,8 +19,12 @@ int crear_conexion(char *ip, char* puerto)
                                     server_info->ai_protocol );
 
 	// Ahora que tenemos el socket, vamos a conectarlo
-    connect (socket_cliente, server_info->ai_addr, server_info->ai_addrlen);
-
+    
+	while (connect(socket_cliente, server_info->ai_addr, server_info->ai_addrlen) == -1) {
+            perror("Error al conectarse");
+			 sleep(5);
+			 }
+	
 	freeaddrinfo(server_info);
 
 	return socket_cliente;
@@ -49,15 +53,15 @@ int iniciar_servidor(char* puerto, t_log* un_log, char* msj_server)
     listen (socket_servidor, SOMAXCONN);
 
 	freeaddrinfo(servinfo);
-	log_trace(un_log, "SERVER: %s" , msj_server);
+	log_info(un_log, "SERVER: %s" , msj_server);
 
 	return socket_servidor;
 }
-int esperar_cliente(int socket_servidor, t_log* un_log)
+int esperar_cliente(int socket_servidor, t_log* un_log, char* nombre_cliente)
 {
 	// Aceptamos un nuevo cliente
 	int socket_cliente = accept (socket_servidor, NULL, NULL);
-	log_info(un_log, "Se conecto un cliente!");
+	log_info(un_log, "Se conecto el cliente: %s !!!", nombre_cliente);
 
 	return socket_cliente;
 }
@@ -72,7 +76,7 @@ int recibir_operacion(int socket_cliente)
 		return -1;
 	}
 }
-*/
+
 void inicializar_logger (t_log** logger){
     *logger = log_create ("cpu_logs.log","CL_LOG", 1, LOG_LEVEL_INFO);
     if (*logger == NULL){

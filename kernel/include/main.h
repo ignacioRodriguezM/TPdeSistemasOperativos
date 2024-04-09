@@ -1,12 +1,8 @@
 #ifndef KERNEL_MAIN_H_
 #define KERNEL_MAIN_H_
 
-#include "/home/utnso/Desktop/tp-2024-1c-SOn-mbulos/utils/src/utils/shared.h"
+#include "./k_gestor.h"
 
-#include <stdint.h>
-#include <pthread.h>
-#include <commons/txt.h>
-#include <commons/collections/list.h>
 
 #include "./configuracion_kernel.h"
 
@@ -14,4 +10,9 @@
 t_log* kernel_logger;
 t_log* kernel_log_debug;
 
+int fd_kernel;
+int fd_memoria;         
+int fd_entrada_salida;
+int fd_cpu_dispatch;
+int fd_cpu_interrupt;
 #endif

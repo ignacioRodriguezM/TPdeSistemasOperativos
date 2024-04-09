@@ -1,17 +1,16 @@
 #ifndef MEMORIA_MAIN_H_
 #define MEMORIA_MAIN_H_
 
-#include "/home/utnso/Desktop/tp-2024-1c-SOn-mbulos/utils/src/utils/shared.h"
-
-#include <stdint.h>
-#include <pthread.h>
-#include <commons/txt.h>
-#include <commons/collections/list.h>
-
+#include "./m_gestor.h"
 #include "./configuracion_memoria.h"
 
 //Variables GLOBALES
-t_log* memoria_logger;
-t_log* memoria_log_debug;
+t_log* memoria_logger; //log obligatorio
+t_log* memoria_log_debug; //log debug
+
+int fd_memoria;         //file descriptor de memoria
+int fd_enrada_salida;
+int fd_cpu;
+int fd_kernel;
 
 #endif
