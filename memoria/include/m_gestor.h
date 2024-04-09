@@ -14,7 +14,7 @@ extern t_log* memoria_logger;
 extern t_log* memoria_log_debug;
 
 extern int fd_memoria;         //file descriptor de memoria
-extern int fd_enrada_salida;
+extern int fd_entrada_salida;
 extern int fd_cpu;
 extern int fd_kernel;
 
