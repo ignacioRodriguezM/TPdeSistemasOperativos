@@ -40,8 +40,8 @@ int main() {
     //Atender mensajes de Memoria
     pthread_t hilo_memoria;
     pthread_create(&hilo_memoria, NULL, (void*) atender_cpu_memoria, NULL);
-    pthread_detach (hilo_memoria);
+    pthread_join(hilo_memoria, NULL);
   
-  
+
     return 0;
 }
