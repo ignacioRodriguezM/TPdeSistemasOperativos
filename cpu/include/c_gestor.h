@@ -11,8 +11,8 @@
 #include "./configuracion_cpu.h"
 
 //Variables GLOBALES
-extern t_log* kernel_logger;
-extern t_log* kernel_log_debug;
+extern t_log* cpu_logger;
+extern t_log* cpu_log_debug;
 
 extern int fd_cpu_dispatch;
 extern int fd_cpu_interrupt;
