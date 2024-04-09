@@ -5,6 +5,10 @@
 
 
 #include "./configuracion_kernel.h"
+#include "kernel-Entrada_Salida.h"
+#include "kernel-memoria.h"
+#include "kernel-cpu_dispatch.h"
+#include "kernel-cpu_interrupt.h"
 
 //Variables GLOBALES
 t_log* kernel_logger;
