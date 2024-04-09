@@ -30,6 +30,28 @@ int main() {
     log_info(kernel_logger, "Esperando a entrada_salida...");
     fd_entrada_salida = esperar_cliente (fd_kernel, kernel_logger, "ENTRADA SALIDA");
 
+    //atender memoria
+    pthread_t hilo_kernel_memoria;
+    pthread_create (&hilo_kernel_memoria, NULL, (void*)atender_kernel_memoria, NULL);
+    pthread_detach(hilo_kernel_memoria);
+
+    //atender cpu dispatch
+    pthread_t hilo_kernel_cpu_dispatch;
+    pthread_create (&hilo_kernel_cpu_dispatch, NULL, (void*)atender_kernel_cpu_dispatch, NULL);
+    pthread_detach(hilo_kernel_cpu_dispatch);
+
+
+    //atender cpu interrupt
+    pthread_t hilo_kernel_cpu_interrupt;
+    pthread_create (&hilo_kernel_cpu_interrupt, NULL, (void*)atender_kernel_cpu_inerrupt, NULL);
+    pthread_detach(hilo_kernel_cpu_interrupt);
+
+
+    //Atender i/o
+    pthread_t hilo_kernel_entrada_salida;
+    pthread_create (&hilo_kernel_entrada_salida, NULL, (void*)atender_kernel_entrada_salida, NULL);
+    pthread_join(hilo_kernel_entrada_salida, NULL);
+
 
     return 0;
 }
