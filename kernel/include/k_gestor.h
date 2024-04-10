@@ -8,7 +8,6 @@
 #include <commons/txt.h>
 #include <commons/collections/list.h>
 
-#include "./configuracion_kernel.h"
 
 //Variables GLOBALES
 extern t_log* kernel_logger;
@@ -19,4 +18,10 @@ extern int fd_memoria;
 extern int fd_entrada_salida;
 extern int fd_cpu_dispatch;
 extern int fd_cpu_interrupt;
+
+extern int identificador_PID;
+extern int contador_pcbs;
+
+extern pthread_mutex_t mutex_pid;
+
 #endif
