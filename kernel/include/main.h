@@ -9,6 +9,7 @@
 #include "kernel-memoria.h"
 #include "kernel-cpu_dispatch.h"
 #include "kernel-cpu_interrupt.h"
+#include "consola.h"
 
 //Variables GLOBALES
 t_log* kernel_logger;

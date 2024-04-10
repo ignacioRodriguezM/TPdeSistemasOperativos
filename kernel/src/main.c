@@ -2,7 +2,7 @@
 
 
 int main() {
-    //incializo kerne;
+    //incializo kernel;
     inicializar_logger (&kernel_logger, "kernel_logs.log");
     inicializar_logger_debug (&kernel_log_debug, "kernel_debug.log");
     APP_config config_valores = cargar_configuracion_kernel();
@@ -51,8 +51,13 @@ int main() {
     //Atender i/o
     pthread_t hilo_kernel_entrada_salida;
     pthread_create (&hilo_kernel_entrada_salida, NULL, (void*)atender_kernel_entrada_salida, NULL);
-    pthread_join(hilo_kernel_entrada_salida, NULL);
+    pthread_detach(hilo_kernel_entrada_salida);
 
+    //Iniciar consola interactiva
+    iniciar_consola_interactiva ();
+
+
+    log_debug(kernel_log_debug, "Advertencia de salida de Kernel");
 
     return 0;
 }
