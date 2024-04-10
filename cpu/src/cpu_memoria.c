@@ -1,6 +1,6 @@
 #include "../include/cpu_memoria.h"
 
-void atender_cpu_memoria (){
+void atender_cpu_memoria (){ //escucha en el socket fd_memoria a la memoria
     bool control_key = 1;
     while (control_key) {
 		int cod_op = recibir_operacion(fd_memoria);
