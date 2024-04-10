@@ -43,7 +43,28 @@ int crear_conexion(char *ip, char* puerto);
 int iniciar_servidor(char* puerto, t_log* un_log, char* msj_server);
 int esperar_cliente(int socket_servidor, t_log* un_log,  char* nombre_cliente);
 int recibir_operacion(int socket_cliente);
+
+
 void inicializar_logger (t_log** logger, char* nombre);
 void inicializar_logger_debug (t_log** logger, char* nombre);
+
+
+t_buffer* crear_buffer ();
+void destruir_buffer (t_buffer* buffer);
+
+void cargar_choclo_al_buffer (t_buffer* buffer, void* un_choclo, int size_of_choclo);
+void cargar_int_al_buffer (t_buffer* buffer, int valor);
+void cargar_uint32_al_buffer (t_buffer* buffer, uint32_t valor);
+void cargar_string_al_buffer (t_buffer* buffer, char* string);
+
+void extraer_choclo_al_buffer (t_buffer* un_buffer);
+uint32_t extraer_uint32_al_buffer (t_buffer* un_buffer);
+char* extraer_string_al_buffer (t_buffer* un_buffer);
+
+
+t_paquete* crear_paquete (op_code cod_op, t_buffer* un_buffer);
+void destruir_paquete (t_paquete* un_paquete);
+void* serializar_paquete (t_paquete* un_paquete);
+void enviar_paquete (t_paquete* paquete, int conexion);
 
 #endif
