@@ -54,7 +54,7 @@ int main() {
     pthread_detach(hilo_kernel_entrada_salida);
 
     //Iniciar consola interactiva
-    iniciar_consola_interactiva ();
+    iniciar_consola_interactiva (); //si queremos probar los comandos sin antes correr todos los modulos, lo ponemos arriba
 
 
     log_debug(kernel_log_debug, "Advertencia de salida de Kernel");
