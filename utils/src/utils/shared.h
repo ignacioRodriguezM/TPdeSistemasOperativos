@@ -57,7 +57,7 @@ void cargar_int_al_buffer (t_buffer* buffer, int valor);
 void cargar_uint32_al_buffer (t_buffer* buffer, uint32_t valor);
 void cargar_string_al_buffer (t_buffer* buffer, char* string);
 
-void extraer_choclo_al_buffer (t_buffer* un_buffer);
+void* extraer_choclo_al_buffer (t_buffer* un_buffer);
 uint32_t extraer_uint32_al_buffer (t_buffer* un_buffer);
 char* extraer_string_al_buffer (t_buffer* un_buffer);
 

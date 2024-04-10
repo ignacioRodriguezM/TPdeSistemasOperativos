@@ -116,7 +116,7 @@ void cargar_choclo_al_buffer (t_buffer* buffer, void* un_choclo, int size_of_cho
 		memcpy(buffer->stream + sizeof(int), un_choclo, size_of_choclo);
 	}
 	else{
-		buffer->stream = realloc(buffer->stream, buffer->stream + sizeof(int) + size_of_choclo);
+		buffer->stream = realloc(buffer->stream, buffer->size + sizeof(int) + size_of_choclo);
 		memcpy(buffer->stream + buffer->size, &size_of_choclo, sizeof(int));
 		memcpy(buffer->stream + buffer->size + sizeof(int), un_choclo, size_of_choclo);
 	}
@@ -136,7 +136,7 @@ void cargar_string_al_buffer (t_buffer* buffer, char* string){
 
 //=================================================================
 
-void extraer_choclo_al_buffer (t_buffer* un_buffer){
+void* extraer_choclo_al_buffer (t_buffer* un_buffer){
 	if(un_buffer->size==0){
 		printf("\n[ERROR] Al intentar extraer contenido de un t_buffer vacio\n\n");
 		exit(EXIT_FAILURE);
