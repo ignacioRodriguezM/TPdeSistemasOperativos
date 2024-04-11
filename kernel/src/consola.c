@@ -36,7 +36,7 @@ void iniciar_consola_interactiva (){
 bool _validacion_de_instruccion_de_consola (char* leido){
     bool resultado_validacion= false;
 
-    //[FALTA] Hacer mas controles de vaidacion
+    
     char** comando_consola = string_split(leido, " ");
 
     if (strcmp(comando_consola[0], "EJECUTAR_SCRIPT") == 0){        //valida que haya escrito ejecutar script
