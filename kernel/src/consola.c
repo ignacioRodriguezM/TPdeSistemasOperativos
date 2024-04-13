@@ -115,7 +115,16 @@ void _atender_instruccion_validada (char* leido){
         
         }
     else if (strcmp(comando_consola[0], "INICIAR_PROCESO") == 0){
-        
+        t_buffer* buffer = crear_buffer();
+        uint16_t pid = asignar_pid();
+        cargar_uint16_al_buffer(buffer, pid);
+        cargar_string_al_buffer(buffer, comando_consola[1]);
+
+        t_paquete* a_enviar = crear_paquete (INICIAR_PROCESO, buffer); // [PID] [PATH]
+    
+        enviar_paquete(a_enviar, fd_memoria);
+
+        destruir_paquete(a_enviar);
         }
     else if (strcmp(comando_consola[0], "FINALIZAR_PROCESO") == 0){
         

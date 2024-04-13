@@ -6,7 +6,9 @@
 			"array": "c",
 			"string_view": "c",
 			"initializer_list": "c",
-			"utility": "c"
+			"utility": "c",
+			"atomic": "c",
+			"cstdint": "c"
 		},
 		"C_Cpp.errorSquiggles": "disabled",
 	},

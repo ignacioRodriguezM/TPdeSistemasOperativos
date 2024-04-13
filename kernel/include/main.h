@@ -23,9 +23,30 @@ int fd_entrada_salida;
 int fd_cpu_dispatch;
 int fd_cpu_interrupt;
 
-int identificador_PID = 1;
-int contador_pcbs = 1;
+uint16_t identificador_PID = 1;
+uint16_t contador_pcbs = 1;
 
 pthread_mutex_t mutex_pid;
+
+typedef struct{
+    uint8_t ax;
+    uint8_t bx;
+    uint8_t cx;
+    uint8_t dx;
+    uint32_t eax;
+    uint32_t ebx;
+    uint32_t ecx;
+    uint32_t edx;
+    uint32_t si;
+    uint32_t di;
+}registros;
+
+
+typedef struct{
+    uint32_t pid;
+    uint32_t* pc;
+    uint32_t quantum;
+    registros registro;
+}PCB;
 
 #endif

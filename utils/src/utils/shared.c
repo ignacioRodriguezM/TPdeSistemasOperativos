@@ -130,6 +130,9 @@ void cargar_int_al_buffer (t_buffer* buffer, int valor){
 void cargar_uint32_al_buffer (t_buffer* buffer, uint32_t valor){
 	cargar_choclo_al_buffer (buffer, &valor, sizeof(uint32_t));
 }
+void cargar_uint16_al_buffer (t_buffer* buffer, uint16_t valor){
+	cargar_choclo_al_buffer (buffer, &valor, sizeof(uint16_t));
+}
 void cargar_string_al_buffer (t_buffer* buffer, char* string){
 	cargar_choclo_al_buffer (buffer, &string, strlen(string) + 1);
 }
@@ -180,6 +183,12 @@ int extraer_int_al_buffer (t_buffer* un_buffer){
 uint32_t extraer_uint32_al_buffer (t_buffer* un_buffer){
 	uint32_t* un_entero = extraer_choclo_al_buffer(un_buffer);
 	uint32_t valor_retorno = *un_entero;
+	free(un_entero);
+	return valor_retorno;
+}
+uint16_t extraer_uint16_al_buffer (t_buffer* un_buffer){
+	uint16_t* un_entero = extraer_choclo_al_buffer(un_buffer);
+	uint16_t valor_retorno = *un_entero;
 	free(un_entero);
 	return valor_retorno;
 }

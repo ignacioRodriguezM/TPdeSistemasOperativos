@@ -21,8 +21,8 @@ typedef enum
     HANDSHAKE,
     RTA_HANDSHAKE,
     //------------------------------------
-    CREAR_PROCESO,
-    RTA_CREAR_PROCESO
+    INICIAR_PROCESO,
+    RTA_INICIAR_PROCESO
     
 }op_code;
 
@@ -55,10 +55,12 @@ void destruir_buffer (t_buffer* buffer);
 void cargar_choclo_al_buffer (t_buffer* buffer, void* un_choclo, int size_of_choclo);
 void cargar_int_al_buffer (t_buffer* buffer, int valor);
 void cargar_uint32_al_buffer (t_buffer* buffer, uint32_t valor);
+void cargar_uint16_al_buffer (t_buffer* buffer, uint16_t valor);
 void cargar_string_al_buffer (t_buffer* buffer, char* string);
 
 void* extraer_choclo_al_buffer (t_buffer* un_buffer);
 uint32_t extraer_uint32_al_buffer (t_buffer* un_buffer);
+uint16_t extraer_uint16_al_buffer (t_buffer* un_buffer);
 char* extraer_string_al_buffer (t_buffer* un_buffer);
 
 

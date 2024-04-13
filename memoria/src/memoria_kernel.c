@@ -11,6 +11,10 @@ void atender_memoria_kernel (){
             case PAQUETE:
                 //
                 break;
+            case INICIAR_PROCESO:
+                log_debug(memoria_log_debug, "LLEGO EL MENSAJE");
+                control_key = 0;
+                break;
             case -1:
                 log_error(memoria_logger, "Desconexion de KERNEL");
                 control_key = 0;

@@ -3,7 +3,7 @@
 
 #include "./k_gestor.h"
 
-int asignar_pid ();
+uint16_t asignar_pid ();
 
 
 
