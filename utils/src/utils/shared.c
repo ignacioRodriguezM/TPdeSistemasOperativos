@@ -230,4 +230,3 @@ void enviar_paquete (t_paquete* paquete, int conexion){
 
 	free (a_enviar);
 }
-

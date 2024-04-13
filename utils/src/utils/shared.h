@@ -69,4 +69,5 @@ void destruir_paquete (t_paquete* un_paquete);
 void* serializar_paquete (t_paquete* un_paquete);
 void enviar_paquete (t_paquete* paquete, int conexion);
 
+
 #endif

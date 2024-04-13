@@ -13,6 +13,12 @@ void atender_memoria_kernel (){
                 break;
             case INICIAR_PROCESO:
                 log_debug(memoria_log_debug, "LLEGO EL MENSAJE");
+                void* buffer;
+                int* size;
+                recv(socket_cliente, size, sizeof(int), MSG_WAITALL);
+                buffer = malloc(*size);
+                recv(socket_cliente, buffer, *size, MSG_WAITALL);
+
                 control_key = 0;
                 break;
             case -1:
