@@ -13,15 +13,7 @@ void atender_memoria_kernel (){
                 break;
             case INICIAR_PROCESO:
                 log_debug(memoria_log_debug, "LLEGO EL MENSAJE");
-                int size;
-	            void* buffer;
-                buffer = recibir_buffer(&size, fd_kernel);
-                if(buffer== NULL){
-                    printf("SOY NULO");
-                }
-                uint16_t pid = extraer_uint16_al_buffer (buffer);
-                char* path = extraer_string_al_buffer(buffer);
-                control_key = 0;
+               
                 break;
 
             case -1:
