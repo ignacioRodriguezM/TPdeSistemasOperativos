@@ -10,7 +10,20 @@ int main() {
    
     //iniciar servidor de kernel
     fd_kernel = iniciar_servidor (config_valores.puerto_escucha, kernel_logger, "KERNEL INCIADO !!!");
+    
 
+
+    
+    log_info(kernel_logger, "Conectandose a memoria...");
+    fd_memoria = crear_conexion (config_valores.ip_memoria, config_valores.puerto_memoria);
+    log_info(kernel_logger, "Conexion a memoria Exitosa");
+
+    iniciar_consola_interactiva ();
+
+
+
+
+    /*
     //Esperiar conexion de i/o
     log_info(kernel_logger, "Esperando a entrada_salida...");
     fd_entrada_salida = esperar_cliente (fd_kernel, kernel_logger, "ENTRADA SALIDA");
@@ -55,7 +68,7 @@ int main() {
 
     //Iniciar consola interactiva
     iniciar_consola_interactiva (); //si queremos probar los comandos sin antes correr todos los modulos, lo ponemos arriba
-
+    */
 
     log_debug(kernel_log_debug, "Advertencia de salida de Kernel");
 

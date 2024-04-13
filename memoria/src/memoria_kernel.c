@@ -13,14 +13,17 @@ void atender_memoria_kernel (){
                 break;
             case INICIAR_PROCESO:
                 log_debug(memoria_log_debug, "LLEGO EL MENSAJE");
-                void* buffer;
-                int* size;
-                recv(socket_cliente, size, sizeof(int), MSG_WAITALL);
-                buffer = malloc(*size);
-                recv(socket_cliente, buffer, *size, MSG_WAITALL);
-
+                int size;
+	            void* buffer;
+                buffer = recibir_buffer(&size, fd_kernel);
+                if(buffer== NULL){
+                    printf("SOY NULO");
+                }
+                uint16_t pid = extraer_uint16_al_buffer (buffer);
+                char* path = extraer_string_al_buffer(buffer);
                 control_key = 0;
                 break;
+
             case -1:
                 log_error(memoria_logger, "Desconexion de KERNEL");
                 control_key = 0;

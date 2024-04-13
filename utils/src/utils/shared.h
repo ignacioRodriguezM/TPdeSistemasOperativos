@@ -69,5 +69,6 @@ void destruir_paquete (t_paquete* un_paquete);
 void* serializar_paquete (t_paquete* un_paquete);
 void enviar_paquete (t_paquete* paquete, int conexion);
 
+void* recibir_buffer(int* size, int socket_cliente);
 
 #endif
