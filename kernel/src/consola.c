@@ -116,6 +116,7 @@ void _atender_instruccion_validada (char* leido){
         }
     else if (strcmp(comando_consola[0], "INICIAR_PROCESO") == 0){
         t_buffer* buffer = crear_buffer();
+        printf("Ingresaste: %s\n", comando_consola[1]);
         uint16_t pid = asignar_pid();
         cargar_uint16_al_buffer(buffer, pid);
         cargar_string_al_buffer(buffer, comando_consola[1]);
@@ -124,7 +125,14 @@ void _atender_instruccion_validada (char* leido){
     
         enviar_paquete(a_enviar, fd_memoria);
 
-        destruir_paquete(a_enviar);
+        uint16_t pid_recibido = extraer_uint16_del_paquete(a_enviar);
+        char* path_recibido = extraer_string_del_paquete(a_enviar);
+            
+        // Imprimir
+        printf("PID en paquete: %hu\n", pid_recibido);            
+        printf("Path en paquete: %s\n", path_recibido);
+
+        //destruir_paquete(a_enviar);
         }
     else if (strcmp(comando_consola[0], "FINALIZAR_PROCESO") == 0){
         

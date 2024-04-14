@@ -139,40 +139,49 @@ void cargar_string_al_buffer (t_buffer* buffer, char* string){
 
 //=================================================================
 
-void* extraer_choclo_al_buffer (t_buffer* un_buffer){
-	if(un_buffer->size==0){
-		printf("\n[ERROR] Al intentar extraer contenido de un t_buffer vacio\n\n");
-		exit(EXIT_FAILURE);
-	}
-	if(un_buffer->size<0){
-		printf("\n[ERROR] Esto es raro. El t_buffer contiene un size NEGATIVO\n\n");
-		exit(EXIT_FAILURE);
-	}
+void* extraer_choclo_al_buffer(t_buffer* un_buffer) {
+    if(un_buffer->size == 0) {
+        printf("\n[ERROR] Al intentar extraer contenido de un t_buffer vacio\n\n");
+        exit(EXIT_FAILURE);
+    }
+    if(un_buffer->size < 0) {
+        printf("\n[ERROR] Esto es raro. El t_buffer contiene un size NEGATIVO\n\n");
+        exit(EXIT_FAILURE);
+    }
 
-	int size_choclo;
-	memcpy(&size_choclo, un_buffer->stream, sizeof(int));
-	void* choclo = malloc(size_choclo);
-	memcpy(choclo, un_buffer->stream + sizeof(int), size_choclo);
+    int size_choclo;
+    memcpy(&size_choclo, un_buffer->stream, sizeof(int));
+    void* choclo = malloc(size_choclo);
+    if(choclo == NULL) {
+        perror("Error al asignar memoria para choclo");
+        exit(EXIT_FAILURE);
+    }
+    memcpy(choclo, un_buffer->stream + sizeof(int), size_choclo);
 
-	int nuevo_size = un_buffer->size - sizeof(int) - size_choclo;
-	if(nuevo_size==0){
-		un_buffer->size=0;
-		free(un_buffer->stream);
-		un_buffer->stream=NULL;
-		return choclo;
-	}
-	if(nuevo_size<0){
-		perror("/n[ERROR_CHOCLO] BUFFER con tamanio negativo");
-		exit(EXIT_FAILURE);
-	}
-	void* nuevo_stream = malloc(nuevo_size);
-	memcpy(nuevo_stream, un_buffer->stream + sizeof(int) + size_choclo, nuevo_size);
-	free(un_buffer->stream);
-	un_buffer->size = nuevo_size;
-	un_buffer->stream = nuevo_stream;
+    int nuevo_size = un_buffer->size - sizeof(int) - size_choclo;
+    if(nuevo_size == 0) {
+        un_buffer->size = 0;
+        free(un_buffer->stream);
+        un_buffer->stream = NULL;
+        return choclo;
+    }
+    if(nuevo_size < 0) {
+        perror("/n[ERROR_CHOCLO] BUFFER con tamanio negativo");
+        exit(EXIT_FAILURE);
+    }
+    void* nuevo_stream = malloc(nuevo_size);
+    if(nuevo_stream == NULL) {
+        perror("Error al asignar memoria para nuevo_stream");
+        exit(EXIT_FAILURE);
+    }
+    memcpy(nuevo_stream, un_buffer->stream + sizeof(int) + size_choclo, nuevo_size);
+    free(un_buffer->stream);
+    un_buffer->size = nuevo_size;
+    un_buffer->stream = nuevo_stream;
 
-	return choclo;
+    return choclo;
 }
+
 
 int extraer_int_al_buffer (t_buffer* un_buffer){
 	int* un_entero = extraer_choclo_al_buffer(un_buffer);
@@ -229,4 +238,45 @@ void enviar_paquete (t_paquete* paquete, int conexion){
 	send (conexion, a_enviar, bytes, 0);
 
 	free (a_enviar);
+}
+
+t_paquete* recibir_paquete(int conexion) {
+    t_paquete* paquete = malloc(sizeof(t_paquete));
+    paquete->buffer = crear_buffer(); // Inicializar el buffer
+
+    // Omitir la recepción del código de operación
+    // Recibir el tamaño del buffer
+    if(recv(conexion, &(paquete->buffer->size), sizeof(int), MSG_WAITALL) != sizeof(int)) {
+        perror("Error al recibir el tamaño del buffer");
+        exit(EXIT_FAILURE);
+    }
+    
+    // Recibir el stream del buffer
+    paquete->buffer->stream = malloc(paquete->buffer->size);
+    if(recv(conexion, paquete->buffer->stream, paquete->buffer->size, MSG_WAITALL) != paquete->buffer->size) {
+        perror("Error al recibir el stream del buffer");
+        exit(EXIT_FAILURE);
+    }
+    
+    return paquete;
+}
+
+// Función para extraer un entero del paquete
+int extraer_int_del_paquete(t_paquete* paquete) {
+    return extraer_int_al_buffer(paquete->buffer);
+}
+
+// Función para extraer un uint32_t del paquete
+uint32_t extraer_uint32_del_paquete(t_paquete* paquete) {
+    return extraer_uint32_al_buffer(paquete->buffer);
+}
+
+// Función para extraer un uint16_t del paquete
+uint16_t extraer_uint16_del_paquete(t_paquete* paquete) {
+    return extraer_uint16_al_buffer(paquete->buffer);
+}
+
+// Función para extraer un string del paquete
+char* extraer_string_del_paquete(t_paquete* paquete) {
+    return extraer_string_al_buffer(paquete->buffer);
 }
