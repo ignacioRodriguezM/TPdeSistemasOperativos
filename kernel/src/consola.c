@@ -121,18 +121,21 @@ void _atender_instruccion_validada (char* leido){
         cargar_uint16_al_buffer(buffer, pid);
         cargar_string_al_buffer(buffer, comando_consola[1]);
 
+        // Imprimir
+        uint16_t cargadoint = extraer_uint16_al_buffer(buffer);
+        char* cargadostring = extraer_string_al_buffer(buffer);
+
+        printf("PID en buffer: %hu\n", cargadoint);            
+        printf("Path en buffer: %s\n", cargadostring);
+
+        cargar_uint16_al_buffer(buffer, pid);
+        cargar_string_al_buffer(buffer, comando_consola[1]);
+
         t_paquete* a_enviar = crear_paquete (INICIAR_PROCESO, buffer); // [PID] [PATH]
     
         enviar_paquete(a_enviar, fd_memoria);
-
-        uint16_t pid_recibido = extraer_uint16_del_paquete(a_enviar);
-        char* path_recibido = extraer_string_del_paquete(a_enviar);
-            
-        // Imprimir
-        printf("PID en paquete: %hu\n", pid_recibido);            
-        printf("Path en paquete: %s\n", path_recibido);
-
-        //destruir_paquete(a_enviar);
+        
+        destruir_paquete(a_enviar);
         }
     else if (strcmp(comando_consola[0], "FINALIZAR_PROCESO") == 0){
         

@@ -13,35 +13,29 @@ void atender_memoria_kernel (){
                 break;
 
             case INICIAR_PROCESO:
-                log_debug(memoria_log_debug, "LLEGO EL MENSAJE"); // [PID] [PATH]
-                int size;
-            if (recv(fd_kernel, &size, sizeof(int), 0) != sizeof(int)){
-                perror( "ERROR al recibir el tamaño del buffer");
-                // Manejo de error
-            }
+                // Recibir el tamaño del buffer
+                int size_of_stream = recibir_size_del_buffer(fd_kernel);
+                
+                t_buffer* buffer_recibido = crear_buffer();
+                buffer_recibido -> size = size_of_stream;
+                buffer_recibido->stream = malloc(size_of_stream);
+
+                //recibo el buffer, teniendo como dato su tamanio
+                if (recv(fd_kernel, buffer_recibido -> stream, size_of_stream, MSG_WAITALL) != size_of_stream ){
+                perror("Error al recibir el buffer");
+                exit(EXIT_FAILURE);
+                }
+
+                uint16_t pid_recibido = extraer_uint16_al_buffer (buffer_recibido);
+                char* path_recibido = extraer_string_al_buffer (buffer_recibido);
             
-            void* stream = malloc(size);
-            if (recv(fd_kernel, stream, size, 0) != size){
-                perror( "ERROR al recibir el stream del buffer");
-                // Manejo de error
-            }
+                // Imprimir
+                printf("SE RECIBIO: %hu\n", pid_recibido);            
+                printf("SE RECIBIO: %s\n", path_recibido);
 
-            // Crear un buffer e inicializarlo con el stream recibido
-            t_buffer* buffer = crear_buffer();
-            buffer->size = size;
-            buffer->stream = stream;
+                
 
-            // Extraer los datos del buffer
-            uint16_t pid_recibido = extraer_uint16_del_paquete(crear_paquete(INICIAR_PROCESO, buffer));
-            char* path_recibido = extraer_string_del_paquete(crear_paquete(INICIAR_PROCESO, buffer));
-            
-            // Imprimir
-            printf("PID recibido: %hu\n", pid_recibido);            
-            printf("Path recibido: %s\n", path_recibido);
-
-            // Liberar la memoria utilizada
-            free(stream);
-            free(buffer);
+                
 
             break;
 

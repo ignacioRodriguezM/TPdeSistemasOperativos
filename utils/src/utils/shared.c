@@ -76,6 +76,17 @@ int recibir_operacion(int socket_cliente)
 		return -1;
 	}
 }
+int recibir_size_del_buffer(int socket_cliente)
+{
+	int size_del_buffer;
+	if(recv(socket_cliente, &size_del_buffer, sizeof(int), MSG_WAITALL) > 0)
+		return size_del_buffer;
+	else
+	{
+		close(socket_cliente);
+		return -1;
+	}
+}
 
 void inicializar_logger (t_log** logger, char* nombre){
     *logger = log_create (nombre,"CL_LOG", 1, LOG_LEVEL_INFO);
@@ -111,17 +122,19 @@ void destruir_buffer (t_buffer* buffer){
 
 void cargar_choclo_al_buffer (t_buffer* buffer, void* un_choclo, int size_of_choclo){
 	if(buffer->size==0){
+		// Si el buffer está vacío, asignar memoria para el stream y copiar los datos
 		buffer->stream = malloc (sizeof(int) + size_of_choclo);
 		memcpy(buffer->stream, &size_of_choclo, sizeof(int));
 		memcpy(buffer->stream + sizeof(int), un_choclo, size_of_choclo);
 	}
 	else{
+		// Si el buffer ya contiene datos, realojar memoria para el stream y concatenar los nuevos datos
 		buffer->stream = realloc(buffer->stream, buffer->size + sizeof(int) + size_of_choclo);
 		memcpy(buffer->stream + buffer->size, &size_of_choclo, sizeof(int));
 		memcpy(buffer->stream + buffer->size + sizeof(int), un_choclo, size_of_choclo);
 	}
-	buffer->size += sizeof(int);
-	buffer->size += size_of_choclo;
+	// Actualizar el tamaño del buffer
+	buffer->size += sizeof(int) + size_of_choclo;
 }
 
 void cargar_int_al_buffer (t_buffer* buffer, int valor){
@@ -134,52 +147,69 @@ void cargar_uint16_al_buffer (t_buffer* buffer, uint16_t valor){
 	cargar_choclo_al_buffer (buffer, &valor, sizeof(uint16_t));
 }
 void cargar_string_al_buffer (t_buffer* buffer, char* string){
-	cargar_choclo_al_buffer (buffer, &string, strlen(string) + 1);
+	size_t len = strlen(string) + 1;
+	cargar_choclo_al_buffer(buffer, (void*)string, len);
 }
 
 //=================================================================
 
 void* extraer_choclo_al_buffer(t_buffer* un_buffer) {
+    // Verificar si el buffer está vacío
     if(un_buffer->size == 0) {
         printf("\n[ERROR] Al intentar extraer contenido de un t_buffer vacio\n\n");
         exit(EXIT_FAILURE);
     }
+    // Verificar si el tamaño del buffer es negativo (lo cual sería inusual y un error)
     if(un_buffer->size < 0) {
         printf("\n[ERROR] Esto es raro. El t_buffer contiene un size NEGATIVO\n\n");
         exit(EXIT_FAILURE);
     }
 
+    // Obtener el tamaño del dato del buffer
     int size_choclo;
-    memcpy(&size_choclo, un_buffer->stream, sizeof(int));
+    memcpy(&size_choclo, un_buffer->stream, sizeof(int));  //EL PROBLEMA ESTA AQUI
+    
+    // Asignar memoria para el dato
     void* choclo = malloc(size_choclo);
     if(choclo == NULL) {
         perror("Error al asignar memoria para choclo");
         exit(EXIT_FAILURE);
     }
+    
+    // Copiar el dato desde el buffer
     memcpy(choclo, un_buffer->stream + sizeof(int), size_choclo);
 
+    // Calcular el nuevo tamaño del buffer después de extraer el dato
     int nuevo_size = un_buffer->size - sizeof(int) - size_choclo;
+    
+    // Verificar si el nuevo tamaño del buffer es 0
     if(nuevo_size == 0) {
+        // Si es 0, liberar el stream del buffer y establecer el tamaño del buffer en 0
         un_buffer->size = 0;
         free(un_buffer->stream);
         un_buffer->stream = NULL;
-        return choclo;
+        return choclo; // Devolver el dato extraído
     }
+    // Verificar si el nuevo tamaño del buffer es negativo (lo cual sería un error)
     if(nuevo_size < 0) {
         perror("/n[ERROR_CHOCLO] BUFFER con tamanio negativo");
         exit(EXIT_FAILURE);
     }
+    
+    // Si el nuevo tamaño del buffer es mayor que 0, realojar memoria para el nuevo stream del buffer
     void* nuevo_stream = malloc(nuevo_size);
     if(nuevo_stream == NULL) {
         perror("Error al asignar memoria para nuevo_stream");
         exit(EXIT_FAILURE);
     }
+    // Copiar el resto del buffer al nuevo stream
     memcpy(nuevo_stream, un_buffer->stream + sizeof(int) + size_choclo, nuevo_size);
+    // Liberar el stream original y actualizar el stream y tamaño del buffer
     free(un_buffer->stream);
     un_buffer->size = nuevo_size;
     un_buffer->stream = nuevo_stream;
 
-    return choclo;
+    return choclo; // Devolver el dato extraído
 }
 
 
@@ -226,7 +256,6 @@ void* serializar_paquete (t_paquete* un_paquete){
 	memcpy(coso + desplazamiento, &(un_paquete->buffer->size), sizeof(int));
 	desplazamiento += sizeof(int);
 	memcpy(coso + desplazamiento, &(un_paquete->buffer->stream), un_paquete->buffer->size);
-	desplazamiento += un_paquete->buffer->size;
 
 	return coso;
 }
@@ -234,32 +263,30 @@ void* serializar_paquete (t_paquete* un_paquete){
 void enviar_paquete (t_paquete* paquete, int conexion){
 	void* a_enviar = serializar_paquete(paquete);
 
-	int bytes = paquete->buffer->size + 2*sizeof(int);
-	send (conexion, a_enviar, bytes, 0);
+	int bytes_enviados = 0;
+    int bytes_a_enviar = paquete->buffer->size + 2 * sizeof(int);
 
-	free (a_enviar);
+    while (bytes_enviados < bytes_a_enviar) {
+        int bytes_enviados_actual = send(conexion, a_enviar + bytes_enviados, bytes_a_enviar - bytes_enviados, 0);
+        if (bytes_enviados_actual == -1) {
+            perror("Error al enviar el paquete");
+            exit(EXIT_FAILURE);
+        }
+        bytes_enviados += bytes_enviados_actual;
+    }
+
+    free(a_enviar);
+
+    // Verificar si se enviaron todos los bytes del paquete
+    if (bytes_enviados == bytes_a_enviar) {
+        printf("El paquete se ha enviado completamente.\n");
+    } else {
+        printf("Error: No se han enviado todos los bytes del paquete.\n");
+    }
 }
 
-t_paquete* recibir_paquete(int conexion) {
-    t_paquete* paquete = malloc(sizeof(t_paquete));
-    paquete->buffer = crear_buffer(); // Inicializar el buffer
 
-    // Omitir la recepción del código de operación
-    // Recibir el tamaño del buffer
-    if(recv(conexion, &(paquete->buffer->size), sizeof(int), MSG_WAITALL) != sizeof(int)) {
-        perror("Error al recibir el tamaño del buffer");
-        exit(EXIT_FAILURE);
-    }
-    
-    // Recibir el stream del buffer
-    paquete->buffer->stream = malloc(paquete->buffer->size);
-    if(recv(conexion, paquete->buffer->stream, paquete->buffer->size, MSG_WAITALL) != paquete->buffer->size) {
-        perror("Error al recibir el stream del buffer");
-        exit(EXIT_FAILURE);
-    }
-    
-    return paquete;
-}
+
 
 // Función para extraer un entero del paquete
 int extraer_int_del_paquete(t_paquete* paquete) {
