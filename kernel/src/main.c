@@ -12,7 +12,7 @@ int main() {
     fd_kernel = iniciar_servidor (config_valores.puerto_escucha, kernel_logger, "KERNEL INCIADO !!!");
     
 
-
+    //PROBANDO
     
     log_info(kernel_logger, "Conectandose a memoria...");
     fd_memoria = crear_conexion (config_valores.ip_memoria, config_valores.puerto_memoria);

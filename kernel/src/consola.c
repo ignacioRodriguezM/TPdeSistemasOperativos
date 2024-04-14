@@ -121,18 +121,8 @@ void _atender_instruccion_validada (char* leido){
         cargar_uint16_al_buffer(buffer, pid);
         cargar_string_al_buffer(buffer, comando_consola[1]);
 
-        // Imprimir
-        uint16_t cargadoint = extraer_uint16_al_buffer(buffer);
-        char* cargadostring = extraer_string_al_buffer(buffer);
-
-        printf("PID en buffer: %hu\n", cargadoint);            
-        printf("Path en buffer: %s\n", cargadostring);
-
-        cargar_uint16_al_buffer(buffer, pid);
-        cargar_string_al_buffer(buffer, comando_consola[1]);
-
         t_paquete* a_enviar = crear_paquete (INICIAR_PROCESO, buffer); // [PID] [PATH]
-    
+        
         enviar_paquete(a_enviar, fd_memoria);
         
         destruir_paquete(a_enviar);

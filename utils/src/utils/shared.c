@@ -255,7 +255,7 @@ void* serializar_paquete (t_paquete* un_paquete){
 	desplazamiento += sizeof(int);
 	memcpy(coso + desplazamiento, &(un_paquete->buffer->size), sizeof(int));
 	desplazamiento += sizeof(int);
-	memcpy(coso + desplazamiento, &(un_paquete->buffer->stream), un_paquete->buffer->size);
+	memcpy(coso + desplazamiento, un_paquete->buffer->stream, un_paquete->buffer->size);
 
 	return coso;
 }
