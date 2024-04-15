@@ -46,5 +46,10 @@ typedef struct{
     Registros registros;
 }PCB;
 
+extern t_queue* procesos_new;
+extern t_queue* procesos_ready;
+extern t_queue* procesos_excec;
+extern t_queue* procesos_exit;
+extern t_queue** procesos_bloqueados;
 
 #endif

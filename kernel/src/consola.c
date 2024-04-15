@@ -115,27 +115,27 @@ void _atender_instruccion_validada (char* leido){
     char** comando_consola = string_split(leido, " ");
 
     if (strcmp(comando_consola[0], "EJECUTAR_SCRIPT") == 0){
-        char *ruta_script = comando_consola[1];
         FILE *archivo;
-        char comando[100];
+        char* comando = malloc(100 * sizeof(char));
+        //char** comando_consola = string_split(leido, " ");
         // Abrir el archivo de comandos
         archivo = fopen(comando_consola[1], "r");
         // Verificar si se pudo abrir el archivo
         if (archivo == NULL) {
             printf("No se pudo abrir el archivo.\n");
-            return 1;
+            exit(EXIT_FAILURE);
         }
         // Leer y ejecutar los comandos uno por uno
-        while (fgets(comando, sizeof(comando), archivo) != NULL) {
-            // Ejecutar el comando
-            printf("Ejecutando comando: %s", comando);
-            system(comando);
+        while (fgets(comando, 100 * sizeof(char), archivo) != NULL) {
+            printf("%s", comando);
+            _atender_instruccion_validada(comando);
         }
         // Cerrar el archivo
         fclose(archivo);
     }
     
     else if (strcmp(comando_consola[0], "INICIAR_PROCESO") == 0){
+        printf("LLEGUE A INICIAR PROCESO");
         t_buffer* buffer = crear_buffer();
         printf("Ingresaste: %s\n", comando_consola[1]);
         uint16_t pid = asignar_pid();
@@ -147,6 +147,7 @@ void _atender_instruccion_validada (char* leido){
         enviar_paquete(a_enviar, fd_memoria);
         
         destruir_paquete(a_enviar);
+
         }
     else if (strcmp(comando_consola[0], "FINALIZAR_PROCESO") == 0){
         
