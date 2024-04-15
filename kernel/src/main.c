@@ -8,19 +8,22 @@ int main() {
     APP_config config_valores = cargar_configuracion_kernel();
     // POR SI NECESITO PASAR EL ARRAY DE STRINGS A ARRAY DE INTS: uint16_t* instancias_Recursos = convertirArrayCharAUInt16 (config_valores.instancias_recursos);
     
-    inicializar_colas(config_valores); //INICIALIZA LAS COLAS
+    
+    //FUNCION PARA CONTAR RECURSOS
+    int cantidad_recursos = contarElementos(config_valores.recursos);
+    inicializar_colas(config_valores, cantidad_recursos); //INICIALIZA LAS COLAS
     
     //iniciar servidor de kernel
     fd_kernel = iniciar_servidor (config_valores.puerto_escucha, kernel_logger, "KERNEL INCIADO !!!");
     
-
+    iniciar_consola_interactiva ();
     //PROBANDO
     
     log_info(kernel_logger, "Conectandose a memoria...");
     fd_memoria = crear_conexion (config_valores.ip_memoria, config_valores.puerto_memoria);
     log_info(kernel_logger, "Conexion a memoria Exitosa");
 
-    iniciar_consola_interactiva ();
+    
 
 
 
