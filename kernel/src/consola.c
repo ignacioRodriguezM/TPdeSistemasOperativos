@@ -16,6 +16,7 @@ void iniciar_consola_interactiva (){
     char* leido;
     leido = readline("> ");
     bool validacion_leido;
+    
 
     while (strcmp(leido,"\0") != 0){
         validacion_leido = _validacion_de_instruccion_de_consola (leido);

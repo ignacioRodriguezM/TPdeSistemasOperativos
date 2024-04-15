@@ -9,7 +9,7 @@
 #include "./kernel-cpu_interrupt.h"
 #include "./consola.h"
 #include "./servicios_kernel.h"
-
+#include "./colas_estados.h"
 
 
 
@@ -28,6 +28,10 @@ uint16_t contador_pcbs = 1;
 
 pthread_mutex_t mutex_pid;
 
-
+t_queue* procesos_new;
+t_queue* procesos_ready;
+t_queue* procesos_excec;
+t_queue* procesos_exit;
+t_queue** procesos_bloqueados;
 
 #endif
