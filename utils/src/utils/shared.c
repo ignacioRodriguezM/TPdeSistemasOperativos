@@ -167,7 +167,7 @@ void* extraer_choclo_al_buffer(t_buffer* un_buffer) {
 
     // Obtener el tamaño del dato del buffer
     int size_choclo;
-    memcpy(&size_choclo, un_buffer->stream, sizeof(int));  //EL PROBLEMA ESTA AQUI
+    memcpy(&size_choclo, un_buffer->stream, sizeof(int)); 
     
     // Asignar memoria para el dato
     void* choclo = malloc(size_choclo);

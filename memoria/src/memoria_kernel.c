@@ -18,7 +18,8 @@ void atender_memoria_kernel (){
                 uint16_t pid_recibido = extraer_uint16_al_buffer (buffer_recibido);
                 char* path_recibido = extraer_string_al_buffer (buffer_recibido);
                 destruir_buffer (buffer_recibido);
-                // Imprimir
+                
+                // Imprimir, solo para verificar que lleguen bien, dsp borrar
                 printf("SE RECIBIO: %hu\n", pid_recibido);            
                 printf("SE RECIBIO: %s\n", path_recibido);
     

@@ -71,6 +71,7 @@ int main() {
     */
 
     log_debug(kernel_log_debug, "Advertencia de salida de Kernel");
+    config_destroy(config_valores.config);
 
     return 0;
 }

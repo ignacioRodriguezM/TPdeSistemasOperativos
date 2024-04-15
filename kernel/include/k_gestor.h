@@ -24,8 +24,8 @@ extern uint16_t contador_pcbs;
 
 extern pthread_mutex_t mutex_pid;
 
-/*
-extern struct REGISTROS{
+
+typedef struct{
     uint8_t ax;
     uint8_t bx;
     uint8_t cx;
@@ -36,13 +36,15 @@ extern struct REGISTROS{
     uint32_t edx;
     uint32_t si;
     uint32_t di;
-};
+}Registros;
 
-extern struct PCB{
+
+typedef struct{
     uint32_t pid;
     uint32_t* pc;
     uint32_t quantum;
-    REGISTROS registros;
-}; */
+    Registros registros;
+}PCB;
+
 
 #endif

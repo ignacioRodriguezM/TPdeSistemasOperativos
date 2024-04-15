@@ -14,6 +14,7 @@
     char** recursos;                    //Lista ordenada de los nombres de los recursos compartidos del sistema
     char** instancias_recursos;         //Lista ordenada de la cantidad de unidades por recurso
     uint16_t grado_multiprogramacion;   //Grado de multiprogramación del módulo
+    t_config* config;
 
 }APP_config;
 
