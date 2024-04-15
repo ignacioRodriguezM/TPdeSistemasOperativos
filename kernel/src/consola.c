@@ -16,6 +16,7 @@ void iniciar_consola_interactiva (){
     char* leido;
     leido = readline("> ");
     bool validacion_leido;
+    
 
     while (strcmp(leido,"\0") != 0){
         validacion_leido = _validacion_de_instruccion_de_consola (leido);
@@ -43,15 +44,17 @@ bool _validacion_de_instruccion_de_consola (char* leido){
         if (access(comando_consola[1], F_OK) != -1) { //valida que exista el path
         resultado_validacion= true;}
         else {
-        log_error(kernel_logger, "El path no es válido o no se tiene permiso para acceder.");}
+        log_error(kernel_logger, "El path no es válido o no se tiene permiso para acceder.");
+        }
     }
     
     else if (strcmp(comando_consola[0], "INICIAR_PROCESO") == 0){
         if (access(comando_consola[1], F_OK) != -1) {
         resultado_validacion= true;}
         else {
-        log_error(kernel_logger, "El path no es válido o no se tiene permiso para acceder.");}
+        log_error(kernel_logger, "El path no es válido o no se tiene permiso para acceder.");
         }
+    }
     
     else if (strcmp(comando_consola[0], "FINALIZAR_PROCESO") == 0){
         if(esNumero(comando_consola[1]) == 1){        //validamos que haya ingresado un numero como process id
@@ -69,7 +72,7 @@ bool _validacion_de_instruccion_de_consola (char* leido){
         }
         else {
         log_error(kernel_logger, "Comando incorrecto, asegurese de escribir solo DETENER_PLANIFICACION");}
-        }
+    }
 
     
     else if (strcmp(comando_consola[0], "INICIAR_PLANIFICACION") == 0){
@@ -112,8 +115,26 @@ void _atender_instruccion_validada (char* leido){
     char** comando_consola = string_split(leido, " ");
 
     if (strcmp(comando_consola[0], "EJECUTAR_SCRIPT") == 0){
-        
+        char *ruta_script = comando_consola[1];
+        FILE *archivo;
+        char comando[100];
+        // Abrir el archivo de comandos
+        archivo = fopen(comando_consola[1], "r");
+        // Verificar si se pudo abrir el archivo
+        if (archivo == NULL) {
+            printf("No se pudo abrir el archivo.\n");
+            return 1;
         }
+        // Leer y ejecutar los comandos uno por uno
+        while (fgets(comando, sizeof(comando), archivo) != NULL) {
+            // Ejecutar el comando
+            printf("Ejecutando comando: %s", comando);
+            system(comando);
+        }
+        // Cerrar el archivo
+        fclose(archivo);
+    }
+    
     else if (strcmp(comando_consola[0], "INICIAR_PROCESO") == 0){
         t_buffer* buffer = crear_buffer();
         printf("Ingresaste: %s\n", comando_consola[1]);

@@ -13,6 +13,8 @@
 #include <commons/config.h>
 #include <readline/readline.h>
 #include <sys/types.h>
+#include <commons/collections/list.h>
+#include <commons/collections/queue.h>
 
 typedef enum
 {

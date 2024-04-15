@@ -22,7 +22,7 @@ void atender_memoria_kernel (){
                 // Imprimir, solo para verificar que lleguen bien, dsp borrar
                 printf("SE RECIBIO: %hu\n", pid_recibido);            
                 printf("SE RECIBIO: %s\n", path_recibido);
-    
+                
                 
 
                 
