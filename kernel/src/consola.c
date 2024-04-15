@@ -132,6 +132,8 @@ void _atender_instruccion_validada (char* leido){
         }
         // Cerrar el archivo
         fclose(archivo);
+        // Liberar memoria
+        free(comando);
     }
     
     else if (strcmp(comando_consola[0], "INICIAR_PROCESO") == 0){
