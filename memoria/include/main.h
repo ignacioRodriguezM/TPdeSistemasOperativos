@@ -6,6 +6,7 @@
 #include "./memoria_cpu.h"
 #include "./memoria_kernel.h"
 #include "./memoria_entrada_salida.h"
+#include "./espacios_memoria.h"
 
 
 //Variables GLOBALES

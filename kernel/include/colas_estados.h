@@ -3,7 +3,6 @@
 
 #include "k_gestor.h"
 #include "./configuracion_kernel.h"
-#include <commons/collections/queue.h>
 
 
 void inicializar_colas (APP_config config_valores);
