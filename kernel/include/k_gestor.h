@@ -52,4 +52,8 @@ extern t_queue* procesos_excec;
 extern t_queue* procesos_exit;
 extern t_queue** procesos_bloqueados;
 
+
+extern bool planificacion_activa;
+extern int grado_multiprogramacion;
+
 #endif

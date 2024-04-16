@@ -34,4 +34,7 @@ t_queue* procesos_excec;
 t_queue* procesos_exit;
 t_queue** procesos_bloqueados;
 
+bool planificacion_activa; // cuando activas la planificacion se pone en true
+int grado_multiprogramacion;
+
 #endif

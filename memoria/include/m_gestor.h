@@ -18,4 +18,10 @@ extern int fd_entrada_salida;
 extern int fd_cpu;
 extern int fd_kernel;
 
+extern void* espacio_memoria_usuario;
+extern int tam_pagina;
+extern int retardo_respuesta;
+extern int cantidad_de_paginas;
+extern void** tabla_de_paginas;
+
 #endif

@@ -117,7 +117,7 @@ void _atender_instruccion_validada (char* leido){
     if (strcmp(comando_consola[0], "EJECUTAR_SCRIPT") == 0){
         FILE *archivo;
         char* comando = malloc(100 * sizeof(char));
-        //char** comando_consola = string_split(leido, " ");
+        
         // Abrir el archivo de comandos
         archivo = fopen(comando_consola[1], "r");
         // Verificar si se pudo abrir el archivo
@@ -127,7 +127,7 @@ void _atender_instruccion_validada (char* leido){
         }
         // Leer y ejecutar los comandos uno por uno
         while (fgets(comando, 100 * sizeof(char), archivo) != NULL) {
-            printf("%s", comando);
+            printf("%s", comando); //borrar
             _atender_instruccion_validada(comando);
         }
         // Cerrar el archivo
@@ -137,7 +137,6 @@ void _atender_instruccion_validada (char* leido){
     }
     
     else if (strcmp(comando_consola[0], "INICIAR_PROCESO") == 0){
-        printf("LLEGUE A INICIAR PROCESO");
         t_buffer* buffer = crear_buffer();
         printf("Ingresaste: %s\n", comando_consola[1]);
         uint16_t pid = asignar_pid();
@@ -158,7 +157,12 @@ void _atender_instruccion_validada (char* leido){
         
         }
     else if (strcmp(comando_consola[0], "INICIAR_PLANIFICACION") == 0){
-        
+        if (planificacion_activa == true){
+            log_info(kernel_logger, "La planificacion ya está"); 
+            }
+        else{
+            l
+            }
         }
     else if (strcmp(comando_consola[0], "MULTIPROGRAMACION") == 0){
         

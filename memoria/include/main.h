@@ -18,4 +18,10 @@ int fd_entrada_salida;
 int fd_cpu;
 int fd_kernel;
 
+void* espacio_memoria_usuario; 
+int tam_pagina;
+int retardo_respuesta;
+int cantidad_de_paginas;
+void** tabla_de_paginas;
+
 #endif
