@@ -1,4 +1,14 @@
 #include "../include/consola.h"
+int contarElementos(t_queue **arreglo) {
+     int contador = 0;
+    
+     // Iterar sobre el arreglo hasta encontrar un puntero nulo
+    while (arreglo[contador] != NULL) {
+         contador++;
+    }
+    
+     return contador;
+ }
 
 int esNumero(const char *cadena) {
     // Iterar sobre cada carácter del string
@@ -11,6 +21,10 @@ int esNumero(const char *cadena) {
     }
     return 1; // Todos los caracteres son dígitos numéricos
 }
+
+
+bool planificacion_activa;
+bool first_time = true; //primera planificacion
 
 void iniciar_consola_interactiva (){
     char* leido;
@@ -146,29 +160,78 @@ void _atender_instruccion_validada (char* leido){
         t_paquete* a_enviar = crear_paquete (INICIAR_PROCESO, buffer); // [PID] [PATH]
         
         enviar_paquete(a_enviar, fd_memoria);
-        
         destruir_paquete(a_enviar);
 
+
+
+        log_info(kernel_logger, "Se crea el proceso %u en NEW", pid);         
         }
     else if (strcmp(comando_consola[0], "FINALIZAR_PROCESO") == 0){
-        
+        int pid_a_finalizar = atoi(comando_consola[1]); //HAY QUE TRANSFORMAR EL INT A UINT16_T
+        if (pid_a_finalizar < 1){
+            log_error(kernel_logger, "El PID no puede ser : %d", pid_a_finalizar);
+        }
         }
     else if (strcmp(comando_consola[0], "DETENER_PLANIFICACION") == 0){
-        
-        }
-    else if (strcmp(comando_consola[0], "INICIAR_PLANIFICACION") == 0){
-        if (planificacion_activa == true){
-            log_info(kernel_logger, "La planificacion ya está"); 
+        if (planificacion_activa == false){
+            
+            log_info(kernel_logger, "La planificacion ya estaba detenida"); 
             }
         else{
-            l
+            planificacion_activa = false;
+            log_info(kernel_logger, "La planificacion fue detenida");
+            }
+        }
+    else if (strcmp(comando_consola[0], "INICIAR_PLANIFICACION") == 0){  
+        if (first_time == true){
+            planificacion_activa = true;
+            first_time = false;
+            log_info(kernel_logger, "La planificacion fue activada por primera vez");
+        }   
+        else if (planificacion_activa == true){
+            log_info(kernel_logger, "La planificacion ya estaba activa"); 
+                }
+        else{
+            planificacion_activa = true;
+            log_info(kernel_logger, "La planificacion fue reactivada");
             }
         }
     else if (strcmp(comando_consola[0], "MULTIPROGRAMACION") == 0){
-        
+        int nuevo_grado_multiprogramacion = atoi (comando_consola[1]);
+        if (nuevo_grado_multiprogramacion < 1){
+            log_error (kernel_logger, "El grado de multiprogramacion no puede ser : %d", nuevo_grado_multiprogramacion);
+        }
+        if (nuevo_grado_multiprogramacion == grado_multiprogramacion){
+            log_info (kernel_logger, "El grado de multiprogramacion ya es : %d", grado_multiprogramacion);
+        }
+        else{
+            grado_multiprogramacion = nuevo_grado_multiprogramacion;
+            log_info (kernel_logger, "El grado de multiprogramacion cambio a %d", grado_multiprogramacion);
+        }
+       
         }
     else if (strcmp(comando_consola[0], "PROCESO_ESTADO") == 0){
         
+        void imprimo_elemento(void* elemento) {
+        // Assuming your process structure has a field 'pid'
+        printf("%d\n", ((PCB*)elemento)->pid);
+        }
+
+        // Imprimo los elementos de la cola de cada proceso
+        printf("PROCESOS NEW : \n");
+        list_iterate(procesos_new->elements, imprimo_elemento);
+        printf("PROCESOS READY : \n");
+        list_iterate(procesos_ready->elements, imprimo_elemento);
+        printf("PROCESOS EXCECUTE : \n");
+        list_iterate(procesos_excec->elements, imprimo_elemento);
+        printf("PROCESOS EXIT : \n");
+        list_iterate(procesos_exit->elements, imprimo_elemento);
+
+        for(int i = 0; i < contarElementos(procesos_bloqueados); i++ ){
+        printf("PROCESOS BLOQUEADOS EN COLA %d : \n", i);
+        list_iterate(procesos_bloqueados[i]->elements, imprimo_elemento);
+        }
+
         }
     else{
         log_error(kernel_logger, "Comando no reconocido, por que paso la validacion?! ");

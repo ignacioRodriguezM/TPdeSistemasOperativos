@@ -40,9 +40,9 @@ typedef struct{
 
 
 typedef struct{
-    uint32_t pid;
-    uint32_t* pc;
-    uint32_t quantum;
+    uint16_t pid;
+    uint16_t* pc;
+    uint8_t quantum;
     Registros registros;
 }PCB;
 
@@ -53,7 +53,6 @@ extern t_queue* procesos_exit;
 extern t_queue** procesos_bloqueados;
 
 
-extern bool planificacion_activa;
 extern int grado_multiprogramacion;
 
 #endif
