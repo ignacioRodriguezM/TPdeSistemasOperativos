@@ -33,7 +33,7 @@ void atender_memoria_kernel (){
                 // 
                 while (fgets(comando, 100 * sizeof(char), archivo) != NULL) {
                     for (int i=0; i<cantidad_de_paginas; i++){
-                        if (*(tabla_de_paginas[i])==NULL){
+                        if (tabla_de_paginas[i]==NULL){
                             break;
                         }
                     }
@@ -50,7 +50,8 @@ void atender_memoria_kernel (){
             break;
 
             case FINALIZAR_PROCESO:
-                t_buffer* buffer_recibido = recibir_buffer_sin_cod_op (fd_kernel);
+            //MAL
+                /*t_buffer* buffer_recibido = recibir_buffer_sin_cod_op (fd_kernel);
 
                 uint16_t pid_recibido = extraer_uint16_al_buffer (buffer_recibido);
                 char* path_recibido = extraer_string_al_buffer (buffer_recibido);
@@ -68,10 +69,12 @@ void atender_memoria_kernel (){
                 }
                 fclose(archivo);
     
-    
+            */
             break;
 
             case ACCESO_A_TABLA:
+            //REVISAR
+            /*
                 t_buffer* buffer_recibido = recibir_buffer_sin_cod_op (fd_kernel);
 
                 uint16_t pid_recibido = extraer_uint16_al_buffer (buffer_recibido);
@@ -81,12 +84,14 @@ void atender_memoria_kernel (){
                 uint16_t num_marco = (uint16_t)((espacio_memoria_usuario + pagina_recibida * tam_pagina) / tam_pagina);
                 printf("El número de marco correspondiente a la tabla consultada es: %s", num_marco)
     
-
+            */
             break;
 
 
 
             case AMPLIACION_PROCESO:
+            //REVISAR
+            /*
                 t_buffer* buffer_recibido = recibir_buffer_sin_cod_op (fd_kernel);
 
                 uint16_t pid_recibido = extraer_uint16_al_buffer (buffer_recibido);
@@ -94,12 +99,14 @@ void atender_memoria_kernel (){
                 uint16_t tamanio_a_ampliar = extraer_uint16_al_buffer (buffer_recibido);
                 destruir_buffer (buffer_recibido);
 
-                
+                */
             break;
 
 
 
             case REDUCCION_PROCESO:
+            //REVISAR
+            /*
                 t_buffer* buffer_recibido = recibir_buffer_sin_cod_op (fd_kernel);
             
                 uint16_t pid_recibido = extraer_uint16_al_buffer (buffer_recibido);
@@ -107,6 +114,7 @@ void atender_memoria_kernel (){
                 uint16_t tamanio_a_reducir = extraer_uint16_al_buffer(buffer_recibido)
                 
                 destruir_buffer (buffer_recibido);
+                */
             break;
 
 

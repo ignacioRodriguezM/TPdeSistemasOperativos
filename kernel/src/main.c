@@ -7,10 +7,11 @@ int main() {
     inicializar_logger_debug (&kernel_log_debug, "kernel_debug.log");
     APP_config config_valores = cargar_configuracion_kernel();
     // POR SI NECESITO PASAR EL ARRAY DE STRINGS A ARRAY DE INTS: uint16_t* instancias_Recursos = convertirArrayCharAUInt16 (config_valores.instancias_recursos);
-    
+
     grado_multiprogramacion = config_valores.grado_multiprogramacion;
-    
-    inicializar_colas(config_valores); //INICIALIZA LAS COLAS
+    algoritmo_planificacion = config_valores.algoritmo_planificacion;
+    catidad_de_colas_bloqueados = contarElementos (config_valores.recursos);
+    inicializar_colas(); //INICIALIZA LAS COLAS
     
     //iniciar servidor de kernel
     fd_kernel = iniciar_servidor (config_valores.puerto_escucha, kernel_logger, "KERNEL INCIADO !!!");
@@ -20,7 +21,7 @@ int main() {
     fd_memoria = crear_conexion (config_valores.ip_memoria, config_valores.puerto_memoria);
     log_info(kernel_logger, "Conexion a memoria Exitosa");
     
-    //PROBANDO
+    
     
 
     
@@ -76,8 +77,8 @@ int main() {
     */
 
     log_debug(kernel_log_debug, "Advertencia de salida de Kernel");
-    config_destroy(config_valores.config);
     finalizar_colas ();
+    config_destroy(config_valores.config);
     
     return 0;
 }

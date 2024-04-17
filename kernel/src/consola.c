@@ -1,14 +1,5 @@
 #include "../include/consola.h"
-int contarElementos(t_queue **arreglo) {
-     int contador = 0;
-    
-     // Iterar sobre el arreglo hasta encontrar un puntero nulo
-    while (arreglo[contador] != NULL) {
-         contador++;
-    }
-    
-     return contador;
- }
+
 
 int esNumero(const char *cadena) {
     // Iterar sobre cada carácter del string
@@ -23,7 +14,7 @@ int esNumero(const char *cadena) {
 }
 
 
-bool planificacion_activa;
+
 bool first_time = true; //primera planificacion
 
 void iniciar_consola_interactiva (){
@@ -226,8 +217,8 @@ void _atender_instruccion_validada (char* leido){
         list_iterate(procesos_excec->elements, imprimo_elemento);
         printf("PROCESOS EXIT : \n");
         list_iterate(procesos_exit->elements, imprimo_elemento);
-
-        for(int i = 0; i < contarElementos(procesos_bloqueados); i++ ){
+        
+        for(int i = 0; i < catidad_de_colas_bloqueados; i++ ){
         printf("PROCESOS BLOQUEADOS EN COLA %d : \n", i);
         list_iterate(procesos_bloqueados[i]->elements, imprimo_elemento);
         }

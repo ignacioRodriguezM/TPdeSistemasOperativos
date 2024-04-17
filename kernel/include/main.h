@@ -10,7 +10,7 @@
 #include "./consola.h"
 #include "./servicios_kernel.h"
 #include "./colas_estados.h"
-
+#include "./planificador.h"
 
 
 //Variables GLOBALES
@@ -33,8 +33,12 @@ t_queue* procesos_ready;
 t_queue* procesos_excec;
 t_queue* procesos_exit;
 t_queue** procesos_bloqueados;
+int catidad_de_colas_bloqueados;
 
 
 int grado_multiprogramacion;
+bool planificacion_activa;
+char* algoritmo_planificacion;
+
 
 #endif

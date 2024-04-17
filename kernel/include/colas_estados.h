@@ -5,8 +5,9 @@
 #include "./configuracion_kernel.h"
 
 
-void inicializar_colas (APP_config config_valores);
+void inicializar_colas ();
 void finalizar_colas ();
+int contarElementos(char **arreglo);
 
 
 #endif

@@ -11,16 +11,15 @@
      return contador;
  }
 
-void inicializar_colas (APP_config config_valores){
+void inicializar_colas (){
     procesos_new = queue_create();
     procesos_ready = queue_create();
     procesos_excec = queue_create();
     procesos_exit = queue_create();
 
-    int cantidad_recursos = contarElementos(config_valores.recursos);
 
     //CREAR COLAS DENTRO DE COLA BLOQUEADOS
-        procesos_bloqueados = malloc(cantidad_recursos * sizeof(t_queue*));
+        procesos_bloqueados = malloc(catidad_de_colas_bloqueados * sizeof(t_queue*));
         if (procesos_bloqueados == NULL) {
         // Manejar el error si no se pudo asignar memoria
         printf("Error: No se pudo asignar memoria para el arreglo de colas bloqueadas\n");
@@ -29,7 +28,7 @@ void inicializar_colas (APP_config config_valores){
     
 
     // Crear cada cola dentro del arreglo
-    for (int i = 0; i < cantidad_recursos; i++) {
+    for (int i = 0; i < catidad_de_colas_bloqueados; i++) {
         procesos_bloqueados[i] = queue_create();
     }
 
@@ -42,9 +41,9 @@ void inicializar_colas (APP_config config_valores){
     queue_destroy(procesos_excec);
     queue_destroy(procesos_exit);
 
-    int cantidad_recursos = contarElementos(procesos_bloqueados);
 
-    for (int i = 0; i < cantidad_recursos; i++){
+
+    for (int i = 0; i < catidad_de_colas_bloqueados; i++){
          queue_destroy(procesos_bloqueados[i]);
     }
     free(procesos_bloqueados);

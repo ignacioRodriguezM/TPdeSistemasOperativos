@@ -26,6 +26,7 @@ extern pthread_mutex_t mutex_pid;
 
 
 typedef struct{
+    uint32_t pc;
     uint8_t ax;
     uint8_t bx;
     uint8_t cx;
@@ -41,8 +42,9 @@ typedef struct{
 
 typedef struct{
     uint16_t pid;
-    uint16_t* pc;
+    uint16_t pc;
     uint8_t quantum;
+    uint8_t quantum_extra; //para vrr
     Registros registros;
 }PCB;
 
@@ -51,8 +53,11 @@ extern t_queue* procesos_ready;
 extern t_queue* procesos_excec;
 extern t_queue* procesos_exit;
 extern t_queue** procesos_bloqueados;
+extern int catidad_de_colas_bloqueados;
 
 
 extern int grado_multiprogramacion;
+extern bool planificacion_activa;
+extern char* algoritmo_planificacion;
 
 #endif
