@@ -12,6 +12,7 @@ void _asignar_valores_a_variables_globales_de_memoria (APP_config config_valores
 
     for (int i =0; i < cantidad_de_paginas ; i++){
         tabla_de_paginas[i] = espacio_memoria_usuario + tam_pagina * i;
+        
     }
 }
 

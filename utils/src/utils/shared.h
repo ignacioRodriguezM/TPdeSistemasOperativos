@@ -24,7 +24,13 @@ typedef enum
     RTA_HANDSHAKE,
     //------------------------------------
     INICIAR_PROCESO,
-    RTA_INICIAR_PROCESO
+	FINALIZAR_PROCESO,
+    RTA_INICIAR_PROCESO,
+	ACCESO_A_TABLA,
+	AMPLIACION_PROCESO,
+	REDUCCION_PROCESO,
+	ACCESO_A_ESPACIO_USUARIO,
+
     
 }op_code;
 

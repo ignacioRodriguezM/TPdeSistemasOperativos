@@ -11,6 +11,11 @@ void atender_memoria_entrada_salida (){
             case PAQUETE:
                 //
                 break;
+
+            case ACCESO_A_ESPACIO_USUARIO:
+                t_buffer* buffer_recibido = recibir_buffer_sin_cod_op (fd_entrada_salida);
+            break;
+
             case -1:
                 log_error(memoria_logger, "Desconexion de ENTRADA SALIDA");
                 control_key = 0;
