@@ -46,6 +46,7 @@ void inicializar_colas (){
     for (int i = 0; i < catidad_de_colas_bloqueados; i++){
          queue_destroy(procesos_bloqueados[i]);
     }
+    
     free(procesos_bloqueados);
     
 } 
