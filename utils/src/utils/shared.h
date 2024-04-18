@@ -31,6 +31,9 @@ typedef enum
 	REDUCCION_PROCESO,
 	ACCESO_A_ESPACIO_USUARIO,
 
+	//-------------------KERNEL-CPU DIS
+	PROCESO_A_EJECUTAR
+
     
 }op_code;
 

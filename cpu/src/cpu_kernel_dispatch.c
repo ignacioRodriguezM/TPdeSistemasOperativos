@@ -11,6 +11,13 @@ void atender_cpu_kernel_dispatch (){
             case PAQUETE:
                 //
                 break;
+
+            case PROCESO_A_EJECUTAR:
+
+                
+                break;
+
+
             case -1:
                 log_error(cpu_logger, "Desconexion de KERNEL - dispatch");
                 control_key = 0;

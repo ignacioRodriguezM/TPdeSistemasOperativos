@@ -37,6 +37,7 @@ int catidad_de_colas_bloqueados;
 
 
 int grado_multiprogramacion;
+int procesos_en_programacion;
 bool planificacion_activa;
 char* algoritmo_planificacion;
 

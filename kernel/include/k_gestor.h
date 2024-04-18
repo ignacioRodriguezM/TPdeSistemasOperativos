@@ -57,7 +57,9 @@ extern int catidad_de_colas_bloqueados;
 
 
 extern int grado_multiprogramacion;
+extern int procesos_en_programacion;
 extern bool planificacion_activa;
 extern char* algoritmo_planificacion;
+
 
 #endif

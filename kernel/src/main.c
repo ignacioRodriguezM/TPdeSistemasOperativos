@@ -11,8 +11,16 @@ int main() {
     grado_multiprogramacion = config_valores.grado_multiprogramacion;
     algoritmo_planificacion = config_valores.algoritmo_planificacion;
     catidad_de_colas_bloqueados = contarElementos (config_valores.recursos);
+    procesos_en_programacion = 0;
     inicializar_colas(); //INICIALIZA LAS COLAS
-    
+
+
+
+    iniciar_planificador_de_corto_plazo ();
+
+
+
+
     //iniciar servidor de kernel
     fd_kernel = iniciar_servidor (config_valores.puerto_escucha, kernel_logger, "KERNEL INCIADO !!!");
     iniciar_consola_interactiva ();
