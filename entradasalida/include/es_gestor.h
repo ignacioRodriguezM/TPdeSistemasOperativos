@@ -15,4 +15,7 @@ extern t_log* entrada_salida_log_debug;
 extern int fd_entrada_salida;
 extern int fd_memoria;
 extern int fd_kernel;
+
+
+
 #endif

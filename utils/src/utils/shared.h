@@ -37,6 +37,16 @@ typedef enum
     
 }op_code;
 
+typedef enum
+{
+	
+	GEN,
+	STDIN,
+	STDOUT,
+	DIALFS
+    
+}interfaces_io;
+
 typedef struct
 {
 	int size;
