@@ -11,9 +11,9 @@ void inicializar_colas_sin_bloqueados (){
 
  void finalizar_colas_sin_bloqueados(){
 
-    queue_destroy(procesos_new);
-    queue_destroy(procesos_ready);
-    queue_destroy(procesos_excec);
-    queue_destroy(procesos_exit);
+    queue_destroy_and_destroy_elements(procesos_new);
+    queue_destroy_and_destroy_elements(procesos_ready);
+    queue_destroy_and_destroy_elements(procesos_excec);
+    queue_destroy_and_destroy_elements(procesos_exit);
     
 } 
