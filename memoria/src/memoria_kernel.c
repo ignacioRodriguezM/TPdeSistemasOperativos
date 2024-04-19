@@ -19,6 +19,8 @@ void atender_memoria_kernel (){
                 char* path_recibido = extraer_string_al_buffer (buffer_recibido);
                 destruir_buffer (buffer_recibido);
                 
+                log_info (memoria_logger, "LLEGO : %u , %s", pid_recibido, path_recibido);
+                
                 //asignarle un espacio de memoria a instrucciones, y devolverle el PC al kernel
                 
                 FILE *archivo;

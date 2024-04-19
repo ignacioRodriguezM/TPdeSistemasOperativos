@@ -4,7 +4,7 @@ void iniciar_planificador_de_corto_plazo (){
     
     if(strcmp(algoritmo_planificacion, "FIFO") == 0 ){
         _planificar_por_fifo ();
-        log_info(kernel_logger,"Se ha iniciado la planificacion FIFO");
+        
     }   
     
 

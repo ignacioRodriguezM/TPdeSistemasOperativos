@@ -53,7 +53,7 @@ extern t_queue* procesos_ready;
 extern t_queue* procesos_excec;
 extern t_queue* procesos_exit;
 extern t_queue** procesos_bloqueados;
-extern int catidad_de_colas_bloqueados;
+
 
 
 extern int grado_multiprogramacion;

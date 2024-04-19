@@ -10,34 +10,20 @@ int main() {
 
     grado_multiprogramacion = config_valores.grado_multiprogramacion;
     algoritmo_planificacion = config_valores.algoritmo_planificacion;
-    catidad_de_colas_bloqueados = contarElementos (config_valores.recursos);
     procesos_en_programacion = 0;
     inicializar_colas(); //INICIALIZA LAS COLAS
 
 
 
-    iniciar_planificador_de_corto_plazo ();
+    //iniciar_planificador_de_corto_plazo ();
 
 
 
 
     //iniciar servidor de kernel
     fd_kernel = iniciar_servidor (config_valores.puerto_escucha, kernel_logger, "KERNEL INCIADO !!!");
-    iniciar_consola_interactiva ();
-    
-    log_info(kernel_logger, "Conectandose a memoria...");
-    fd_memoria = crear_conexion (config_valores.ip_memoria, config_valores.puerto_memoria);
-    log_info(kernel_logger, "Conexion a memoria Exitosa");
     
     
-    
-
-    
-
-
-
-
-    /*
     //Esperiar conexion de i/o
     log_info(kernel_logger, "Esperando a entrada_salida...");
     fd_entrada_salida = esperar_cliente (fd_kernel, kernel_logger, "ENTRADA SALIDA");
@@ -82,7 +68,9 @@ int main() {
 
     //Iniciar consola interactiva
     iniciar_consola_interactiva (); //si queremos probar los comandos sin antes correr todos los modulos, lo ponemos arriba
-    */
+
+
+
 
     log_debug(kernel_log_debug, "Advertencia de salida de Kernel");
     finalizar_colas ();

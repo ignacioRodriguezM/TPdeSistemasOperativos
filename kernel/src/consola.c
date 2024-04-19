@@ -218,10 +218,7 @@ void _atender_instruccion_validada (char* leido){
         printf("PROCESOS EXIT : \n");
         list_iterate(procesos_exit->elements, imprimo_elemento);
         
-        for(int i = 0; i < catidad_de_colas_bloqueados; i++ ){
-        printf("PROCESOS BLOQUEADOS EN COLA %d : \n", i);
-        list_iterate(procesos_bloqueados[i]->elements, imprimo_elemento);
-        }
+    
 
         }
     else{
