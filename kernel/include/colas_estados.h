@@ -5,9 +5,9 @@
 #include "./configuracion_kernel.h"
 
 
-void inicializar_colas ();
-void finalizar_colas ();
-int contarElementos(char **arreglo);
+void inicializar_colas_sin_bloqueados ();
+void finalizar_colas_sin_bloqueados ();
+
 
 
 #endif

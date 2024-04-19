@@ -32,8 +32,8 @@ t_queue* procesos_new;
 t_queue* procesos_ready;
 t_queue* procesos_excec;
 t_queue* procesos_exit;
-t_queue** procesos_bloqueados;
-int catidad_de_colas_bloqueados;
+Colas_bloqueados** colas_bloqueados;
+int contador_de_colas_bloqueados;
 
 
 int grado_multiprogramacion;

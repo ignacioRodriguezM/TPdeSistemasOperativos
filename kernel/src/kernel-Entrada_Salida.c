@@ -22,10 +22,23 @@ void atender_kernel_entrada_salida(){
             interfaces_io tipo_interfaz = *puntero_recibido;
             free(puntero_recibido);
 
+            if (contador_de_colas_bloqueados == 0){
+                contador_de_colas_bloqueados ++;
+                colas_bloqueados = malloc(sizeof(Colas_bloqueados));
+                colas_bloqueados[0]->nombre = nombre_del_io_presentado;
+                colas_bloqueados[0]->tipo_interfaz = tipo_interfaz;
+                colas_bloqueados[0]->cola = queue_create();
+            }
+            else {
+                contador_de_colas_bloqueados++;
+                colas_bloqueados = realloc (contador_de_colas_bloqueados * sizeof(Colas_bloqueados));
+                colas_bloqueados[contador_de_colas_bloqueados]->nombre = nombre_del_io_presentado;
+                colas_bloqueados[contador_de_colas_bloqueados]->tipo_interfaz = tipo_interfaz;
+                colas_bloqueados[contador_de_colas_bloqueados]->cola = queue_create();
+            }
 
-            log_info(kernel_log_debug, "LLEGO %s, %u", nombre_del_io_presentado, tipo_interfaz);
-            destruir_buffer (buffer_recibido);
-
+            
+            
 
 
             break;

@@ -1,6 +1,6 @@
 #include "../include/colas_estados.h"
 
-void inicializar_colas (){
+void inicializar_colas_sin_bloqueados (){
     procesos_new = queue_create();
     procesos_ready = queue_create();
     procesos_excec = queue_create();
@@ -9,7 +9,7 @@ void inicializar_colas (){
 
 } 
 
- void finalizar_colas (){
+ void finalizar_colas_sin_bloqueados(){
 
     queue_destroy(procesos_new);
     queue_destroy(procesos_ready);

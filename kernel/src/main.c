@@ -10,8 +10,9 @@ int main() {
 
     grado_multiprogramacion = config_valores.grado_multiprogramacion;
     algoritmo_planificacion = config_valores.algoritmo_planificacion;
+    contador_de_colas_bloqueados = 0;
     procesos_en_programacion = 0;
-    inicializar_colas(); //INICIALIZA LAS COLAS
+    inicializar_colas_sin_bloqueados(); //INICIALIZA LAS COLAS
 
 
 
@@ -25,14 +26,14 @@ int main() {
     
     
     //Esperiar conexion de i/o
-    log_info(kernel_logger, "Esperando a entrada_salida...");
+    log_info(kernel_logger, "Esperando a  algun entrada_salida...");
     fd_entrada_salida = esperar_cliente (fd_kernel, kernel_logger, "ENTRADA SALIDA");
 
 
 
 
-
-    //Atender i/o
+    
+    //Atender i/o PROBANDO
     pthread_t hilo_kernel_entrada_salida;
     pthread_create (&hilo_kernel_entrada_salida, NULL, (void*)atender_kernel_entrada_salida, NULL);
     pthread_join(hilo_kernel_entrada_salida, NULL);
@@ -82,7 +83,7 @@ int main() {
 
 
     log_debug(kernel_log_debug, "Advertencia de salida de Kernel");
-    finalizar_colas ();
+    finalizar_colas_sin_bloqueados ();
     config_destroy(config_valores.config);
     
     return 0;

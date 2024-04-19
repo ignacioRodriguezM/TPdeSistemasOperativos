@@ -47,13 +47,20 @@ typedef struct{
     uint8_t quantum_extra; //para vrr
     Registros registros;
 }PCB;
+typedef struct{
+    char* nombre;
+    interfaces_io tipo_interfaz;
+    t_queue* cola;
+}Colas_bloqueados;
+
+
 
 extern t_queue* procesos_new;
 extern t_queue* procesos_ready;
 extern t_queue* procesos_excec;
 extern t_queue* procesos_exit;
-extern t_queue** procesos_bloqueados;
-
+extern Colas_bloqueados** colas_bloqueados;
+extern int contador_de_colas_bloqueados;
 
 
 extern int grado_multiprogramacion;
