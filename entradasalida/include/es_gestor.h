@@ -16,6 +16,8 @@ extern int fd_entrada_salida;
 extern int fd_memoria;
 extern int fd_kernel;
 
-
+extern char* nombre;
+extern interfaces_io tipo_interfaz;
+extern uint8_t tiempo_unidad_trabajo;
 
 #endif

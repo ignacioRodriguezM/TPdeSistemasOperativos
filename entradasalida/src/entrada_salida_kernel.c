@@ -21,3 +21,16 @@ void atender_entrada_salida_kernel(){
             }
 	}
 }
+void presentarse_con_kernel(){
+
+    t_buffer* buffer = crear_buffer();
+    cargar_string_al_buffer (buffer, nombre);
+    cargar_choclo_al_buffer (buffer, &tipo_interfaz, sizeof(interfaces_io));
+
+    t_paquete *a_enviar = crear_paquete(PRESENTACION, buffer);
+
+    enviar_paquete(a_enviar, fd_kernel);
+
+    destruir_paquete(a_enviar);
+    
+}

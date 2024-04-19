@@ -146,6 +146,9 @@ void cargar_uint32_al_buffer (t_buffer* buffer, uint32_t valor){
 void cargar_uint16_al_buffer (t_buffer* buffer, uint16_t valor){
 	cargar_choclo_al_buffer (buffer, &valor, sizeof(uint16_t));
 }
+void cargar_uint8_al_buffer (t_buffer* buffer, uint8_t valor){
+	cargar_choclo_al_buffer (buffer, &valor, sizeof(uint8_t));
+}
 void cargar_string_al_buffer (t_buffer* buffer, char* string){
 	size_t len = strlen(string) + 1;
 	cargar_choclo_al_buffer(buffer, (void*)string, len);
@@ -231,6 +234,13 @@ uint16_t extraer_uint16_al_buffer (t_buffer* un_buffer){
 	free(un_entero);
 	return valor_retorno;
 }
+uint8_t extraer_uint8_al_buffer (t_buffer* un_buffer){
+	uint8_t* un_entero = extraer_choclo_al_buffer(un_buffer);
+	uint8_t valor_retorno = *un_entero;
+	free(un_entero);
+	return valor_retorno;
+}
+
 char* extraer_string_al_buffer (t_buffer* un_buffer){
 	char* un_string = extraer_choclo_al_buffer(un_buffer);
 	return un_string;

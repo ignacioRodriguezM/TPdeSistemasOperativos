@@ -22,7 +22,7 @@ typedef enum
 	PAQUETE,
     HANDSHAKE,
     RTA_HANDSHAKE,
-    //------------------------------------
+    //------------------------KERNEL- MEMORIA
     INICIAR_PROCESO,
 	FINALIZAR_PROCESO,
     RTA_INICIAR_PROCESO,
@@ -32,8 +32,11 @@ typedef enum
 	ACCESO_A_ESPACIO_USUARIO,
 
 	//-------------------KERNEL-CPU DIS
-	PROCESO_A_EJECUTAR
+	PROCESO_A_EJECUTAR,
 
+
+	//----------------IO-KERNEL
+	PRESENTACION
     
 }op_code;
 
@@ -77,11 +80,13 @@ void cargar_choclo_al_buffer (t_buffer* buffer, void* un_choclo, int size_of_cho
 void cargar_int_al_buffer (t_buffer* buffer, int valor);
 void cargar_uint32_al_buffer (t_buffer* buffer, uint32_t valor);
 void cargar_uint16_al_buffer (t_buffer* buffer, uint16_t valor);
+void cargar_uint8_al_buffer (t_buffer* buffer, uint8_t valor);
 void cargar_string_al_buffer (t_buffer* buffer, char* string);
 
 void* extraer_choclo_al_buffer (t_buffer* un_buffer);
 uint32_t extraer_uint32_al_buffer (t_buffer* un_buffer);
 uint16_t extraer_uint16_al_buffer (t_buffer* un_buffer);
+uint8_t extraer_uint8_al_buffer (t_buffer* un_buffer);
 char* extraer_string_al_buffer (t_buffer* un_buffer);
 
 
