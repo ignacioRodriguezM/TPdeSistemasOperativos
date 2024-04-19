@@ -6,7 +6,7 @@ void atender_kernel_entrada_salida(){
 
         log_info(kernel_logger, "Esperando a  algun entrada_salida...");
         fd_entrada_salida = esperar_cliente (fd_kernel, kernel_logger, "ENTRADA SALIDA");
-        
+
 
         bool control_key = 1; 
         while(control_key){
@@ -26,18 +26,8 @@ void atender_kernel_entrada_salida(){
 
                 log_info (kernel_log_debug, "%s", nombre_del_io_presentado);
 
-                if (contador_de_colas_bloqueados == 0){
-                    contador_de_colas_bloqueados ++;
-                    colas_bloqueados = malloc(sizeof(Colas_bloqueados*)); // Reservar memoria para un solo puntero a Colas_bloqueados
-                    colas_bloqueados[0] = malloc(sizeof(Colas_bloqueados)); // Reservar memoria para el primer elemento de Colas_bloqueados
-                    colas_bloqueados[0]->nombre = nombre_del_io_presentado;
-                    colas_bloqueados[0]->tipo_interfaz = tipo_interfaz;
-                    colas_bloqueados[0]->cola = queue_create();
-                    colas_bloqueados[0]->fd = fd_entrada_salida;
-                }
-
                 bool check = false;
-                if(contador_de_colas_bloqueados >1){
+                if(contador_de_colas_bloqueados >0){
 
                     for(int i=0; i< contador_de_colas_bloqueados;i++){
                         if(colas_bloqueados[i]->nombre == nombre_del_io_presentado){
@@ -47,6 +37,17 @@ void atender_kernel_entrada_salida(){
                             break;
                         }
                     }
+                if (contador_de_colas_bloqueados == 0){
+                    contador_de_colas_bloqueados ++;
+                    colas_bloqueados = malloc(sizeof(Colas_bloqueados*)); // Reservar memoria para un solo puntero a Colas_bloqueados
+                    colas_bloqueados[0] = malloc(sizeof(Colas_bloqueados)); // Reservar memoria para el primer elemento de Colas_bloqueados
+                    colas_bloqueados[0]->nombre = nombre_del_io_presentado;
+                    colas_bloqueados[0]->tipo_interfaz = tipo_interfaz;
+                    colas_bloqueados[0]->cola = queue_create();
+                    colas_bloqueados[0]->fd = fd_entrada_salida;
+                    log_info (kernel_log_debug, "TE CREE PRIMERO");
+                }
+
 
                     if (check == false){
                         contador_de_colas_bloqueados++;
@@ -56,6 +57,7 @@ void atender_kernel_entrada_salida(){
                         colas_bloqueados[contador_de_colas_bloqueados - 1]->tipo_interfaz = tipo_interfaz;
                         colas_bloqueados[contador_de_colas_bloqueados - 1]->cola = queue_create();
                         colas_bloqueados[contador_de_colas_bloqueados - 1]->fd = fd_entrada_salida;
+                        log_info (kernel_log_debug, "TE CREE AL FINAL");
                     }
                 }
                 
