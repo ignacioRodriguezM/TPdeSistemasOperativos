@@ -51,6 +51,7 @@ typedef struct{
     char* nombre;
     interfaces_io tipo_interfaz;
     t_queue* cola;
+    int fd;
 }Colas_bloqueados;
 
 

@@ -18,25 +18,22 @@ int main() {
 
     //iniciar_planificador_de_corto_plazo ();
 
-
-
-
     //iniciar servidor de kernel
     fd_kernel = iniciar_servidor (config_valores.puerto_escucha, kernel_logger, "KERNEL INCIADO !!!");
-    
-    
-    //Esperiar conexion de i/o
-    log_info(kernel_logger, "Esperando a  algun entrada_salida...");
-    fd_entrada_salida = esperar_cliente (fd_kernel, kernel_logger, "ENTRADA SALIDA");
-
-
 
 
     
+        
     //Atender i/o PROBANDO
     pthread_t hilo_kernel_entrada_salida;
     pthread_create (&hilo_kernel_entrada_salida, NULL, (void*)atender_kernel_entrada_salida, NULL);
     pthread_join(hilo_kernel_entrada_salida, NULL);
+
+    
+    
+    
+   
+
     /*
     //Conectarse como cliente a memoria
     log_info(kernel_logger, "Conectandose a memoria...");

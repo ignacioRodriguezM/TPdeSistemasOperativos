@@ -71,9 +71,9 @@ void atender_memoria_kernel (){
                 }
                 fclose(archivo);
     
-            */
+            
             break;
-
+            */
             case ACCESO_A_TABLA:
             //REVISAR
             /*
