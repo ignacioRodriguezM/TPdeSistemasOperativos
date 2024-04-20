@@ -20,10 +20,10 @@ int crear_conexion(char *ip, char* puerto)
 
 	// Ahora que tenemos el socket, vamos a conectarlo
     
-	while (connect(socket_cliente, server_info->ai_addr, server_info->ai_addrlen) == -1) {
-            perror("Error al conectarse");
-			 sleep(5);
-			 }
+	connect(socket_cliente, server_info->ai_addr, server_info->ai_addrlen);
+            
+			 
+			 
 	
 	freeaddrinfo(server_info);
 

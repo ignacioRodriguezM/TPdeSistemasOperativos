@@ -6,5 +6,6 @@
 
 void atender_entrada_salida_kernel();
 void presentarse_con_kernel();
+void esperarMilisegundos(unsigned int milisegundos);
 
 #endif
