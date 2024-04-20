@@ -1,6 +1,20 @@
 #include "../include/kernel-Entrada_Salida.h"
+void atender_kernel_entrada_salida (){
+    while(1){
+        
+        fd_entrada_salida = esperar_cliente (fd_kernel, kernel_logger, "ENTRADA SALIDA");
 
-void atender_kernel_entrada_salida(int *socket_ptr)
+        int *client_socket_ptr = malloc(sizeof(int));
+        *client_socket_ptr = fd_entrada_salida;
+
+        pthread_t hilo_multipes_entrada_salida;
+        pthread_create (&hilo_multipes_entrada_salida, NULL, (void*)atender_multiples_entrada_salida, (int*)client_socket_ptr);
+        pthread_detach(hilo_multipes_entrada_salida);
+    }
+}
+
+
+void atender_multiples_entrada_salida(int *socket_ptr)
 {   
     int client_socket = *socket_ptr;
     bool control_key = 1;
@@ -17,12 +31,11 @@ void atender_kernel_entrada_salida(int *socket_ptr)
             char *nombre_del_io_presentado = extraer_string_al_buffer(buffer_recibido);
             interfaces_io *puntero_recibido = extraer_choclo_al_buffer(buffer_recibido);
 
-            log_info(kernel_log_debug, "LLEGO");
+
             interfaces_io tipo_interfaz = *puntero_recibido;
+
             destruir_buffer (buffer_recibido);
             free(puntero_recibido);
-
-            log_info(kernel_log_debug, "%s", nombre_del_io_presentado);
 
             bool check = false;
             if (contador_de_colas_bloqueados > 0)
@@ -36,7 +49,7 @@ void atender_kernel_entrada_salida(int *socket_ptr)
                         colas_bloqueados[i]->conectado = true;
                         posicion = i;
                         check = true;
-                        log_info(kernel_log_debug, "TE VOLVI A ASIGNAR A TU COLA DE BLOQUEADOS");
+                        log_info(kernel_log_debug, "VOLVI A ASIGNAR A %s A SU COLA DE BLOQUEADOS ", nombre_del_io_presentado);
                         break;
                     }
                 }
@@ -55,7 +68,7 @@ void atender_kernel_entrada_salida(int *socket_ptr)
                 colas_bloqueados[0]->fd = client_socket;
                 colas_bloqueados[0]->conectado = true;
                 posicion = 0;
-                log_info(kernel_log_debug, "TE CREE PRIMERO");
+                log_info(kernel_log_debug, "CREE UNA COLA DE BLOQUEADOS PARA %s ", nombre_del_io_presentado);
                 check = true;
             }
 
@@ -70,20 +83,21 @@ void atender_kernel_entrada_salida(int *socket_ptr)
                 colas_bloqueados[contador_de_colas_bloqueados - 1]->fd = client_socket;
                 colas_bloqueados[contador_de_colas_bloqueados - 1]->conectado = true;
                 posicion = contador_de_colas_bloqueados - 1;
-                log_info(kernel_log_debug, "TE CREE AL FINAL");
+                log_info(kernel_log_debug, "CREE UNA COLA DE BLOQUEADOS PARA %s ", nombre_del_io_presentado);
+                check = true;
             }
-
-            thread_mutex_unlock(&mutex_colas);
+            
+            pthread_mutex_unlock(&mutex_colas);
             
             break;
 
         case -1:
-            log_error(kernel_logger, "Desconexion de KERNEL-i/o");
+            log_error(kernel_logger, "Desconexion de KERNEL-i/o ");
             colas_bloqueados[posicion]->conectado = false;
             control_key = 0;
             break;
         default:
-            log_warning(kernel_logger, "Operacion desconocida de KERNEL-i/o");
+            log_warning(kernel_logger, "Operacion desconocida de KERNEL-i/o ");
             break;
         }
     }

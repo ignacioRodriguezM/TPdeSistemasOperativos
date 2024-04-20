@@ -12,7 +12,7 @@ int main() {
     algoritmo_planificacion = config_valores.algoritmo_planificacion;
     contador_de_colas_bloqueados = 0;
     procesos_en_programacion = 0;
-    inicializar_colas_sin_bloqueados(); //INICIALIZA LAS COLAS
+    inicializar_colas_sin_bloqueados(); //INICIALIZA LAS COLAS "NORMALES"
 
 
 
@@ -20,29 +20,7 @@ int main() {
 
     //iniciar servidor de kernel
     fd_kernel = iniciar_servidor (config_valores.puerto_escucha, kernel_logger, "KERNEL INCIADO !!!");
-
-    while(1){
-        
-        log_info(kernel_logger, "Esperando a  algun entrada_salida...");
-        fd_entrada_salida = esperar_cliente (fd_kernel, kernel_logger, "ENTRADA SALIDA");
-
-        int *client_socket_ptr = malloc(sizeof(int));
-        *client_socket_ptr = fd_entrada_salida;
-
-        pthread_t hilo_kernel_entrada_salida;
-        pthread_create (&hilo_kernel_entrada_salida, NULL, (void*)atender_kernel_entrada_salida, (int*)client_socket_ptr);
-        pthread_detach(hilo_kernel_entrada_salida);
-
-    }
-
-    
-        
-    
-    
-    
    
-
-    /*
     //Conectarse como cliente a memoria
     log_info(kernel_logger, "Conectandose a memoria...");
     fd_memoria = crear_conexion (config_valores.ip_memoria, config_valores.puerto_memoria);
@@ -76,16 +54,15 @@ int main() {
     pthread_detach(hilo_kernel_cpu_interrupt);
 
 
-    //Atender i/o
+    
+    //atender entrada/salida
     pthread_t hilo_kernel_entrada_salida;
     pthread_create (&hilo_kernel_entrada_salida, NULL, (void*)atender_kernel_entrada_salida, NULL);
     pthread_detach(hilo_kernel_entrada_salida);
-    */
+
+
     //Iniciar consola interactiva
     iniciar_consola_interactiva (); //si queremos probar los comandos sin antes correr todos los modulos, lo ponemos arriba
-
-    
-
 
     log_debug(kernel_log_debug, "Advertencia de salida de Kernel");
     finalizar_colas_sin_bloqueados ();
