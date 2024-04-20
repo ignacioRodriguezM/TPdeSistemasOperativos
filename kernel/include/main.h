@@ -27,6 +27,7 @@ uint16_t identificador_PID = 1;
 uint16_t contador_pcbs = 1;
 
 pthread_mutex_t mutex_pid;
+pthread_mutex_t mutex_colas;
 
 t_queue* procesos_new;
 t_queue* procesos_ready;

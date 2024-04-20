@@ -10,3 +10,4 @@ uint16_t asignar_pid (){ //asigno un id al proceso que se crea, evita pid`s igua
 
     return valor_pid;
 }
+

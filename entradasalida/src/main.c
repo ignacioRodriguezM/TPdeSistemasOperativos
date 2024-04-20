@@ -22,6 +22,7 @@ int main() {
 
             //AVISARLE A KERNEL QUE LLEGO EL KING
             presentarse_con_kernel ();
+
             /*
             // QUITAR
             log_info(entrada_salida_logger, "Conectandose a memoria...");
@@ -33,6 +34,7 @@ int main() {
             pthread_create(&hilo_memoria, NULL, (void*) atender_entrada_salida_memoria, NULL);
             pthread_detach (hilo_memoria);
             */
+
             //Atender los mensajes de KERNEL
             pthread_t hilo_kernel;
             pthread_create(&hilo_kernel, NULL, (void*) atender_entrada_salida_kernel, NULL);
@@ -43,13 +45,13 @@ int main() {
 
 
         case STDIN:
-            
+            log_info (entrada_salida_logger,"INTERFAZ AUN NO DESARROLLADA" );
             break;
         case STDOUT:
-            
+            log_info (entrada_salida_logger,"INTERFAZ AUN NO DESARROLLADA" );
             break;
         case DIALFS:
-            
+            log_info (entrada_salida_logger,"INTERFAZ AUN NO DESARROLLADA" );
             break;
     }
     return 0;

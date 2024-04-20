@@ -23,6 +23,7 @@ extern uint16_t identificador_PID;
 extern uint16_t contador_pcbs;
 
 extern pthread_mutex_t mutex_pid;
+extern pthread_mutex_t mutex_colas;
 
 
 typedef struct{
@@ -52,6 +53,7 @@ typedef struct{
     interfaces_io tipo_interfaz;
     t_queue* cola;
     int fd;
+    bool conectado;
 }Colas_bloqueados;
 
 
