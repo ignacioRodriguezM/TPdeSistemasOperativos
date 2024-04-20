@@ -3,6 +3,6 @@
 
 #include "k_gestor.h"
 
-void atender_kernel_entrada_salida();
+void atender_kernel_entrada_salida(int *socket_ptr);
 
 #endif

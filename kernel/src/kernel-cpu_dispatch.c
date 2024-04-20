@@ -6,7 +6,7 @@ void atender_kernel_cpu_dispatch(){
         int cod_op = recibir_operacion(fd_cpu_dispatch);
         switch (cod_op)
         {
-        case  :
+        case 0 :
             
             break;
         case -1:

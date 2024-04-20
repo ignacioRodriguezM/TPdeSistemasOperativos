@@ -24,15 +24,18 @@ int main() {
     while(1){
         log_info(kernel_logger, "Esperando a  algun entrada_salida...");
         fd_entrada_salida = esperar_cliente (fd_kernel, kernel_logger, "ENTRADA SALIDA");
+
+        int *client_socket_ptr = malloc(sizeof(int));
+        *client_socket_ptr = fd_entrada_salida;
+
+        pthread_t hilo_kernel_entrada_salida;
+        pthread_create (&hilo_kernel_entrada_salida, NULL, (void*)atender_kernel_entrada_salida, (int*)client_socket_ptr);
+        pthread_detach(hilo_kernel_entrada_salida);
+
     }
 
     
         
-    //Atender i/o PROBANDO
-    pthread_t hilo_kernel_entrada_salida;
-    pthread_create (&hilo_kernel_entrada_salida, NULL, (void*)atender_kernel_entrada_salida, NULL);
-    pthread_join(hilo_kernel_entrada_salida, NULL);
-
     
     
     
@@ -76,11 +79,11 @@ int main() {
     pthread_t hilo_kernel_entrada_salida;
     pthread_create (&hilo_kernel_entrada_salida, NULL, (void*)atender_kernel_entrada_salida, NULL);
     pthread_detach(hilo_kernel_entrada_salida);
-
+    */
     //Iniciar consola interactiva
     iniciar_consola_interactiva (); //si queremos probar los comandos sin antes correr todos los modulos, lo ponemos arriba
 
-    */
+    
 
 
     log_debug(kernel_log_debug, "Advertencia de salida de Kernel");
