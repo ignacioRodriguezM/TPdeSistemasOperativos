@@ -5,7 +5,7 @@ Nicolas Reinoso
 Juan Cruz Scollo
 Ignacio Vila
 
-#PROTOCOLO-COMUNICACIONES
+# PROTOCOLO-COMUNICACIONES
 Iniciar Memoria
 Iniciar CPU
 Iniciar KERNEL
