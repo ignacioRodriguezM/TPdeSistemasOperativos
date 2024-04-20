@@ -30,13 +30,14 @@ void atender_kernel_entrada_salida(){
                 if(contador_de_colas_bloqueados >0){
 
                     for(int i=0; i< contador_de_colas_bloqueados;i++){
-                        if(colas_bloqueados[i]->nombre == nombre_del_io_presentado){
+                        if(strcmp(colas_bloqueados[i]->nombre, nombre_del_io_presentado) == 0){
                             colas_bloqueados[i]->fd = fd_entrada_salida;
                             check = true;
                             log_info (kernel_log_debug, "TE VOLVI A ASIGNAR A TU COLA DE BLOQUEADOS");
                             break;
-                        }
+                        }        
                     }
+                }
                 if (contador_de_colas_bloqueados == 0){
                     contador_de_colas_bloqueados ++;
                     colas_bloqueados = malloc(sizeof(Colas_bloqueados*)); // Reservar memoria para un solo puntero a Colas_bloqueados
@@ -46,6 +47,7 @@ void atender_kernel_entrada_salida(){
                     colas_bloqueados[0]->cola = queue_create();
                     colas_bloqueados[0]->fd = fd_entrada_salida;
                     log_info (kernel_log_debug, "TE CREE PRIMERO");
+                    check = true;
                 }
 
 
@@ -59,7 +61,7 @@ void atender_kernel_entrada_salida(){
                         colas_bloqueados[contador_de_colas_bloqueados - 1]->fd = fd_entrada_salida;
                         log_info (kernel_log_debug, "TE CREE AL FINAL");
                     }
-                }
+                
                 
                 
 
