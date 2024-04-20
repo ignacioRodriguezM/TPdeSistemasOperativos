@@ -22,6 +22,7 @@ int main() {
     fd_kernel = iniciar_servidor (config_valores.puerto_escucha, kernel_logger, "KERNEL INCIADO !!!");
 
     while(1){
+        
         log_info(kernel_logger, "Esperando a  algun entrada_salida...");
         fd_entrada_salida = esperar_cliente (fd_kernel, kernel_logger, "ENTRADA SALIDA");
 
