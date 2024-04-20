@@ -6,9 +6,9 @@ Juan Cruz Scollo
 Ignacio Vila
 
 # PROTOCOLO-COMUNICACIONES
-Iniciar Memoria
-Iniciar CPU
-Iniciar KERNEL
+Iniciar Memoria/
+Iniciar CPU/
+Iniciar KERNEL/
 Iniciar IOs
 
 # tp-scaffold
