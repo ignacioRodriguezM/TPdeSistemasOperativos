@@ -4,6 +4,13 @@ Nicolas Rey
 Nicolas Reinoso
 Juan Cruz Scollo
 Ignacio Vila
+
+#PROTOCOLO-COMUNICACIONES
+Iniciar Memoria
+Iniciar CPU
+Iniciar KERNEL
+Iniciar IOs
+
 # tp-scaffold
 
 Esta es una plantilla de proyecto diseñada para generar un TP de Sistemas
