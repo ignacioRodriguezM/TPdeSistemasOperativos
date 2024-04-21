@@ -24,10 +24,10 @@ extern uint16_t contador_pcbs;
 
 extern pthread_mutex_t mutex_pid;
 extern pthread_mutex_t mutex_colas;
+extern pthread_mutex_t mutex_procesos;
 
 
 typedef struct{
-    uint32_t pc;
     uint8_t ax;
     uint8_t bx;
     uint8_t cx;
@@ -43,9 +43,8 @@ typedef struct{
 
 typedef struct{
     uint16_t pid;
-    uint16_t pc;
+    uint32_t pc;
     uint8_t quantum;
-    uint8_t quantum_extra; //para vrr
     Registros registros;
 }PCB;
 typedef struct{
@@ -69,6 +68,7 @@ extern int contador_de_colas_bloqueados;
 extern int grado_multiprogramacion;
 extern int procesos_en_programacion;
 extern bool planificacion_activa;
+extern bool proceso_ejecutando;
 extern char* algoritmo_planificacion;
 
 

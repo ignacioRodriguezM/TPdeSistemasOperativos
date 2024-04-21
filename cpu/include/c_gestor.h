@@ -18,5 +18,24 @@ extern int fd_cpu_dispatch;
 extern int fd_cpu_interrupt;
 extern int fd_kernel_dispatch;
 extern int fd_kernel_interrupt;
-extern int fd_memoria;         
+extern int fd_memoria;
+
+
+//COSAS RECIVIDAS DEL KERNEL QUE NO SON REGISTROS
+extern uint16_t PID;
+extern uint8_t QUANTUM;
+
+//REGISTROS
+extern uint32_t PC_registro;
+extern uint8_t AX_registro;
+extern uint8_t BX_registro;
+extern uint8_t CX_registro;
+extern uint8_t DX_registro;
+extern uint32_t EAX_registro;
+extern uint32_t EBX_registro;
+extern uint32_t ECX_registro;
+extern uint32_t EDX_registro;
+extern uint32_t SI_registro;
+extern uint32_t DI_registro;
+
 #endif

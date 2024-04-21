@@ -6,8 +6,11 @@ int main() {
     inicializar_logger (&memoria_logger, "memoria_logs.log");
     inicializar_logger_debug (&memoria_log_debug, "memoria_debug.log");
     APP_config config_valores = cargar_configuracion_memoria();
-    
-    _asignar_valores_a_variables_globales_de_memoria(config_valores);
+    tam_memoria = config_valores.tam_memoria;
+    tam_pagina = config_valores.tam_pagina
+    retardo_respuesta = config_valores.retardo_respuesta;
+
+    memoria = inicializar_memoria();
 
     //iniciar servidor de memoria
     fd_memoria = iniciar_servidor (config_valores.puerto_escucha, memoria_logger, "MEMORIA INCIADA !!!");
@@ -51,6 +54,7 @@ int main() {
 
 
 
-   _liberar_memoria_asignada_a_usuario ();
+    // Liberar la memoria
+    free_memory(memoria);
     return 0;
 }

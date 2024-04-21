@@ -10,7 +10,7 @@
 #include "./consola.h"
 #include "./servicios_kernel.h"
 #include "./colas_estados.h"
-#include "./planificador.h"
+
 
 
 //Variables GLOBALES
@@ -28,6 +28,7 @@ uint16_t contador_pcbs = 1;
 
 pthread_mutex_t mutex_pid;
 pthread_mutex_t mutex_colas;
+pthread_mutex_t mutex_procesos;
 
 t_queue* procesos_new;
 t_queue* procesos_ready;
@@ -40,6 +41,7 @@ int contador_de_colas_bloqueados;
 int grado_multiprogramacion;
 int procesos_en_programacion;
 bool planificacion_activa;
+bool proceso_ejecutando;
 char* algoritmo_planificacion;
 
 

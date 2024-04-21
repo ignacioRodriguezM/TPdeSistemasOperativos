@@ -295,27 +295,6 @@ void enviar_paquete (t_paquete* paquete, int conexion){
 
 
 
-
-// Función para extraer un entero del paquete
-int extraer_int_del_paquete(t_paquete* paquete) {
-    return extraer_int_al_buffer(paquete->buffer);
-}
-
-// Función para extraer un uint32_t del paquete
-uint32_t extraer_uint32_del_paquete(t_paquete* paquete) {
-    return extraer_uint32_al_buffer(paquete->buffer);
-}
-
-// Función para extraer un uint16_t del paquete
-uint16_t extraer_uint16_del_paquete(t_paquete* paquete) {
-    return extraer_uint16_al_buffer(paquete->buffer);
-}
-
-// Función para extraer un string del paquete
-char* extraer_string_del_paquete(t_paquete* paquete) {
-    return extraer_string_al_buffer(paquete->buffer);
-}
-
 t_buffer* recibir_buffer_sin_cod_op (int socket){
 	// Recibir el tamaño del buffer
     int size_of_stream = recibir_size_del_buffer(socket);
