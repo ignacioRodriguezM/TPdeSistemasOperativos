@@ -28,7 +28,6 @@ extern pthread_mutex_t mutex_procesos;
 
 
 typedef struct{
-    uint32_t pc;
     uint8_t ax;
     uint8_t bx;
     uint8_t cx;
@@ -44,7 +43,7 @@ typedef struct{
 
 typedef struct{
     uint16_t pid;
-    uint16_t pc;
+    uint32_t pc;
     uint8_t quantum;
     Registros registros;
 }PCB;
