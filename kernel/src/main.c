@@ -12,11 +12,12 @@ int main() {
     algoritmo_planificacion = config_valores.algoritmo_planificacion;
     contador_de_colas_bloqueados = 0;
     procesos_en_programacion = 0;
+    planificacion_activa = false;
+    proceso_ejecutando = false;
     inicializar_colas_sin_bloqueados(); //INICIALIZA LAS COLAS "NORMALES"
 
 
 
-    //iniciar_planificador_de_corto_plazo ();
 
     //iniciar servidor de kernel
     fd_kernel = iniciar_servidor (config_valores.puerto_escucha, kernel_logger, "KERNEL INCIADO !!!");

@@ -15,8 +15,6 @@ int esNumero(const char *cadena)
     return 1; // Todos los caracteres son dígitos numéricos
 }
 
-bool first_time = true; // primera planificacion
-
 void iniciar_consola_interactiva()
 {
     char *leido;
@@ -209,20 +207,16 @@ void _atender_instruccion_validada(char *leido)
     }
     else if (strcmp(comando_consola[0], "INICIAR_PLANIFICACION") == 0)
     {
-        if (first_time == true)
-        {
-            planificacion_activa = true;
-            first_time = false;
-            log_info(kernel_logger, "La planificacion fue activada por primera vez");
-        }
-        else if (planificacion_activa == true)
+
+        if (planificacion_activa == true)
         {
             log_info(kernel_logger, "La planificacion ya estaba activa");
         }
         else
         {
             planificacion_activa = true;
-            log_info(kernel_logger, "La planificacion fue reactivada");
+            log_info(kernel_logger, "La planificacion fue activada");
+            
         }
     }
     else if (strcmp(comando_consola[0], "MULTIPROGRAMACION") == 0)
@@ -267,4 +261,25 @@ void _atender_instruccion_validada(char *leido)
     }
 
     string_array_destroy(comando_consola);
+}
+
+void _mover_el_primero_de_lista_a_otra_lista(t_queue *fuente, t_queue *destino)
+{
+    void *element = queue_pop(fuente);
+    queue_push(destino, element);
+}
+
+void manejar  (){
+    while (planificacion_activa)
+    {
+        while (procesos_en_programacion < grado_multiprogramacion)
+        {
+            if (procesos_new->elements->elements_count > 0)
+            {
+
+                _mover_el_primero_de_lista_a_otra_lista(procesos_new, procesos_ready);
+                procesos_en_programacion++;
+            }
+        }
+    }
 }
