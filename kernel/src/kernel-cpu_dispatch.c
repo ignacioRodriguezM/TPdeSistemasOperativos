@@ -6,9 +6,24 @@ void atender_kernel_cpu_dispatch(){
         int cod_op = recibir_operacion(fd_cpu_dispatch);
         switch (cod_op)
         {
-        case 0 :
+        case EXIT:
             
             break;
+        case INVALID_RESOURCE:
+            
+            break;
+        case INVALID_WRITE:
+            
+            break;
+        case LLAMADA_AL_KERNEL:
+            
+            break;
+        case INTERRUPT:
+            
+            break;
+
+
+
         case -1:
         log_error(kernel_logger, "Desconexion de KERNEL-CPU_DISPATCH");
         control_key = 0;

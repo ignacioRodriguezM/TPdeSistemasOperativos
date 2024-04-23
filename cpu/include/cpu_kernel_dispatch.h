@@ -3,8 +3,8 @@
 
 #include "./c_gestor.h"
 
+void _extraer_contexto_de_ejecucion();
 void atender_cpu_kernel_dispatch ();
-void _extraer_contexto_de_ejecucion()
 
 
 #endif

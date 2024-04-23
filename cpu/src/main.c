@@ -1,7 +1,6 @@
 #include "../include/main.h"
 
-int main()
-{
+int main (){
 
     // Inicializo cpu
     inicializar_logger(&cpu_logger, "cpu_logs.log");           // loggers obligatorios
@@ -30,7 +29,6 @@ int main()
     // Atender los mensajes de Kernel - Dispatch
     pthread_t hilo_kernel_dispatch;
     pthread_create(&hilo_kernel_dispatch, NULL, (void *)atender_cpu_kernel_dispatch, NULL);
-    atender_cpu_kernel_dispatch();
     pthread_detach(hilo_kernel_dispatch);
 
     // Atender los mensajes de Kernel - Interrupt

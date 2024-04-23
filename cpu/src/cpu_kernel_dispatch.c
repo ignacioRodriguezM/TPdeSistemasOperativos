@@ -15,8 +15,8 @@ void atender_cpu_kernel_dispatch()
         case PROCESO_A_EJECUTAR:
 
             _extraer_contexto_de_ejecucion();
-
-            _ejecutar_ciclo_de_cpu ();
+            log_info(cpu_logger, "LLego %u", PID);
+            //_ejecutar_ciclo_de_cpu ();
             
             break;
 

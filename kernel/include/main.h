@@ -41,7 +41,6 @@ int grado_multiprogramacion;
 uint8_t quantum; //SI ES FIFO PONER -1
 int procesos_en_programacion;
 bool planificacion_activa;
-bool proceso_ejecutando;
 char* algoritmo_planificacion;
 
 

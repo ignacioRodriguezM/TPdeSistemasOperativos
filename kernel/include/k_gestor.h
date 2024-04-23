@@ -72,7 +72,6 @@ extern int grado_multiprogramacion;
 extern int procesos_en_programacion;
 extern uint8_t quantum;
 extern bool planificacion_activa;
-extern bool proceso_ejecutando;
 extern char* algoritmo_planificacion;
 
 

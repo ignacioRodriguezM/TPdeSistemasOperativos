@@ -33,7 +33,11 @@ typedef enum
 
 	//-------------------KERNEL-CPU DIS
 	PROCESO_A_EJECUTAR,
-
+	EXIT,
+	INVALID_RESOURCE,
+	INVALID_WRITE,
+	LLAMADA_AL_KERNEL,
+	INTERRUPT,
 
 	//----------------IO-KERNEL
 	PRESENTACION,
