@@ -41,7 +41,7 @@ typedef enum
 
 	//----------------IO-KERNEL
 	PRESENTACION,
-	IO_GEN_SLEEP
+	GEN_SLEEP
 
     
 }op_code;

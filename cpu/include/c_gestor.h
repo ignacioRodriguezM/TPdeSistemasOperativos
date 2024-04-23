@@ -9,6 +9,7 @@
 #include <commons/collections/list.h>
 
 #include "./configuracion_cpu.h"
+#include "./instrucciones.h"
 
 
 //Variables GLOBALES

@@ -5,7 +5,7 @@ void atender_entrada_salida_kernel(){
     while (control_key) {
 		int cod_op = recibir_operacion(fd_kernel);
 		switch (cod_op) {
-            case IO_GEN_SLEEP:
+            case GEN_SLEEP:
                 t_buffer *buffer_recibido = recibir_buffer_sin_cod_op(fd_kernel); // [PID] [CANTIDAD DE UNIDADES DE TRABAJO]
                 uint16_t pid = extraer_uint16_al_buffer(buffer_recibido);
                 uint8_t cantidad_unidades_de_trabajo = extraer_uint8_al_buffer(buffer_recibido);

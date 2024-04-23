@@ -108,7 +108,7 @@ void JNZ(void* registro, unsigned int valor_salto) {
         PC_registro = valor_salto;
     }
 }
-/*
+
 void IO_GEN_SLEEP (char* nombre_interfaz, uint8_t unidades_de_trabajo){
 
 
@@ -131,7 +131,7 @@ void IO_GEN_SLEEP (char* nombre_interfaz, uint8_t unidades_de_trabajo){
         cargar_uint32_al_buffer(buffer, EBX_registro);
         cargar_uint32_al_buffer(buffer, ECX_registro);
         cargar_uint32_al_buffer(buffer, EDX_registro);
-        cargar_uint32_al_buffer(buffer, SI_registro;
+        cargar_uint32_al_buffer(buffer, SI_registro);
         cargar_uint32_al_buffer(buffer, DI_registro);
 
 
@@ -144,4 +144,4 @@ void IO_GEN_SLEEP (char* nombre_interfaz, uint8_t unidades_de_trabajo){
         //SETEAR REGISTROS EN CERO???
             
 
-}*/
+}
