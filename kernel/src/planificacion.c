@@ -25,6 +25,7 @@ void crear_proceso (char* path){
             destruir_paquete(a_enviar);
             
             //RECIBIR DE MEMORIA EL OK, Y RECIBIR EL PC
+            //falta desarrollar que memoria envie el ip para el proceso y luego es asignado a su pcb
             uint32_t pc_recibido_de_memoria = 0;//recibir
 
             PCB* proceso_creado = _crear_pcb (pid, pc_recibido_de_memoria);
@@ -54,6 +55,7 @@ void mover_procesos_de_new_a_ready (){
 
             //TERMINAR ESTE LOG
             log_info(kernel_logger, "Cola Ready procesos_ready: [<LISTA DE PIDS>]");
+            //puedo crear un buffer y ahi ir guardandno todos lo s pids
 
             pthread_mutex_unlock(&mutex_procesos);
 
@@ -108,7 +110,7 @@ void mover_procesos_de_ready_a_excecute(){
             t_paquete *a_enviar = crear_paquete(PROCESO_A_EJECUTAR, buffer); // [PID] [PATH]
 
             enviar_paquete(a_enviar, fd_cpu_dispatch);
-
+            //enviamos el proceso de ready a execute primero y luego lo enviamos a cpu
             log_info(kernel_logger, "PID: %u - Estado Anterior: READY - Estado Actual: EXCEC", proceso_movido->pid);
             destruir_paquete(a_enviar);
         }

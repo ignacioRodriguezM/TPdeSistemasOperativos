@@ -6,12 +6,6 @@ void atender_kernel_cpu_inerrupt(){
         int cod_op = recibir_operacion(fd_cpu_interrupt);
         switch (cod_op)
         {
-        case MENSAJE:
-            /* code */
-            break;
-        case PAQUETE:
-        //codigo
-            break;
         case -1:
         log_error(kernel_logger, "Desconexion de KERNEL-CPU_INTERRUPT");
         control_key = 0;
