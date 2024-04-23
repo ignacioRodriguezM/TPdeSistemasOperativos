@@ -171,18 +171,8 @@ void _atender_instruccion_validada(char *leido)
 
     else if (strcmp(comando_consola[0], "INICIAR_PROCESO") == 0)
     {
-        t_buffer *buffer = crear_buffer();
-        printf("Ingresaste: %s\n", comando_consola[1]);
-        uint16_t pid = asignar_pid();
-        cargar_uint16_al_buffer(buffer, pid);
-        cargar_string_al_buffer(buffer, comando_consola[1]);
+        crear_proceso(comando_consola[1]);
 
-        t_paquete *a_enviar = crear_paquete(INICIAR_PROCESO, buffer); // [PID] [PATH]
-
-        enviar_paquete(a_enviar, fd_memoria);
-        destruir_paquete(a_enviar);
-
-        log_info(kernel_logger, "Se crea el proceso %u en NEW", pid);
     }
     else if (strcmp(comando_consola[0], "FINALIZAR_PROCESO") == 0)
     {
@@ -215,6 +205,7 @@ void _atender_instruccion_validada(char *leido)
         else
         {
             planificacion_activa = true;
+            iniciar_planificador_de_largo_plazo();
             log_info(kernel_logger, "La planificacion fue activada");
             
         }
@@ -254,6 +245,8 @@ void _atender_instruccion_validada(char *leido)
         list_iterate(procesos_excec->elements, imprimo_elemento);
         printf("PROCESOS EXIT : \n");
         list_iterate(procesos_exit->elements, imprimo_elemento);
+        //FALTA LISTAR PROCESOS BLOQUEADOS
+        
     }
     else
     {
@@ -263,23 +256,3 @@ void _atender_instruccion_validada(char *leido)
     string_array_destroy(comando_consola);
 }
 
-void _mover_el_primero_de_lista_a_otra_lista(t_queue *fuente, t_queue *destino)
-{
-    void *element = queue_pop(fuente);
-    queue_push(destino, element);
-}
-
-void manejar  (){
-    while (planificacion_activa)
-    {
-        while (procesos_en_programacion < grado_multiprogramacion)
-        {
-            if (procesos_new->elements->elements_count > 0)
-            {
-
-                _mover_el_primero_de_lista_a_otra_lista(procesos_new, procesos_ready);
-                procesos_en_programacion++;
-            }
-        }
-    }
-}

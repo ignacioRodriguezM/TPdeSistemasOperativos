@@ -22,23 +22,6 @@ extern uint16_t tam_memoria;
 extern uint16_t tam_pagina;
 extern uint8_t retardo_respuesta;
 
-// Estructura para representar una página de memoria
-typedef struct {
-    int numero_de_esta_pagina;    // Número de página
-    void* data;         // Datos de la página
-} Page;
-
-// Estructura para representar una tabla de páginas
-typedef struct {
-    Page* paginas;        // Array de páginas
-    int num_paginas;      // Número total de páginas
-} PageTable;
-
-// Estructura para representar la memoria
-typedef struct {
-    void* memory;       // Puntero al espacio de memoria de usuario
-    PageTable tabla_de_paginas; // Tabla de páginas
-} Memory;
 
 
 

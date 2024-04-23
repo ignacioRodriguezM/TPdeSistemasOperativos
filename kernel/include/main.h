@@ -8,7 +8,6 @@
 #include "./kernel-cpu_dispatch.h"
 #include "./kernel-cpu_interrupt.h"
 #include "./consola.h"
-#include "./servicios_kernel.h"
 #include "./colas_estados.h"
 
 
@@ -39,6 +38,7 @@ int contador_de_colas_bloqueados;
 
 
 int grado_multiprogramacion;
+uint8_t quantum; //SI ES FIFO PONER -1
 int procesos_en_programacion;
 bool planificacion_activa;
 bool proceso_ejecutando;

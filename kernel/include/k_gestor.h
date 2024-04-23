@@ -8,6 +8,9 @@
 #include <commons/txt.h>
 #include <commons/collections/list.h>
 
+#include "./servicios_kernel.h"
+#include "./planificador.h"
+
 
 //Variables GLOBALES
 extern t_log* kernel_logger;
@@ -67,6 +70,7 @@ extern int contador_de_colas_bloqueados;
 
 extern int grado_multiprogramacion;
 extern int procesos_en_programacion;
+extern uint8_t quantum;
 extern bool planificacion_activa;
 extern bool proceso_ejecutando;
 extern char* algoritmo_planificacion;

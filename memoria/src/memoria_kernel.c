@@ -21,34 +21,7 @@ void atender_memoria_kernel (){
                 
                 log_info (memoria_logger, "LLEGO : %u , %s", pid_recibido, path_recibido);
                 
-                //asignarle un espacio de memoria a instrucciones, y devolverle el PC al kernel
                 
-                FILE *archivo;
-                char* comando = malloc(100 * sizeof(char));
-        
-                archivo = fopen(path_recibido, "r");
-                // Verificar si se pudo abrir el archivo
-                if (archivo == NULL) {
-                    printf("No se pudo abrir el archivo.\n");
-                    exit(EXIT_FAILURE);
-                }
-                // 
-                while (fgets(comando, 100 * sizeof(char), archivo) != NULL) {
-                    for (int i=0; i<cantidad_de_paginas; i++){
-                        if (tabla_de_paginas[i]==NULL){
-                            break;
-                        }
-                    }
-                
-                    
-
-                }
-                // Cerrar el archivo
-                fclose(archivo);
-                // Liberar memoria
-                free(comando);
-                
-
             break;
 
             case FINALIZAR_PROCESO:
