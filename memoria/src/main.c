@@ -7,10 +7,9 @@ int main() {
     inicializar_logger_debug (&memoria_log_debug, "memoria_debug.log");
     APP_config config_valores = cargar_configuracion_memoria();
     tam_memoria = config_valores.tam_memoria;
-    tam_pagina = config_valores.tam_pagina
+    tam_pagina = config_valores.tam_pagina;
     retardo_respuesta = config_valores.retardo_respuesta;
 
-    memoria = inicializar_memoria();
 
     //iniciar servidor de memoria
     fd_memoria = iniciar_servidor (config_valores.puerto_escucha, memoria_logger, "MEMORIA INCIADA !!!");
@@ -54,7 +53,5 @@ int main() {
 
 
 
-    // Liberar la memoria
-    free_memory(memoria);
     return 0;
 }
