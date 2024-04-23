@@ -1,4 +1,40 @@
 #include "../include/cpu_kernel_dispatch.h"
+void IO_GEN_SLEEP_funcion (char* nombre_interfaz, uint8_t unidades_de_trabajo){
+
+
+
+
+    t_buffer *buffer = crear_buffer();
+        //[nombre_interfaz] [operacion] [unidades_de_trabajo] [pid] [pc] [quantum] [registros]
+        
+        cargar_string_al_buffer(buffer, nombre_interfaz);
+        cargar_string_al_buffer(buffer, "IO_GEN_SLEEP");
+        cargar_uint8_al_buffer(buffer, unidades_de_trabajo);
+        cargar_uint16_al_buffer(buffer, PID);
+        cargar_uint32_al_buffer(buffer, PC_registro);
+        cargar_uint8_al_buffer(buffer, QUANTUM);
+        cargar_uint8_al_buffer(buffer, AX_registro);
+        cargar_uint8_al_buffer(buffer, BX_registro);
+        cargar_uint8_al_buffer(buffer, CX_registro);
+        cargar_uint8_al_buffer(buffer, DX_registro);
+        cargar_uint32_al_buffer(buffer, EAX_registro);
+        cargar_uint32_al_buffer(buffer, EBX_registro);
+        cargar_uint32_al_buffer(buffer, ECX_registro);
+        cargar_uint32_al_buffer(buffer, EDX_registro);
+        cargar_uint32_al_buffer(buffer, SI_registro);
+        cargar_uint32_al_buffer(buffer, DI_registro);
+
+
+        t_paquete *a_enviar = crear_paquete(LLAMADA_A_IO, buffer);
+
+        enviar_paquete(a_enviar, fd_kernel_dispatch);
+        
+        destruir_paquete(a_enviar);
+        
+        //SETEAR REGISTROS EN CERO???
+            
+
+}
 
 void atender_cpu_kernel_dispatch()
 {
@@ -17,6 +53,8 @@ void atender_cpu_kernel_dispatch()
             _extraer_contexto_de_ejecucion();
             log_info(cpu_logger, "LLego %u", PID);
             //_ejecutar_ciclo_de_cpu ();
+            IO_GEN_SLEEP_funcion ("mouse", 10);
+
             
             break;
 

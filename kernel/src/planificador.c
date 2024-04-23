@@ -107,7 +107,7 @@ void mover_procesos_de_ready_a_excecute(){
             cargar_uint32_al_buffer(buffer, proceso_movido->registros.di);
 
 
-            t_paquete *a_enviar = crear_paquete(PROCESO_A_EJECUTAR, buffer); // [PID] [PATH]
+            t_paquete *a_enviar = crear_paquete(PROCESO_A_EJECUTAR, buffer);
 
             enviar_paquete(a_enviar, fd_cpu_dispatch);
             //enviamos el proceso de ready a execute primero y luego lo enviamos a cpu

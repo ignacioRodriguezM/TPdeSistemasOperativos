@@ -4,6 +4,10 @@
 #include "./c_gestor.h"
 
 void SET (void* registro, int valor);
+void SUM(void *registroDestino, void *registroOrigen);
+void SUB(void *registroDestino, void *registroOrigen);
+void JNZ(void* registro, unsigned int valor_salto);
+//void IO_GEN_SLEEP (char* nombre_interfaz, uint8_t unidades_de_trabajo);
 
 
 #endif

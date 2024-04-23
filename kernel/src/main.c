@@ -13,7 +13,6 @@ int main() {
     contador_de_colas_bloqueados = 0;
     procesos_en_programacion = 0;
     planificacion_activa = false;
-    proceso_ejecutando = false;
     quantum = config_valores.quantum;
     inicializar_colas_sin_bloqueados(); //INICIALIZA LAS COLAS "NORMALES"
 

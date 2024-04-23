@@ -10,6 +10,7 @@
 
 #include "./configuracion_cpu.h"
 
+
 //Variables GLOBALES
 extern t_log* cpu_logger;
 extern t_log* cpu_log_debug;

@@ -36,7 +36,7 @@ typedef enum
 	EXIT,
 	INVALID_RESOURCE,
 	INVALID_WRITE,
-	LLAMADA_AL_KERNEL,
+	LLAMADA_A_IO,
 	INTERRUPT,
 
 	//----------------IO-KERNEL

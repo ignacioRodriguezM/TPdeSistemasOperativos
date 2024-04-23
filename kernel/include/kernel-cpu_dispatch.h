@@ -4,5 +4,7 @@
 #include "k_gestor.h"
 
 void atender_kernel_cpu_dispatch();
+bool _chequear_la_io(char *nombre_interfaz, char *operacion);
+
 
 #endif
