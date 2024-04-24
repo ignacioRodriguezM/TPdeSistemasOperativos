@@ -16,7 +16,7 @@ void atender_entrada_salida_kernel()
             uint16_t pid = extraer_uint16_al_buffer(buffer_recibido);
             uint8_t unidades_de_trabajo = extraer_uint8_al_buffer(buffer_recibido);
 
-            if (nombre_io_llegado_del_kernel != nombre)
+            if (strcmp(nombre_io_llegado_del_kernel, nombre) != 0)
             {
                 log_error(entrada_salida_log_debug, "ME LLEGO UNA OPERACION QUE NO DEBIA, YA QUE NO ESTA A MI NOMBRE");
             }

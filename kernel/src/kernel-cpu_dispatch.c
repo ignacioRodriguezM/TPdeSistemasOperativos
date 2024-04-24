@@ -21,7 +21,7 @@ void atender_kernel_cpu_dispatch()
 
             pthread_t hilo_que_maneja_bloqueos;
             pthread_create(&hilo_que_maneja_bloqueos, NULL, (void *)_manejar_bloqueo, NULL);
-            pthread_detach(hilo_que_maneja_bloqueos);
+            pthread_join(hilo_que_maneja_bloqueos, NULL);
 
             break;
         case INTERRUPT:
