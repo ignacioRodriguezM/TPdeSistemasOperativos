@@ -16,8 +16,9 @@ void atender_cpu_kernel_dispatch()
         case PROCESO_A_EJECUTAR:
 
             _extraer_contexto_de_ejecucion();
-            log_info(cpu_logger, "LLego %u", PID);
+
             //_ejecutar_ciclo_de_cpu ();
+            PC_registro =1;
             IO_GEN_SLEEP ("mouse", 10);
 
             

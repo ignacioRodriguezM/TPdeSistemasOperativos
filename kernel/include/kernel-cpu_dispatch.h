@@ -5,6 +5,8 @@
 
 void atender_kernel_cpu_dispatch();
 bool _chequear_la_io(char *nombre_interfaz, char *operacion);
+void _manejar_bloqueo ();
+
 
 
 #endif
