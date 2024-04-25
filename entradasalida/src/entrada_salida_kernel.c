@@ -28,6 +28,14 @@ void atender_entrada_salida_kernel()
             log_info(entrada_salida_logger, "PID: %u - Operacion: %s", pid, operacion_a_realizar);
             esperarMilisegundos (unidades_de_trabajo * tiempo_unidad_trabajo);
             //DEVOLVER CONFIRMACION AL KERNEL
+            t_buffer *buffer_a_enviar = crear_buffer();
+            cargar_string_al_buffer(buffer_a_enviar, nombre); //[nombre][pid]
+            cargar_uint16_al_buffer(buffer_a_enviar, pid);
+            t_paquete *a_enviar = crear_paquete(FIN_DE_EJECUCION_DE_IO, buffer_a_enviar);
+
+            enviar_paquete(a_enviar, fd_kernel);
+
+            destruir_paquete(a_enviar);
 
             break;
         case -1:

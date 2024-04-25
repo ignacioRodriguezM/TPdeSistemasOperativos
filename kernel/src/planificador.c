@@ -118,17 +118,23 @@ void iniciar_planificador_de_corto_plazo()
 }
 
 void mover_de_excec_a_cola_bloqueado(char *nombre_de_la_io)
-{
-    for (int i = 0; i < contador_de_colas_bloqueados; i++)
-    {
+{   
+    bool a = true;
+    while (a){
+        while (planificacion_activa && a){
+            for (int i = 0; i < contador_de_colas_bloqueados; i++)
+            {
 
-        if (strcmp(colas_bloqueados[i]->nombre, nombre_de_la_io) == 0)
-        {
-            pthread_mutex_lock(&mutex_procesos);
-            PCB *proceso_movido = queue_pop(procesos_excec);
-            queue_push(colas_bloqueados[i]->cola, proceso_movido);
-            pthread_mutex_unlock(&mutex_procesos);
-            log_info(kernel_logger, "PID: %u - Estado Anterior: EXCEC - Estado Actual: BLOQUEADO", proceso_movido->pid);
+                if (strcmp(colas_bloqueados[i]->nombre, nombre_de_la_io) == 0)
+                {
+                    pthread_mutex_lock(&mutex_procesos);
+                    PCB *proceso_movido = queue_pop(procesos_excec);
+                    queue_push(colas_bloqueados[i]->cola, proceso_movido);
+                    pthread_mutex_unlock(&mutex_procesos);
+                    log_info(kernel_logger, "PID: %u - Estado Anterior: EXCEC - Estado Actual: BLOQUEADO", proceso_movido->pid);
+                }
+            }
+            a = false;
         }
     }
 }

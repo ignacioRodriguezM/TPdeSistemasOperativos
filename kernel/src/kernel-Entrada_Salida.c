@@ -91,6 +91,15 @@ void atender_multiples_entrada_salida(int *socket_ptr)
             
             break;
 
+        case FIN_DE_EJECUCION_DE_IO:
+                //[nombre][pid]
+                t_buffer* buffer_recibido = recibir_buffer_sin_cod_op(client_socket);
+                char* nombre_de_io = extraer_string_al_buffer(buffer_recibido);
+                uint16_t pid = extraer_uint16_al_buffer(buffer_recibido);
+
+                
+            break;
+
         case -1:
             log_error(kernel_logger, "Desconexion de KERNEL-i/o ");
             colas_bloqueados[posicion]->conectado = false;
