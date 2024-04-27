@@ -24,6 +24,8 @@ void atender_memoria_kernel()
 
         case FINALIZAR_PROCESO:
 
+            finalizar_proceso ();
+            
             break;
 
         case -1:

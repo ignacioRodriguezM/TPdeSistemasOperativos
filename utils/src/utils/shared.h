@@ -39,9 +39,14 @@ typedef enum
 	//----------------IO-KERNEL
 	PRESENTACION,
 	GEN_SLEEP,
-	FIN_DE_EJECUCION_DE_IO
+	FIN_DE_EJECUCION_DE_IO,
 
     
+
+	//---------------- CPU-MEMORIA
+	SOLICITUD_DE_PROXIMA_INSTRUCCION,
+	PROXIMA_INSTRUCCION
+
 }op_code;
 
 typedef enum

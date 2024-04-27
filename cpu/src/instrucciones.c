@@ -11,6 +11,8 @@ void SET_uint32(uint32_t *registro, int valor)
 
 void SET(void *registro, int valor)
 {
+
+    
     if (sizeof(*(uint8_t *)registro) == sizeof(uint8_t))
     {
         SET_uint8((uint8_t *)registro, valor);
@@ -19,6 +21,9 @@ void SET(void *registro, int valor)
     {
         SET_uint32((uint32_t *)registro, valor);
     }
+
+    PC_registro ++;
+
 }
 
 void SUM_8_a_8(uint8_t *destino, uint8_t *origen)
@@ -59,6 +64,8 @@ void SUM(void *registroDestino, void *registroOrigen)
     {
         SUM_32_a_8((uint8_t *)registroDestino, (uint32_t *)registroOrigen);
     }
+
+    PC_registro ++;
 }
 
 
@@ -101,6 +108,8 @@ void SUB(void *registroDestino, void *registroOrigen)
     {
         SUB_32_a_8((uint8_t *)registroDestino, (uint32_t *)registroOrigen);
     }
+
+    PC_registro ++;
 }
 
 void JNZ(void* registro, unsigned int valor_salto) {
@@ -113,7 +122,7 @@ void IO_GEN_SLEEP (char* nombre_interfaz, uint8_t unidades_de_trabajo){
 
 
 
-
+    PC_registro ++;
     t_buffer *buffer = crear_buffer();
         //[nombre_interfaz] [operacion] [unidades_de_trabajo] [pid] [pc] [quantum] [registros]
         

@@ -5,13 +5,9 @@ void atender_memoria_cpu (){
     while (control_key) {
 		int cod_op = recibir_operacion(fd_cpu);
 		switch (cod_op) {
-            case MENSAJE:
+            case SOLICITUD_DE_PROXIMA_INSTRUCCION:
                 //
                 break;
-            case PAQUETE:
-                //
-                break;
-
             
 
             case -1:
