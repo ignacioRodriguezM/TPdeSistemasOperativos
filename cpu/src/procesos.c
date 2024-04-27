@@ -203,10 +203,12 @@ void _decode_and_excecute (char* palabra){
         else if(strcmp(comandos[1], "PC") == 0){
             JNZ(&PC_registro, valor);
         }
+        log_info(cpu_logger,  "PID: %u - Ejecutando: JNZ - %s, %s", PID, comandos[1], comandos[2]);
     }
     else if(strcmp(comandos[0], "IO_GEN_SLEEP") == 0){
         uint8_t valor = atoi(comandos[2]);
         IO_GEN_SLEEP(comandos[1], valor);
+        log_info(cpu_logger,  "PID: %u - Ejecutando: IO_GEN_SLEEP - ");
     }
 
 
