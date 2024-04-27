@@ -12,7 +12,6 @@ void SET_uint32(uint32_t *registro, int valor)
 void SET(void *registro, int valor)
 {
 
-    
     if (sizeof(*(uint8_t *)registro) == sizeof(uint8_t))
     {
         SET_uint8((uint8_t *)registro, valor);

@@ -7,7 +7,9 @@ void ejecutar_ciclo_fifo_de_cpu ();
 
 void _enviar_pid_y_pc_a_memoria ();
 char* _esperar_respuesta_de_memoria ();
-
+void _aplicar_sum_a_registro (char** comandos, void* regist);
+void _aplicar_sub_a_registro (char** comandos, void* regist);
+void _decode_and_excecute (char* palabra);
 
 
 #endif
