@@ -30,7 +30,7 @@ extern bool bloq_flag;
 
 //COSAS RECIVIDAS DEL KERNEL QUE NO SON REGISTROS
 extern uint16_t PID;
-extern uint8_t QUANTUM;
+extern int8_t QUANTUM;
 
 //REGISTROS
 extern uint32_t PC_registro;

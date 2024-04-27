@@ -27,7 +27,7 @@ void ejecutar_ciclo_fifo_de_cpu (){
 
 void _enviar_pid_y_pc_a_memoria (){
 
-    t_buffer* buffer_a_enviar = crear_buffer();
+    t_buffer* buffer_a_enviar = crear_buffer(); //[pid][pc]
     cargar_uint16_al_buffer(buffer_a_enviar, PID);
     cargar_uint32_al_buffer(buffer_a_enviar, PC_registro);
     t_paquete* a_enviar = crear_paquete(SOLICITUD_DE_PROXIMA_INSTRUCCION, buffer_a_enviar);

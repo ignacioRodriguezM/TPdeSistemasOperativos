@@ -85,7 +85,7 @@ void mover_procesos_de_ready_a_excecute()
 
             cargar_uint16_al_buffer(buffer, proceso_movido->pid);
             cargar_uint32_al_buffer(buffer, proceso_movido->pc);
-            cargar_uint8_al_buffer(buffer, proceso_movido->quantum);
+            cargar_int8_al_buffer(buffer, proceso_movido->quantum);
             cargar_uint8_al_buffer(buffer, proceso_movido->registros.ax);
             cargar_uint8_al_buffer(buffer, proceso_movido->registros.bx);
             cargar_uint8_al_buffer(buffer, proceso_movido->registros.cx);

@@ -131,7 +131,7 @@ void IO_GEN_SLEEP (char* nombre_interfaz, uint8_t unidades_de_trabajo){
         cargar_uint8_al_buffer(buffer, unidades_de_trabajo);
         cargar_uint16_al_buffer(buffer, PID);
         cargar_uint32_al_buffer(buffer, PC_registro);
-        cargar_uint8_al_buffer(buffer, QUANTUM);
+        cargar_int8_al_buffer(buffer, QUANTUM);
         cargar_uint8_al_buffer(buffer, AX_registro);
         cargar_uint8_al_buffer(buffer, BX_registro);
         cargar_uint8_al_buffer(buffer, CX_registro);

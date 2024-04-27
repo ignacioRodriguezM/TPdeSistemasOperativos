@@ -47,7 +47,7 @@ typedef struct{
 typedef struct{
     uint16_t pid;
     uint32_t pc;
-    uint8_t quantum;
+    int8_t quantum;
     Registros registros;
 }PCB;
 typedef struct{

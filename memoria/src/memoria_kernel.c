@@ -24,7 +24,7 @@ void atender_memoria_kernel()
 
         case FINALIZAR_PROCESO:
 
-            finalizar_proceso ();
+            //finalizar_proceso ();
             
             break;
 
@@ -93,7 +93,7 @@ void crear_proceso()
     fclose(archivo);
 
     // Imprimir la primera instrucción (para depuración)
-    printf("%s\n", proceso->instrucciones[0]);
+
 
     // Enlistar el proceso
     pthread_mutex_lock(&mutex_procesos);

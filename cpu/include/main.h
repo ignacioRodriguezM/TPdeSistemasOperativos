@@ -24,7 +24,7 @@ bool bloq_flag;
 
 //COSAS RECIVIDAS DEL KERNEL QUE NO SON REGISTROS
 uint16_t PID;
-uint8_t QUANTUM;
+int8_t QUANTUM;
 
 
 //REGISTROS

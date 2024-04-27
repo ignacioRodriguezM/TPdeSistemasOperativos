@@ -90,12 +90,14 @@ void cargar_int_al_buffer (t_buffer* buffer, int valor);
 void cargar_uint32_al_buffer (t_buffer* buffer, uint32_t valor);
 void cargar_uint16_al_buffer (t_buffer* buffer, uint16_t valor);
 void cargar_uint8_al_buffer (t_buffer* buffer, uint8_t valor);
+void cargar_int8_al_buffer (t_buffer* buffer, int8_t valor){
 void cargar_string_al_buffer (t_buffer* buffer, char* string);
 
 void* extraer_choclo_al_buffer (t_buffer* un_buffer);
 uint32_t extraer_uint32_al_buffer (t_buffer* un_buffer);
 uint16_t extraer_uint16_al_buffer (t_buffer* un_buffer);
 uint8_t extraer_uint8_al_buffer (t_buffer* un_buffer);
+int8_t extraer_int8_al_buffer (t_buffer* un_buffer);
 char* extraer_string_al_buffer (t_buffer* un_buffer);
 
 
@@ -107,6 +109,8 @@ void enviar_paquete (t_paquete* paquete, int conexion);
 
 int recibir_size_del_buffer(int socket_cliente);
 t_buffer* recibir_buffer_sin_cod_op (int socket);
+
+void esperarMilisegundos(unsigned int milisegundos);
 
 
 

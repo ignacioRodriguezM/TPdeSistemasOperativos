@@ -19,6 +19,7 @@ void atender_cpu_kernel_dispatch()
             bloq_flag = true;
 
             _extraer_contexto_de_ejecucion();
+            
             while (bloq_flag){
                 if(QUANTUM == -1){
                 ejecutar_ciclo_fifo_de_cpu();
@@ -55,7 +56,7 @@ void _extraer_contexto_de_ejecucion()
     // EXTRAIGO EN ORDEN [PID] [PC] [QUANTUUM] [REGISTROS]
     PID = extraer_uint16_al_buffer(buffer_recibido);
     PC_registro = extraer_uint32_al_buffer(buffer_recibido);
-    QUANTUM = extraer_uint8_al_buffer(buffer_recibido);
+    QUANTUM = extraer_int8_al_buffer(buffer_recibido);
     AX_registro = extraer_uint8_al_buffer(buffer_recibido);
     BX_registro = extraer_uint8_al_buffer(buffer_recibido);
     CX_registro = extraer_uint8_al_buffer(buffer_recibido);

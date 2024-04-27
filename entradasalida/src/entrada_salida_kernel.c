@@ -61,8 +61,3 @@ void presentarse_con_kernel()
 
     destruir_paquete(a_enviar);
 }
-
-void esperarMilisegundos(unsigned int milisegundos)
-{
-    usleep(milisegundos * 1000); // Convertimos milisegundos a microsegundos
-}

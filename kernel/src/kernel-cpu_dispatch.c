@@ -150,7 +150,7 @@ void _manejar_bloqueo()
                     uint8_t unidades_de_trabajo = extraer_uint8_al_buffer(buffer_recibido);
                     uint16_t pid = extraer_uint16_al_buffer(buffer_recibido);
                     uint32_t pc = extraer_uint32_al_buffer(buffer_recibido);
-                    uint8_t quantum = extraer_uint8_al_buffer(buffer_recibido);
+                    int8_t quantum = extraer_int8_al_buffer(buffer_recibido);
                     uint8_t ax = extraer_uint8_al_buffer(buffer_recibido);
                     uint8_t bx = extraer_uint8_al_buffer(buffer_recibido);
                     uint8_t cx = extraer_uint8_al_buffer(buffer_recibido);
