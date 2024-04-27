@@ -59,15 +59,9 @@ bool _validacion_de_instruccion_de_consola(char *leido)
 
     else if (strcmp(comando_consola[0], "INICIAR_PROCESO") == 0)
     {
-        if (access(comando_consola[1], F_OK) != -1)
-        {
-            resultado_validacion = true;
+        resultado_validacion = true;
+        //  INICIAR_PROCESO /Pruebas_bascas/Prueba_01  proceso de ejemplo
         }
-        else
-        {
-            log_error(kernel_logger, "El path no es válido o no se tiene permiso para acceder.");
-        }
-    }
 
     else if (strcmp(comando_consola[0], "FINALIZAR_PROCESO") == 0)
     {

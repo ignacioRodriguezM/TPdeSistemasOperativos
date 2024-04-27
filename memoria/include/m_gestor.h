@@ -21,8 +21,19 @@ extern int fd_kernel;
 extern uint16_t tam_memoria; 
 extern uint16_t tam_pagina;
 extern uint8_t retardo_respuesta;
+extern char* path_base;
 
+extern t_list* lista_procesos;
 
+typedef struct{
+
+    uint16_t PID;
+    char** instrucciones;
+    int cantidad_instrucciones;
+
+}Proceso;
+
+extern pthread_mutex_t mutex_procesos;
 
 
 

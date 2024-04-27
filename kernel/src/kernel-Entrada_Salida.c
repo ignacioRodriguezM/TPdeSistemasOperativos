@@ -93,9 +93,9 @@ void atender_multiples_entrada_salida(int *socket_ptr)
 
         case FIN_DE_EJECUCION_DE_IO:
                 //[nombre][pid]
-                t_buffer* buffer_recibido = recibir_buffer_sin_cod_op(client_socket);
-                char* nombre_de_io = extraer_string_al_buffer(buffer_recibido);
-                uint16_t pid = extraer_uint16_al_buffer(buffer_recibido);
+                t_buffer* buffer_recibido_fin_de_ejecucion = recibir_buffer_sin_cod_op(client_socket);
+                char* nombre_de_io = extraer_string_al_buffer(buffer_recibido_fin_de_ejecucion);
+                uint16_t pid = extraer_uint16_al_buffer(buffer_recibido_fin_de_ejecucion);
 
                 
             break;

@@ -9,7 +9,8 @@ int main() {
     tam_memoria = config_valores.tam_memoria;
     tam_pagina = config_valores.tam_pagina;
     retardo_respuesta = config_valores.retardo_respuesta;
-
+    path_base = config_valores.path_instrucciones;
+    lista_procesos = list_create();
 
     //iniciar servidor de memoria
     fd_memoria = iniciar_servidor (config_valores.puerto_escucha, memoria_logger, "MEMORIA INCIADA !!!");

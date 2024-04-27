@@ -4,6 +4,7 @@
 #include "./m_gestor.h"
 
 void atender_memoria_kernel ();
+void crear_proceso ();
 
 
 #endif

@@ -2,10 +2,10 @@
 
 // PLANIFICADOR DE LARGO PLAZO
 
-PCB *_crear_pcb(uint16_t pid, uint32_t pc)
+PCB *_crear_pcb(uint16_t pid)
 {
     PCB *pcb_creado = malloc(sizeof(PCB));
-    pcb_creado->pc = pc;
+    pcb_creado->pc = 0;
     pcb_creado->pid = pid;
     pcb_creado->quantum = quantum;
 
@@ -26,11 +26,8 @@ void crear_proceso(char *path)
     enviar_paquete(a_enviar, fd_memoria);
     destruir_paquete(a_enviar);
 
-    // RECIBIR DE MEMORIA EL OK, Y RECIBIR EL PC
-    // falta desarrollar que memoria envie el ip para el proceso y luego es asignado a su pcb
-    uint32_t pc_recibido_de_memoria = 0; // recibir
-
-    PCB *proceso_creado = _crear_pcb(pid, pc_recibido_de_memoria);
+    
+    PCB *proceso_creado = _crear_pcb(pid);
 
     pthread_mutex_lock(&mutex_procesos);
     queue_push(procesos_new, proceso_creado);

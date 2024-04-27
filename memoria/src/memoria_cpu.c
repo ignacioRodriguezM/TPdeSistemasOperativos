@@ -12,9 +12,7 @@ void atender_memoria_cpu (){
                 //
                 break;
 
-            case ACCESO_A_ESPACIO_USUARIO:
-                //t_buffer* buffer_recibido = recibir_buffer_sin_cod_op (fd_cpu);
-            break;
+            
 
             case -1:
                 log_error(memoria_logger, "Desconexion de CPU");
