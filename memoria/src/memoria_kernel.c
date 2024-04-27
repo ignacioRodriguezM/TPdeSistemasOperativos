@@ -22,79 +22,18 @@ void atender_memoria_kernel (){
                 log_info (memoria_logger, "LLEGO : %u , %s", pid_recibido, path_recibido);
                 
                 
+
             break;
 
             case FINALIZAR_PROCESO:
-            //MAL
-                /*t_buffer* buffer_recibido = recibir_buffer_sin_cod_op (fd_kernel);
-
-                uint16_t pid_recibido = extraer_uint16_al_buffer (buffer_recibido);
-                char* path_recibido = extraer_string_al_buffer (buffer_recibido);
-                destruir_buffer (buffer_recibido);
-
-                //libera el espacio de memoria del proceso y devuelve la pc a kernel
-
-                FILE* archivo = fopen(path_recibido, "r");
-                if (archivo == NULL) {
-                    printf("No se pudo abrir el archivo.\n");
-                    exit(EXIT_FAILURE);
-                }else{
-                    free(path_recibido);
-                    printf("Se libero el espacio en memoria de: %s", path_recibido);
-                }
-                fclose(archivo);
-    
             
-            break;
-            */
-            case ACCESO_A_TABLA:
-            //REVISAR
-            /*
-                t_buffer* buffer_recibido = recibir_buffer_sin_cod_op (fd_kernel);
 
-                uint16_t pid_recibido = extraer_uint16_al_buffer (buffer_recibido);
-                uint16_t pagina_recibida = extraer_uint16_al_buffer (buffer_recibido);
-                
-                //convertir la dirección virtual de la página en la dirección física del marco correspondiente en la memoria.
-                uint16_t num_marco = (uint16_t)((espacio_memoria_usuario + pagina_recibida * tam_pagina) / tam_pagina);
-                printf("El número de marco correspondiente a la tabla consultada es: %s", num_marco)
-    
-            */
-            break;
-
-
-
-            case AMPLIACION_PROCESO:
-            //REVISAR
-            /*
-                t_buffer* buffer_recibido = recibir_buffer_sin_cod_op (fd_kernel);
-
-                uint16_t pid_recibido = extraer_uint16_al_buffer (buffer_recibido);
-                char* path_recibido = extraer_string_al_buffer (buffer_recibido);
-                uint16_t tamanio_a_ampliar = extraer_uint16_al_buffer (buffer_recibido);
-                destruir_buffer (buffer_recibido);
-
-                */
-            break;
-
-
-
-            case REDUCCION_PROCESO:
-            //REVISAR
-            /*
-                t_buffer* buffer_recibido = recibir_buffer_sin_cod_op (fd_kernel);
             
-                uint16_t pid_recibido = extraer_uint16_al_buffer (buffer_recibido);
-                char* path_recibido = extraer_string_al_buffer (buffer_recibido);
-                uint16_t tamanio_a_reducir = extraer_uint16_al_buffer(buffer_recibido)
-                
-                destruir_buffer (buffer_recibido);
-                */
+
+
+
             break;
-
-
-
-
+            
             case -1:
                 log_error(memoria_logger, "Desconexion de KERNEL");
                 control_key = 0;
