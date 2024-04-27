@@ -19,6 +19,9 @@ int fd_kernel_dispatch;
 int fd_kernel_interrupt;
 int fd_memoria;   
 
+bool aviso_de_interrupt;
+bool bloq_flag;
+
 //COSAS RECIVIDAS DEL KERNEL QUE NO SON REGISTROS
 uint16_t PID;
 uint8_t QUANTUM;

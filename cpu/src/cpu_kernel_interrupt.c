@@ -4,6 +4,7 @@ void atender_cpu_kernel_interrupt (){
     bool control_key = 1;
     while (control_key) {
 		int cod_op = recibir_operacion(fd_kernel_interrupt);
+        aviso_de_interrupt = true;
 		switch (cod_op) {
             case MENSAJE:
                 //

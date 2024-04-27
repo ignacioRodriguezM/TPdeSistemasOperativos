@@ -3,6 +3,7 @@
 
 void atender_cpu_kernel_dispatch()
 {
+
     bool control_key = 1;
     while (control_key)
     {
@@ -15,11 +16,17 @@ void atender_cpu_kernel_dispatch()
 
         case PROCESO_A_EJECUTAR:
 
-            _extraer_contexto_de_ejecucion();
+            bloq_flag = true;
 
-            //_ejecutar_ciclo_de_cpu ();
-            PC_registro =1;
-            IO_GEN_SLEEP ("mouse", 10);
+            _extraer_contexto_de_ejecucion();
+            while (bloq_flag){
+                if(QUANTUM == -1){
+                ejecutar_ciclo_fifo_de_cpu();
+                }
+                if(QUANTUM > 0){
+                    //ejecutar_ciclo_rr_de_cpu
+                }
+            }
 
             
             break;

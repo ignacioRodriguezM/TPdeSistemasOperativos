@@ -6,6 +6,7 @@ int main (){
     inicializar_logger(&cpu_logger, "cpu_logs.log");           // loggers obligatorios
     inicializar_logger_debug(&cpu_log_debug, "cpu_debug.log"); // loggers para debug
     APP_config config_valores = cargar_configuracion_cpu();
+    aviso_de_interrupt = false;
 
     // iniciar servidor de cpu dispach
     fd_cpu_dispatch = iniciar_servidor(config_valores.puerto_escucha_dispatch, cpu_logger, "CPU DISPACH INCIADO !!!");

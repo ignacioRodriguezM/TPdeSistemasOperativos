@@ -10,6 +10,7 @@
 
 #include "./configuracion_cpu.h"
 #include "./instrucciones.h"
+#include "./procesos.h"
 
 
 //Variables GLOBALES
@@ -21,6 +22,10 @@ extern int fd_cpu_interrupt;
 extern int fd_kernel_dispatch;
 extern int fd_kernel_interrupt;
 extern int fd_memoria;
+
+extern bool aviso_de_interrupt;
+extern bool bloq_flag;
+
 
 
 //COSAS RECIVIDAS DEL KERNEL QUE NO SON REGISTROS

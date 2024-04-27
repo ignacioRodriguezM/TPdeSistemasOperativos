@@ -122,6 +122,7 @@ void IO_GEN_SLEEP (char* nombre_interfaz, uint8_t unidades_de_trabajo){
 
 
     PC_registro ++;
+    bloq_flag = false;
     t_buffer *buffer = crear_buffer();
         //[nombre_interfaz] [operacion] [unidades_de_trabajo] [pid] [pc] [quantum] [registros]
         
