@@ -167,3 +167,28 @@ void mover_de_excec_a_ready (){
 
     log_info(kernel_logger, "PID: %u - Estado Anterior: EXCEC - Estado Actual: READY", proceso_movido->pid);
 }
+
+void avisarle_a_memoria_que_libere_recursos_de_proceso(uint16_t pid){
+    t_buffer* buffer_fin_proceso = crear_buffer(); // [pid]
+    cargar_uint16_al_buffer(buffer_fin_proceso, pid);
+    t_paquete* a_enviar = crear_paquete(FINALIZAR_PROCESO, buffer_fin_proceso);
+
+    enviar_paquete(a_enviar, fd_memoria);
+
+    destruir_paquete(a_enviar);
+}
+
+void _mandar_de_excec_a_exit(char* motivo){
+
+    pthread_mutex_lock(&mutex_procesos);
+    PCB *proceso_movido = queue_pop(procesos_excec);
+    queue_push(procesos_exit, proceso_movido);
+    pthread_mutex_unlock(&mutex_procesos);
+
+    avisarle_a_memoria_que_libere_recursos_de_proceso(proceso_movido->pid);
+
+
+    log_info(kernel_logger, "Finaliza el proceso %u - Motivo: %s", proceso_movido->pid, motivo);
+
+    log_info(kernel_logger, "PID: %u - Estado Anterior: EXCEC - Estado Actual: EXIT", proceso_movido->pid);
+}

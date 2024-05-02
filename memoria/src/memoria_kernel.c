@@ -17,23 +17,22 @@ void atender_memoria_kernel()
 
         case INICIAR_PROCESO:
 
-    
             crear_proceso();
-            
+
             break;
 
         case FINALIZAR_PROCESO:
 
-            //finalizar_proceso ();
-            
+            finalizar_proceso();
+
             break;
 
         case -1:
-            log_error(memoria_logger, "Desconexion de KERNEL");
+            log_error(memoria_log_debug, "Desconexion de KERNEL");
             control_key = 0;
             break;
         default:
-            log_warning(memoria_logger, "Operacion desconocida de KERNEL");
+            log_warning(memoria_log_debug, "Operacion desconocida de KERNEL");
             break;
         }
     }
@@ -48,7 +47,7 @@ void crear_proceso()
     destruir_buffer(buffer_recibido);
 
     // Log de información
-    log_info(memoria_logger, "LLEGO : %u , %s", pid_recibido, path_recibido);
+    log_trace(memoria_log_debug, "LLEGO : %u , %s", pid_recibido, path_recibido);
 
     // Crear estructura de proceso
     Proceso *proceso = malloc(sizeof(Proceso));
@@ -92,9 +91,6 @@ void crear_proceso()
     // Cerrar el archivo
     fclose(archivo);
 
-    // Imprimir la primera instrucción (para depuración)
-
-
     // Enlistar el proceso
     pthread_mutex_lock(&mutex_procesos);
     if (list_add(lista_procesos, proceso) < 0)
@@ -105,4 +101,36 @@ void crear_proceso()
     free(path_recibido);
 }
 
+void finalizar_proceso()
+{
+    t_buffer *buffer_recibido = recibir_buffer_sin_cod_op(fd_kernel);
+    uint16_t pid_a_finalizar = extraer_uint16_al_buffer(buffer_recibido);
 
+    destruir_buffer(buffer_recibido);
+
+    ///////////////// LIBERO MEMORIA DE INSTRUCCIONES
+
+    t_link_element *current = lista_procesos->head;
+    for (int i = 0; i < lista_procesos->elements_count; i++)
+    {
+        Proceso *proceso = (Proceso *)current->data;
+        if (proceso->PID == pid_a_finalizar)
+        {
+            
+            
+            break;
+        }
+        else
+        {
+            current = current->next;
+        }
+    }
+    current = NULL;
+
+
+    ////////////////LIBERAR ESPACIOS DE MEMORIA
+
+
+    /// A DESARROLLAR
+
+}

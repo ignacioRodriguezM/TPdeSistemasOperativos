@@ -3,8 +3,7 @@
 
 #include "./c_gestor.h"
 
-void ejecutar_ciclo_fifo_de_cpu ();
-void ejecutar_con_quantum_de_cpu ();
+void ejecutar_ciclo_de_cpu ();
 
 
 

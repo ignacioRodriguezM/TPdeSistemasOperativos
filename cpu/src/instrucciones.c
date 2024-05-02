@@ -21,8 +21,7 @@ void SET(void *registro, int valor)
         SET_uint32((uint32_t *)registro, valor);
     }
 
-    PC_registro ++;
-
+    PC_registro++;
 }
 
 void SUM_8_a_8(uint8_t *destino, uint8_t *origen)
@@ -64,10 +63,8 @@ void SUM(void *registroDestino, void *registroOrigen)
         SUM_32_a_8((uint8_t *)registroDestino, (uint32_t *)registroOrigen);
     }
 
-    PC_registro ++;
+    PC_registro++;
 }
-
-
 
 void SUB_8_a_8(uint8_t *destino, uint8_t *origen)
 {
@@ -108,49 +105,73 @@ void SUB(void *registroDestino, void *registroOrigen)
         SUB_32_a_8((uint8_t *)registroDestino, (uint32_t *)registroOrigen);
     }
 
-    PC_registro ++;
+    PC_registro++;
 }
 
-void JNZ(void* registro, unsigned int valor_salto) {
-    if (*(uint32_t*)registro != 0) {
+void JNZ(void *registro, unsigned int valor_salto)
+{
+    if (*(uint32_t *)registro != 0)
+    {
         PC_registro = valor_salto;
     }
 }
 
-void IO_GEN_SLEEP (char* nombre_interfaz, uint8_t unidades_de_trabajo){
+void IO_GEN_SLEEP(char *nombre_interfaz, uint8_t unidades_de_trabajo)
+{
 
+    PC_registro++;
+    bloq_flag = false;
+    t_buffer *buffer = crear_buffer();
+    //[pid] [pc] [quantum] [registros] [nombre_interfaz] [operacion] [unidades_de_trabajo]
 
+    cargar_uint16_al_buffer(buffer, PID);
+    cargar_uint32_al_buffer(buffer, PC_registro);
+    cargar_int8_al_buffer(buffer, QUANTUM);
+    cargar_uint8_al_buffer(buffer, AX_registro);
+    cargar_uint8_al_buffer(buffer, BX_registro);
+    cargar_uint8_al_buffer(buffer, CX_registro);
+    cargar_uint8_al_buffer(buffer, DX_registro);
+    cargar_uint32_al_buffer(buffer, EAX_registro);
+    cargar_uint32_al_buffer(buffer, EBX_registro);
+    cargar_uint32_al_buffer(buffer, ECX_registro);
+    cargar_uint32_al_buffer(buffer, EDX_registro);
+    cargar_uint32_al_buffer(buffer, SI_registro);
+    cargar_uint32_al_buffer(buffer, DI_registro);
+    cargar_string_al_buffer(buffer, nombre_interfaz);
+    cargar_string_al_buffer(buffer, "IO_GEN_SLEEP");
+    cargar_uint8_al_buffer(buffer, unidades_de_trabajo);
 
-        PC_registro ++;
-        bloq_flag = false;
-        t_buffer *buffer = crear_buffer();
-        //[nombre_interfaz] [operacion] [unidades_de_trabajo] [pid] [pc] [quantum] [registros]
-        
-        cargar_string_al_buffer(buffer, nombre_interfaz);
-        cargar_string_al_buffer(buffer, "IO_GEN_SLEEP");
-        cargar_uint8_al_buffer(buffer, unidades_de_trabajo);
-        cargar_uint16_al_buffer(buffer, PID);
-        cargar_uint32_al_buffer(buffer, PC_registro);
-        cargar_int8_al_buffer(buffer, QUANTUM);
-        cargar_uint8_al_buffer(buffer, AX_registro);
-        cargar_uint8_al_buffer(buffer, BX_registro);
-        cargar_uint8_al_buffer(buffer, CX_registro);
-        cargar_uint8_al_buffer(buffer, DX_registro);
-        cargar_uint32_al_buffer(buffer, EAX_registro);
-        cargar_uint32_al_buffer(buffer, EBX_registro);
-        cargar_uint32_al_buffer(buffer, ECX_registro);
-        cargar_uint32_al_buffer(buffer, EDX_registro);
-        cargar_uint32_al_buffer(buffer, SI_registro);
-        cargar_uint32_al_buffer(buffer, DI_registro);
+    t_paquete *a_enviar = crear_paquete(LLAMADA_A_IO, buffer);
 
+    enviar_paquete(a_enviar, fd_kernel_dispatch);
 
-        t_paquete *a_enviar = crear_paquete(LLAMADA_A_IO, buffer);
+    destruir_paquete(a_enviar);
 
-        enviar_paquete(a_enviar, fd_kernel_dispatch);
-        
-        destruir_paquete(a_enviar);
-        
-        //SETEAR REGISTROS EN CERO???
-            
+    // SETEAR REGISTROS EN CERO???
+}
+void EXIT()
+{
+    bloq_flag = false;
+    t_buffer *buffer = crear_buffer();
+    //[pid] [pc] [quantum] [registros]
 
+    cargar_uint16_al_buffer(buffer, PID);
+    cargar_uint32_al_buffer(buffer, PC_registro);
+    cargar_int8_al_buffer(buffer, QUANTUM);
+    cargar_uint8_al_buffer(buffer, AX_registro);
+    cargar_uint8_al_buffer(buffer, BX_registro);
+    cargar_uint8_al_buffer(buffer, CX_registro);
+    cargar_uint8_al_buffer(buffer, DX_registro);
+    cargar_uint32_al_buffer(buffer, EAX_registro);
+    cargar_uint32_al_buffer(buffer, EBX_registro);
+    cargar_uint32_al_buffer(buffer, ECX_registro);
+    cargar_uint32_al_buffer(buffer, EDX_registro);
+    cargar_uint32_al_buffer(buffer, SI_registro);
+    cargar_uint32_al_buffer(buffer, DI_registro);
+
+    t_paquete *a_enviar = crear_paquete(DESALOJO_POR_EXIT, buffer);
+
+    enviar_paquete(a_enviar, fd_kernel_dispatch);
+
+    destruir_paquete(a_enviar);
 }

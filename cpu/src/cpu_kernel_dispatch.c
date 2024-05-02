@@ -21,9 +21,7 @@ void atender_cpu_kernel_dispatch()
             _extraer_contexto_de_ejecucion();
             
             while (bloq_flag){
-                if(QUANTUM == -1){
-                    ejecutar_ciclo_fifo_de_cpu();
-                }
+                
 
                 if(QUANTUM == 0){
                     bloq_flag = false;
@@ -52,8 +50,9 @@ void atender_cpu_kernel_dispatch()
                     destruir_paquete(a_enviar);
                 }
 
-                if(QUANTUM > 0){
-                    ejecutar_con_quantum_de_cpu();
+                else{
+                    ejecutar_ciclo_de_cpu ();
+                
                 }
             }
 
