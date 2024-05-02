@@ -144,7 +144,7 @@ void mover_a_io_si_hay_algun_proceso_encolado(char *nombre_io) //verificar si ha
         if ((strcmp(colas_bloqueados[i]->nombre, nombre_io) == 0 ) && (colas_bloqueados[i]->cola->elements->elements_count > 0 )){
             pthread_mutex_lock(&mutex_procesos);
 
-            PCB* primer_pcb_de_la_cola = (PCB *)queue_peek(procesos_excec);
+            PCB* primer_pcb_de_la_cola = (PCB *)queue_peek(colas_bloqueados[i]->cola);
             // [nombre io][operacion][pid][unidades de trabajo]
             t_paquete *a_enviar_a_io = crear_paquete(TAREA, primer_pcb_de_la_cola->operacion_de_io_por_la_que_fue_bloqueado);
 
@@ -165,6 +165,7 @@ void mover_de_excec_a_ready (){
     queue_push(procesos_ready, proceso_movido);
     pthread_mutex_unlock(&mutex_procesos);
 
+    log_info(kernel_logger, "PID: %u - Desalojado por fin de Quantum", proceso_movido->pid);
     log_info(kernel_logger, "PID: %u - Estado Anterior: EXCEC - Estado Actual: READY", proceso_movido->pid);
 }
 

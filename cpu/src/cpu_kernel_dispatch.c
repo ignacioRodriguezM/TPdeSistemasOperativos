@@ -1,6 +1,5 @@
 #include "../include/cpu_kernel_dispatch.h"
 
-
 void atender_cpu_kernel_dispatch()
 {
 
@@ -19,44 +18,23 @@ void atender_cpu_kernel_dispatch()
             bloq_flag = true;
 
             _extraer_contexto_de_ejecucion();
-            
-            while (bloq_flag){
-                
 
-                if(QUANTUM == 0){
+            while (bloq_flag)
+            {
+
+                if (QUANTUM == 0)
+                {
+
                     bloq_flag = false;
-                    t_buffer *buffer = crear_buffer();
-                    //[pid] [pc] [quantum] [registros]
-                    
-                    cargar_uint16_al_buffer(buffer, PID);
-                    cargar_uint32_al_buffer(buffer, PC_registro);
-                    cargar_int8_al_buffer(buffer, QUANTUM);
-                    cargar_uint8_al_buffer(buffer, AX_registro);
-                    cargar_uint8_al_buffer(buffer, BX_registro);
-                    cargar_uint8_al_buffer(buffer, CX_registro);
-                    cargar_uint8_al_buffer(buffer, DX_registro);
-                    cargar_uint32_al_buffer(buffer, EAX_registro);
-                    cargar_uint32_al_buffer(buffer, EBX_registro);
-                    cargar_uint32_al_buffer(buffer, ECX_registro);
-                    cargar_uint32_al_buffer(buffer, EDX_registro);
-                    cargar_uint32_al_buffer(buffer, SI_registro);
-                    cargar_uint32_al_buffer(buffer, DI_registro);
-
-                
-                    t_paquete *a_enviar = crear_paquete(DESALOJO_POR_QUANTUM, buffer);
-
-                    enviar_paquete(a_enviar, fd_kernel_dispatch);
-                    
-                    destruir_paquete(a_enviar);
+                    _desalojar_proceso();
                 }
 
-                else{
-                    ejecutar_ciclo_de_cpu ();
-                
+                else
+                {
+                    ejecutar_ciclo_de_cpu();
                 }
             }
 
-            
             break;
 
         case -1:
@@ -69,12 +47,6 @@ void atender_cpu_kernel_dispatch()
         }
     }
 }
-
-
-
-
-
-
 
 void _extraer_contexto_de_ejecucion()
 {
@@ -96,4 +68,30 @@ void _extraer_contexto_de_ejecucion()
     DI_registro = extraer_uint32_al_buffer(buffer_recibido);
 
     destruir_buffer(buffer_recibido);
+}
+
+void _desalojar_proceso()
+{
+    t_buffer *buffer = crear_buffer();
+    //[pid] [pc] [quantum] [registros]
+
+    cargar_uint16_al_buffer(buffer, PID);
+    cargar_uint32_al_buffer(buffer, PC_registro);
+    cargar_int8_al_buffer(buffer, QUANTUM);
+    cargar_uint8_al_buffer(buffer, AX_registro);
+    cargar_uint8_al_buffer(buffer, BX_registro);
+    cargar_uint8_al_buffer(buffer, CX_registro);
+    cargar_uint8_al_buffer(buffer, DX_registro);
+    cargar_uint32_al_buffer(buffer, EAX_registro);
+    cargar_uint32_al_buffer(buffer, EBX_registro);
+    cargar_uint32_al_buffer(buffer, ECX_registro);
+    cargar_uint32_al_buffer(buffer, EDX_registro);
+    cargar_uint32_al_buffer(buffer, SI_registro);
+    cargar_uint32_al_buffer(buffer, DI_registro);
+
+    t_paquete *a_enviar = crear_paquete(DESALOJO_POR_QUANTUM, buffer);
+
+    enviar_paquete(a_enviar, fd_kernel_dispatch);
+
+    destruir_paquete(a_enviar);
 }

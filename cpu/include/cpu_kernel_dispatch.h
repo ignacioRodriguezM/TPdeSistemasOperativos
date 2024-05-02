@@ -4,6 +4,8 @@
 #include "./c_gestor.h"
 
 void _extraer_contexto_de_ejecucion();
+void _desalojar_proceso();
+
 void atender_cpu_kernel_dispatch ();
 
 

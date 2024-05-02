@@ -111,18 +111,30 @@ void finalizar_proceso()
     ///////////////// LIBERO MEMORIA DE INSTRUCCIONES
 
     t_link_element *current = lista_procesos->head;
+    int index = 0;
     for (int i = 0; i < lista_procesos->elements_count; i++)
     {
         Proceso *proceso = (Proceso *)current->data;
         if (proceso->PID == pid_a_finalizar)
         {
             
+            proceso->PID = 0;
+            for(int i=0; i<proceso->cantidad_instrucciones; i++){
+                free(proceso->instrucciones[i]);
+            }
+            proceso->cantidad_instrucciones = 0;
+            free(proceso->instrucciones);
+            free(proceso);
+            
+            list_remove(lista_procesos, index);
+
             
             break;
         }
         else
         {
             current = current->next;
+            index ++;
         }
     }
     current = NULL;

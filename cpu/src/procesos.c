@@ -299,12 +299,13 @@ void _decode_and_excecute(char *palabra)
     {
         uint8_t valor = atoi(comandos[2]);
         IO_GEN_SLEEP(comandos[1], valor);
-        log_info(cpu_logger, "PID: %u - Ejecutando: IO_GEN_SLEEP - ", PID);
+        log_info(cpu_logger, "PID: %u - Ejecutando: IO_GEN_SLEEP - %s %u", PID, comandos[1], valor);
     }
 
     else if (strcmp(comandos[0], "EXIT") == 0)
     {
         EXIT();
+        log_info(cpu_logger, "PID: %u - Ejecutando: EXIT -", PID);
     }
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

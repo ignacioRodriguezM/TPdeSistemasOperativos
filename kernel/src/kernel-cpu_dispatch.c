@@ -185,7 +185,7 @@ void _manejar_desalojo_por_quantum()
             extraer_y_actualizar_pcb_en_excecute(buffer_recibido);
 
             mover_de_excec_a_ready();
-            log_info(kernel_logger, "PID: %u - Desalojado por fin de Quantum", pid);
+            
 
             destruir_buffer(buffer_recibido);
             a = false;
@@ -234,10 +234,12 @@ void _manejar_bloqueo()
                     //[unidades_de_trabajo]
                     uint8_t unidades_de_trabajo = extraer_uint8_al_buffer(buffer_recibido);
 
+                    PCB *pcb_a_editar = (PCB *)queue_peek(procesos_excec);
+
                     pcb_a_editar->operacion_de_io_por_la_que_fue_bloqueado = crear_buffer();
                     cargar_string_al_buffer(pcb_a_editar->operacion_de_io_por_la_que_fue_bloqueado, nombre_interfaz);
                     cargar_string_al_buffer(pcb_a_editar->operacion_de_io_por_la_que_fue_bloqueado, operacion_a_realizar);
-                    cargar_uint16_al_buffer(pcb_a_editar->operacion_de_io_por_la_que_fue_bloqueado, pid);
+                    cargar_uint16_al_buffer(pcb_a_editar->operacion_de_io_por_la_que_fue_bloqueado, pcb_a_editar->pid);
                     cargar_uint8_al_buffer(pcb_a_editar->operacion_de_io_por_la_que_fue_bloqueado, unidades_de_trabajo);
                     // [nombre io][operacion][pid][unidades de trabajo]
                     for (int i = 0; i < contador_de_colas_bloqueados; i++)
@@ -257,7 +259,7 @@ void _manejar_bloqueo()
                     }
 
                     mover_de_excec_a_cola_bloqueado(nombre_interfaz);
-                    log_info(kernel_logger, "PID: %u - Bloqueado por: INTERFAZ : %s", pid, nombre_interfaz);
+                    log_info(kernel_logger, "PID: %u - Bloqueado por: INTERFAZ : %s", pcb_a_editar->pid, nombre_interfaz);
                 }
 
                 if (strcmp(operacion_a_realizar, "IO_STDIN_READ") == 0)

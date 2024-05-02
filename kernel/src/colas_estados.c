@@ -6,6 +6,9 @@ void inicializar_colas_sin_bloqueados (){
     procesos_excec = queue_create();
     procesos_exit = queue_create();
 
+    if(strcmp(algoritmo_planificacion, "VRR") == 0){
+        procesos_ready_con_prioridad = queue_create();
+    }
 
 } 
 
@@ -15,5 +18,9 @@ void inicializar_colas_sin_bloqueados (){
     queue_destroy(procesos_ready);
     queue_destroy(procesos_excec);
     queue_destroy(procesos_exit);
-    
+
+    if(strcmp(algoritmo_planificacion, "VRR") == 0){
+        procesos_ready_con_prioridad = queue_destroy();
+    }
+
 } 
