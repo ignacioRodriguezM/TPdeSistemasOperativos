@@ -38,8 +38,8 @@ typedef enum
 
 	//----------------IO-KERNEL
 	PRESENTACION,
-	GEN_SLEEP,
 	FIN_DE_EJECUCION_DE_IO,
+	TAREA,
 
     
 

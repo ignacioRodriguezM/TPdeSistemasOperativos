@@ -21,7 +21,7 @@ void atender_kernel_cpu_dispatch()
 
             pthread_t hilo_que_maneja_bloqueos;
             pthread_create(&hilo_que_maneja_bloqueos, NULL, (void *)_manejar_bloqueo, NULL);
-            pthread_detach(hilo_que_maneja_bloqueos);
+            pthread_join(hilo_que_maneja_bloqueos, NULL);
 
             break;
         case INTERRUPT:
@@ -181,19 +181,20 @@ void _manejar_bloqueo()
                     pcb_a_editar->registros.edx = edx;
                     pcb_a_editar->registros.si = si;
                     pcb_a_editar->registros.di = di;
-
+                    pcb_a_editar->operacion_de_io_por_la_que_fue_bloqueado = crear_buffer();
+                    cargar_string_al_buffer(pcb_a_editar->operacion_de_io_por_la_que_fue_bloqueado, nombre_interfaz);
+                    cargar_string_al_buffer(pcb_a_editar->operacion_de_io_por_la_que_fue_bloqueado, operacion_a_realizar);
+                    cargar_uint16_al_buffer(pcb_a_editar->operacion_de_io_por_la_que_fue_bloqueado, pid);
+                    cargar_uint8_al_buffer(pcb_a_editar->operacion_de_io_por_la_que_fue_bloqueado, unidades_de_trabajo);
+                    // [nombre io][operacion][pid][unidades de trabajo]
                     for (int i = 0; i < contador_de_colas_bloqueados; i++)
                     {
 
                         if ((strcmp(colas_bloqueados[i]->nombre, nombre_interfaz) == 0 ) && (colas_bloqueados[i]->cola->elements->elements_count == 0 ))
                         {
-                            t_buffer *buffer_a_enviar = crear_buffer();
-                            cargar_string_al_buffer(buffer_a_enviar, nombre_interfaz);
-                            cargar_string_al_buffer(buffer_a_enviar, operacion_a_realizar);
-                            cargar_uint16_al_buffer(buffer_a_enviar, pid);
-                            cargar_uint8_al_buffer(buffer_a_enviar, unidades_de_trabajo);
+                            
                             // [nombre io][operacion][pid][unidades de trabajo]
-                            t_paquete *a_enviar_a_io = crear_paquete(GEN_SLEEP, buffer_a_enviar);
+                            t_paquete *a_enviar_a_io = crear_paquete(TAREA, pcb_a_editar->operacion_de_io_por_la_que_fue_bloqueado);
 
                             enviar_paquete(a_enviar_a_io, colas_bloqueados[i]->fd);
 

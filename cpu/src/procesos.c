@@ -208,7 +208,7 @@ void _decode_and_excecute (char* palabra){
     else if(strcmp(comandos[0], "IO_GEN_SLEEP") == 0){
         uint8_t valor = atoi(comandos[2]);
         IO_GEN_SLEEP(comandos[1], valor);
-        log_info(cpu_logger,  "PID: %u - Ejecutando: IO_GEN_SLEEP - ");
+        log_info(cpu_logger,  "PID: %u - Ejecutando: IO_GEN_SLEEP - ", PID);
     }
 
 

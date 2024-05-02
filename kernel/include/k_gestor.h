@@ -49,6 +49,7 @@ typedef struct{
     uint32_t pc;
     int8_t quantum;
     Registros registros;
+    t_buffer* operacion_de_io_por_la_que_fue_bloqueado;
 }PCB;
 typedef struct{
     char* nombre;

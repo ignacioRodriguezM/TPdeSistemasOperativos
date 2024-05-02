@@ -96,7 +96,10 @@ void atender_multiples_entrada_salida(int *socket_ptr)
                 t_buffer* buffer_recibido_fin_de_ejecucion = recibir_buffer_sin_cod_op(client_socket);
                 char* nombre_de_io = extraer_string_al_buffer(buffer_recibido_fin_de_ejecucion);
                 uint16_t pid = extraer_uint16_al_buffer(buffer_recibido_fin_de_ejecucion);
-
+                _mover_de_cola_bloqueados_a_ready(nombre_de_io, pid);
+                mover_a_io_si_hay_algun_proceso_encolado(nombre_de_io); //verificar si hay algun proceso en su cola de bloqueados, si hay, lo manda a "ejecutar" en la io
+                
+                log_info(kernel_log_debug, "LLEGO ACA");
                 
             break;
 
@@ -107,6 +110,23 @@ void atender_multiples_entrada_salida(int *socket_ptr)
             break;
         default:
             log_warning(kernel_logger, "Operacion desconocida de KERNEL-i/o ");
+            break;
+        }
+    }
+}
+
+void _mover_de_cola_bloqueados_a_ready(char* nombre_de_io, uint16_t pid){
+    for(int i=0; i<contador_de_colas_bloqueados; i++){
+        
+        if (strcmp(colas_bloqueados[i]->nombre, nombre_de_io) == 0 ){
+            PCB* pcb_que_cumplio_tarea_io = (PCB *)queue_pop(colas_bloqueados[i]->cola);
+            if(pcb_que_cumplio_tarea_io->pid != pid){
+                log_error(kernel_log_debug, "ERROR, el pid del proceso que finalizo en IO no coincide con el de su proceso");
+            }
+            queue_push(procesos_ready, pcb_que_cumplio_tarea_io);
+            log_info(kernel_logger, "PID: %u - Estado Anterior: BLOQUEADO - Estado Actual: READY", pid);
+            log_info(kernel_logger, "Cola Ready procesos_ready: [<LISTA DE PIDS>]");
+
             break;
         }
     }

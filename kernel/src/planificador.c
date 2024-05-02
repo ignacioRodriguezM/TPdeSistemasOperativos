@@ -26,7 +26,6 @@ void crear_proceso(char *path)
     enviar_paquete(a_enviar, fd_memoria);
     destruir_paquete(a_enviar);
 
-    
     PCB *proceso_creado = _crear_pcb(pid);
 
     pthread_mutex_lock(&mutex_procesos);
@@ -115,10 +114,12 @@ void iniciar_planificador_de_corto_plazo()
 }
 
 void mover_de_excec_a_cola_bloqueado(char *nombre_de_la_io)
-{   
+{
     bool a = true;
-    while (a){
-        while (planificacion_activa && a){
+    while (a)
+    {
+        while (planificacion_activa && a)
+        {
             for (int i = 0; i < contador_de_colas_bloqueados; i++)
             {
 
@@ -132,6 +133,24 @@ void mover_de_excec_a_cola_bloqueado(char *nombre_de_la_io)
                 }
             }
             a = false;
+        }
+    }
+}
+
+void mover_a_io_si_hay_algun_proceso_encolado(char *nombre_io) //verificar si hay algun proceso en su cola de bloqueados, si hay, lo manda a 
+{
+    for(int i=0; i<contador_de_colas_bloqueados; i++){
+        
+        if ((strcmp(colas_bloqueados[i]->nombre, nombre_io) == 0 ) && (colas_bloqueados[i]->cola->elements->elements_count > 0 )){
+            PCB* primer_pcb_de_la_cola = (PCB *)queue_peek(procesos_excec);
+            // [nombre io][operacion][pid][unidades de trabajo]
+            t_paquete *a_enviar_a_io = crear_paquete(TAREA, primer_pcb_de_la_cola->operacion_de_io_por_la_que_fue_bloqueado);
+
+            enviar_paquete(a_enviar_a_io, colas_bloqueados[i]->fd);
+
+            destruir_paquete(a_enviar_a_io);
+
+            break;
         }
     }
 }
