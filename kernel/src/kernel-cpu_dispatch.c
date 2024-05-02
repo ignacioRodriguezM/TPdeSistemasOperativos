@@ -28,7 +28,12 @@ void atender_kernel_cpu_dispatch()
 
             break;
 
-        
+        case DESALOJO_POR_QUANTUM:
+
+            _manejar_desalojo_por_quantum ();
+
+
+            break;
 
         case -1:
             log_error(kernel_logger, "Desconexion de KERNEL-CPU_DISPATCH");
@@ -134,11 +139,52 @@ bool _chequear_la_io(char *nombre_interfaz, char *operacion)
     }
 }
 
+
+void _manejar_desalojo_por_quantum (){
+    t_buffer *buffer_recibido = recibir_buffer_sin_cod_op(fd_cpu_dispatch);
+            uint16_t pid = extraer_uint16_al_buffer(buffer_recibido);
+            uint32_t pc = extraer_uint32_al_buffer(buffer_recibido);
+            int8_t quantum_rec = extraer_int8_al_buffer(buffer_recibido);
+            uint8_t ax = extraer_uint8_al_buffer(buffer_recibido);
+            uint8_t bx = extraer_uint8_al_buffer(buffer_recibido);
+            uint8_t cx = extraer_uint8_al_buffer(buffer_recibido);
+            uint8_t dx = extraer_uint8_al_buffer(buffer_recibido);
+            uint32_t eax = extraer_uint32_al_buffer(buffer_recibido);
+            uint32_t ebx = extraer_uint32_al_buffer(buffer_recibido);
+            uint32_t ecx = extraer_uint32_al_buffer(buffer_recibido);
+            uint32_t edx = extraer_uint32_al_buffer(buffer_recibido);
+            uint32_t si = extraer_uint32_al_buffer(buffer_recibido);
+            uint32_t di = extraer_uint32_al_buffer(buffer_recibido);
+
+            // EXTRAIGO EL ELEMENTO DE EXCEC PERO SIN QUITARLO DE EXCEC
+            PCB *pcb_a_editar = (PCB *)queue_peek(procesos_excec);
+            if (pid != pcb_a_editar->pid)
+            {
+                log_error(kernel_log_debug, "ERROR, EL PID QUE SE EXTRAJO EN EL BUFFER QUE VINO DE CPU NO COINCIDE CON EL DE LA COLA EXCEC");
+            }
+            pcb_a_editar->pc = pc;
+            pcb_a_editar->quantum = quantum;
+            pcb_a_editar->registros.ax = ax;
+            pcb_a_editar->registros.bx = bx;
+            pcb_a_editar->registros.cx = cx;
+            pcb_a_editar->registros.dx = dx;
+            pcb_a_editar->registros.eax = eax;
+            pcb_a_editar->registros.ebx = ebx;
+            pcb_a_editar->registros.ecx = ecx;
+            pcb_a_editar->registros.edx = edx;
+            pcb_a_editar->registros.si = si;
+            pcb_a_editar->registros.di = di;
+
+            mover_de_excec_a_ready();
+            
+}
 void _manejar_bloqueo()
 {
     bool a = true;
-    while (a){
-        while (planificacion_activa == true && a){
+    while (a)
+    {
+        while (planificacion_activa == true && a)
+        {
             t_buffer *buffer_recibido = recibir_buffer_sin_cod_op(fd_cpu_dispatch);
             //[nombre_interfaz] [operacion] [unidades_de_trabajo] [pid] [pc] [quantum] [registros]
 
@@ -152,7 +198,7 @@ void _manejar_bloqueo()
                     uint8_t unidades_de_trabajo = extraer_uint8_al_buffer(buffer_recibido);
                     uint16_t pid = extraer_uint16_al_buffer(buffer_recibido);
                     uint32_t pc = extraer_uint32_al_buffer(buffer_recibido);
-                    int8_t quantum = extraer_int8_al_buffer(buffer_recibido);
+                    int8_t quantum_rec = extraer_int8_al_buffer(buffer_recibido);
                     uint8_t ax = extraer_uint8_al_buffer(buffer_recibido);
                     uint8_t bx = extraer_uint8_al_buffer(buffer_recibido);
                     uint8_t cx = extraer_uint8_al_buffer(buffer_recibido);
@@ -192,9 +238,9 @@ void _manejar_bloqueo()
                     for (int i = 0; i < contador_de_colas_bloqueados; i++)
                     {
 
-                        if ((strcmp(colas_bloqueados[i]->nombre, nombre_interfaz) == 0 ) && (colas_bloqueados[i]->cola->elements->elements_count == 0 ))
+                        if ((strcmp(colas_bloqueados[i]->nombre, nombre_interfaz) == 0) && (colas_bloqueados[i]->cola->elements->elements_count == 0))
                         {
-                            
+
                             // [nombre io][operacion][pid][unidades de trabajo]
                             t_paquete *a_enviar_a_io = crear_paquete(TAREA, pcb_a_editar->operacion_de_io_por_la_que_fue_bloqueado);
 
@@ -207,7 +253,6 @@ void _manejar_bloqueo()
 
                     mover_de_excec_a_cola_bloqueado(nombre_interfaz);
                     log_info(kernel_logger, "PID: %u - Bloqueado por: INTERFAZ : %s", pid, nombre_interfaz);
-                    
                 }
 
                 if (strcmp(operacion_a_realizar, "IO_STDIN_READ") == 0)
@@ -216,7 +261,6 @@ void _manejar_bloqueo()
                 if (strcmp(operacion_a_realizar, "IO_STDOUT_WRITE") == 0)
                 {
                 }
-                
 
                 // HACER RESTO DE IFs
             }

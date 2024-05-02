@@ -25,6 +25,34 @@ void ejecutar_ciclo_fifo_de_cpu (){
 
 
 }
+void ejecutar_con_quantum_de_cpu (){
+    
+        QUANTUM --;
+    
+        /////////////////////////  FETCH   /////////////////////////
+
+        _enviar_pid_y_pc_a_memoria ();
+
+        char* instruccion = _esperar_respuesta_de_memoria();
+
+        log_info(cpu_logger, "PID: %u - FETCH - Program Counter: %u", PID, PC_registro);
+
+        /////////////////////////  DECODE && EXCECUTE   /////////////////////////
+
+        _decode_and_excecute (instruccion);
+
+        free(instruccion);
+
+        /////////////////////////  CHECK INTERRUPT   /////////////////////////
+
+        if(aviso_de_interrupt){
+            //protocolo_de_interrupcion
+            bloq_flag = false;
+        }
+        
+
+
+}
 
 void _enviar_pid_y_pc_a_memoria (){
 

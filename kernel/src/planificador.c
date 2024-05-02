@@ -157,3 +157,13 @@ void mover_a_io_si_hay_algun_proceso_encolado(char *nombre_io) //verificar si ha
         }
     }
 }
+
+void mover_de_excec_a_ready (){
+
+    pthread_mutex_lock(&mutex_procesos);
+    PCB *proceso_movido = queue_pop(procesos_excec);
+    queue_push(procesos_ready, proceso_movido);
+    pthread_mutex_unlock(&mutex_procesos);
+
+    log_info(kernel_logger, "PID: %u - Estado Anterior: EXCEC - Estado Actual: READY", proceso_movido->pid);
+}
