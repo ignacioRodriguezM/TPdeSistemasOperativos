@@ -97,11 +97,12 @@ void crear_proceso()
 
     // Enlistar el proceso
     pthread_mutex_lock(&mutex_procesos);
-    if (list_add(lista_procesos, proceso) != 0)
+    if (list_add(lista_procesos, proceso) < 0)
     {
         printf("Error al agregar el elemento a la lista.\n");
     }
     pthread_mutex_unlock(&mutex_procesos);
+    free(path_recibido);
 }
 
 

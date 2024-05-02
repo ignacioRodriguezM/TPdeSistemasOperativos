@@ -9,6 +9,7 @@ void atender_memoria_cpu (){
                 t_buffer* buffer_recibido = recibir_buffer_sin_cod_op(fd_cpu);
                 uint16_t pid_recibido = extraer_uint16_al_buffer(buffer_recibido);
                 uint32_t pc_recibido = extraer_uint32_al_buffer(buffer_recibido);
+                destruir_buffer(buffer_recibido);
 
                 t_link_element* current = lista_procesos->head;
                 for(int i=0;i<lista_procesos->elements_count;i++){
@@ -16,6 +17,7 @@ void atender_memoria_cpu (){
                     if(proceso->PID == pid_recibido){
                         if (proceso->cantidad_instrucciones <= pc_recibido){
                             perror("CPU SOLICITA UN PC POSTERIOR AL ULTIMO PC DEL PROCESO");
+                            exit(EXIT_FAILURE);
                         }
                         esperarMilisegundos(retardo_respuesta);
                         t_buffer* buffer_a_enviar = crear_buffer(); //[instruccion]
@@ -23,12 +25,13 @@ void atender_memoria_cpu (){
                         t_paquete* a_enviar = crear_paquete(PROXIMA_INSTRUCCION, buffer_a_enviar);
                         enviar_paquete(a_enviar, fd_cpu);
                         destruir_paquete(a_enviar);
+                        break;
                     }
                     else{
                         current = current->next;
                     }
                 }
-                destruir_buffer(buffer_recibido);
+                current = NULL;
 
 
                 break;
@@ -43,7 +46,4 @@ void atender_memoria_cpu (){
                 break;
             }
 	}
-}
-void chequear_pid (){
-
 }

@@ -28,6 +28,8 @@ void atender_kernel_cpu_dispatch()
 
             break;
 
+        
+
         case -1:
             log_error(kernel_logger, "Desconexion de KERNEL-CPU_DISPATCH");
             control_key = 0;
@@ -198,13 +200,14 @@ void _manejar_bloqueo()
 
                             enviar_paquete(a_enviar_a_io, colas_bloqueados[i]->fd);
 
-                            destruir_paquete(a_enviar_a_io);
+                            free(a_enviar_a_io);
                             break;
                         }
                     }
 
                     mover_de_excec_a_cola_bloqueado(nombre_interfaz);
                     log_info(kernel_logger, "PID: %u - Bloqueado por: INTERFAZ : %s", pid, nombre_interfaz);
+                    
                 }
 
                 if (strcmp(operacion_a_realizar, "IO_STDIN_READ") == 0)

@@ -96,11 +96,10 @@ void atender_multiples_entrada_salida(int *socket_ptr)
                 t_buffer* buffer_recibido_fin_de_ejecucion = recibir_buffer_sin_cod_op(client_socket);
                 char* nombre_de_io = extraer_string_al_buffer(buffer_recibido_fin_de_ejecucion);
                 uint16_t pid = extraer_uint16_al_buffer(buffer_recibido_fin_de_ejecucion);
+                destruir_buffer(buffer_recibido_fin_de_ejecucion);
                 _mover_de_cola_bloqueados_a_ready(nombre_de_io, pid);
                 mover_a_io_si_hay_algun_proceso_encolado(nombre_de_io); //verificar si hay algun proceso en su cola de bloqueados, si hay, lo manda a "ejecutar" en la io
-                
-                log_info(kernel_log_debug, "LLEGO ACA");
-                
+                free(nombre_de_io);
             break;
 
         case -1:
@@ -119,13 +118,25 @@ void _mover_de_cola_bloqueados_a_ready(char* nombre_de_io, uint16_t pid){
     for(int i=0; i<contador_de_colas_bloqueados; i++){
         
         if (strcmp(colas_bloqueados[i]->nombre, nombre_de_io) == 0 ){
+            pthread_mutex_lock(&mutex_procesos);
             PCB* pcb_que_cumplio_tarea_io = (PCB *)queue_pop(colas_bloqueados[i]->cola);
             if(pcb_que_cumplio_tarea_io->pid != pid){
                 log_error(kernel_log_debug, "ERROR, el pid del proceso que finalizo en IO no coincide con el de su proceso");
             }
             queue_push(procesos_ready, pcb_que_cumplio_tarea_io);
+            pthread_mutex_unlock(&mutex_procesos);
+
             log_info(kernel_logger, "PID: %u - Estado Anterior: BLOQUEADO - Estado Actual: READY", pid);
             log_info(kernel_logger, "Cola Ready procesos_ready: [<LISTA DE PIDS>]");
+
+
+
+            char* nombre_interfaz = extraer_string_al_buffer(pcb_que_cumplio_tarea_io->operacion_de_io_por_la_que_fue_bloqueado);
+            char* operacion_a_realizar = extraer_string_al_buffer(pcb_que_cumplio_tarea_io->operacion_de_io_por_la_que_fue_bloqueado);
+            free(nombre_interfaz);
+            free(operacion_a_realizar);
+
+            free(pcb_que_cumplio_tarea_io->operacion_de_io_por_la_que_fue_bloqueado);
 
             break;
         }

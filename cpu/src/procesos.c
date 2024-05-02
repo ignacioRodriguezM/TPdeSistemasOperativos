@@ -14,6 +14,7 @@ void ejecutar_ciclo_fifo_de_cpu (){
 
         _decode_and_excecute (instruccion);
 
+        free(instruccion);
 
         /////////////////////////  CHECK INTERRUPT   /////////////////////////
 
@@ -44,6 +45,8 @@ char* _esperar_respuesta_de_memoria (){
             t_buffer* recibido = recibir_buffer_sin_cod_op(fd_memoria);
 
             char* instruccion = extraer_string_al_buffer(recibido);
+
+            destruir_buffer(recibido);
 
             return instruccion;
             break;

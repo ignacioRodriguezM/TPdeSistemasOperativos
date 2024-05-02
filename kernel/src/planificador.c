@@ -142,13 +142,16 @@ void mover_a_io_si_hay_algun_proceso_encolado(char *nombre_io) //verificar si ha
     for(int i=0; i<contador_de_colas_bloqueados; i++){
         
         if ((strcmp(colas_bloqueados[i]->nombre, nombre_io) == 0 ) && (colas_bloqueados[i]->cola->elements->elements_count > 0 )){
+            pthread_mutex_lock(&mutex_procesos);
+
             PCB* primer_pcb_de_la_cola = (PCB *)queue_peek(procesos_excec);
             // [nombre io][operacion][pid][unidades de trabajo]
             t_paquete *a_enviar_a_io = crear_paquete(TAREA, primer_pcb_de_la_cola->operacion_de_io_por_la_que_fue_bloqueado);
 
             enviar_paquete(a_enviar_a_io, colas_bloqueados[i]->fd);
 
-            destruir_paquete(a_enviar_a_io);
+            free(a_enviar_a_io);
+            pthread_mutex_unlock(&mutex_procesos);
 
             break;
         }
