@@ -52,8 +52,10 @@ extern int fd_entrada_salida;
 extern int fd_cpu_dispatch;
 extern int fd_cpu_interrupt;
 
+
 extern uint16_t identificador_PID;
 extern uint16_t contador_pcbs;
+
 
 extern pthread_mutex_t mutex_pid;
 extern pthread_mutex_t mutex_colas;
