@@ -31,7 +31,7 @@ pthread_mutex_t mutex_procesos;
 
 t_queue* procesos_new;
 t_queue* procesos_ready;
-t_queue* procesos_ready_con_prioridad; //PARA VRR
+t_queue* procesos_ready_con_prioridad;
 t_queue* procesos_excec;
 t_queue* procesos_exit;
 Colas_bloqueados** colas_bloqueados;

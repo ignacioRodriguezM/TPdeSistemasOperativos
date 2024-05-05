@@ -97,7 +97,7 @@ void atender_multiples_entrada_salida(int *socket_ptr)
                 char* nombre_de_io = extraer_string_al_buffer(buffer_recibido_fin_de_ejecucion);
                 uint16_t pid = extraer_uint16_al_buffer(buffer_recibido_fin_de_ejecucion);
                 destruir_buffer(buffer_recibido_fin_de_ejecucion);
-                _mover_de_cola_bloqueados_a_ready(nombre_de_io, pid);
+                _mover_de_cola_bloqueados_a_ready_o_aux(nombre_de_io, pid);
                 mover_a_io_si_hay_algun_proceso_encolado(nombre_de_io); //verificar si hay algun proceso en su cola de bloqueados, si hay, lo manda a "ejecutar" en la io
                 free(nombre_de_io);
             break;
@@ -114,7 +114,7 @@ void atender_multiples_entrada_salida(int *socket_ptr)
     }
 }
 
-void _mover_de_cola_bloqueados_a_ready(char* nombre_de_io, uint16_t pid){
+void _mover_de_cola_bloqueados_a_ready_o_aux(char* nombre_de_io, uint16_t pid){
     for(int i=0; i<contador_de_colas_bloqueados; i++){
         
         if (strcmp(colas_bloqueados[i]->nombre, nombre_de_io) == 0 ){
@@ -123,11 +123,19 @@ void _mover_de_cola_bloqueados_a_ready(char* nombre_de_io, uint16_t pid){
             if(pcb_que_cumplio_tarea_io->pid != pid){
                 log_error(kernel_log_debug, "ERROR, el pid del proceso que finalizo en IO no coincide con el de su proceso");
             }
-            queue_push(procesos_ready, pcb_que_cumplio_tarea_io);
+            if(pcb_que_cumplio_tarea_io ->quantum == quantum){
+                queue_push(procesos_ready, pcb_que_cumplio_tarea_io);
+                log_info(kernel_logger, "PID: %u - Estado Anterior: BLOQUEADO - Estado Actual: READY", pid);
+                log_info(kernel_logger, "Cola Ready procesos_ready: [<LISTA DE PIDS>]");
+            }
+            else{
+                queue_push(procesos_ready_con_prioridad, pcb_que_cumplio_tarea_io);
+                log_info(kernel_logger, "PID: %u - Estado Anterior: BLOQUEADO - Estado Actual: READY", pid);
+                log_info(kernel_logger, "Cola Ready procesos_con_prioridad_ready: [<LISTA DE PIDS>]");
+            }
             pthread_mutex_unlock(&mutex_procesos);
 
-            log_info(kernel_logger, "PID: %u - Estado Anterior: BLOQUEADO - Estado Actual: READY", pid);
-            log_info(kernel_logger, "Cola Ready procesos_ready: [<LISTA DE PIDS>]");
+
 
 
 

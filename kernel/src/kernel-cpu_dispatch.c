@@ -80,6 +80,51 @@ void extraer_y_actualizar_pcb_en_excecute(t_buffer *buffer_recibido){
             pcb_a_editar->registros.si = si;
             pcb_a_editar->registros.di = di;
 }
+
+void extraer_y_actualizar_pcb_en_excecute_manteniendo_quantum(t_buffer *buffer_recibido){
+            
+            uint16_t pid = extraer_uint16_al_buffer(buffer_recibido);
+            uint32_t pc = extraer_uint32_al_buffer(buffer_recibido);
+            int8_t quantum_rec = extraer_int8_al_buffer(buffer_recibido);
+            uint8_t ax = extraer_uint8_al_buffer(buffer_recibido);
+            uint8_t bx = extraer_uint8_al_buffer(buffer_recibido);
+            uint8_t cx = extraer_uint8_al_buffer(buffer_recibido);
+            uint8_t dx = extraer_uint8_al_buffer(buffer_recibido);
+            uint32_t eax = extraer_uint32_al_buffer(buffer_recibido);
+            uint32_t ebx = extraer_uint32_al_buffer(buffer_recibido);
+            uint32_t ecx = extraer_uint32_al_buffer(buffer_recibido);
+            uint32_t edx = extraer_uint32_al_buffer(buffer_recibido);
+            uint32_t si = extraer_uint32_al_buffer(buffer_recibido);
+            uint32_t di = extraer_uint32_al_buffer(buffer_recibido);
+
+            // EXTRAIGO EL ELEMENTO DE EXCEC PERO SIN QUITARLO DE EXCEC
+            PCB *pcb_a_editar = (PCB *)queue_peek(procesos_excec);
+            if (pid != pcb_a_editar->pid)
+            {
+                log_error(kernel_log_debug, "ERROR, EL PID QUE SE EXTRAJO EN EL BUFFER QUE VINO DE CPU NO COINCIDE CON EL DE LA COLA EXCEC");
+            }
+
+
+            pcb_a_editar->pc = pc;
+            if(quantum_rec > 0){
+                pcb_a_editar->quantum = quantum_rec;
+            }
+            else{
+            pcb_a_editar->quantum = quantum;
+            }
+            pcb_a_editar->registros.ax = ax;
+            pcb_a_editar->registros.bx = bx;
+            pcb_a_editar->registros.cx = cx;
+            pcb_a_editar->registros.dx = dx;
+            pcb_a_editar->registros.eax = eax;
+            pcb_a_editar->registros.ebx = ebx;
+            pcb_a_editar->registros.ecx = ecx;
+            pcb_a_editar->registros.edx = edx;
+            pcb_a_editar->registros.si = si;
+            pcb_a_editar->registros.di = di;
+
+}
+
 bool _chequear_la_io(char *nombre_interfaz, char *operacion)
 {
 
@@ -217,12 +262,17 @@ void _manejar_bloqueo()
     while (a)
     {
         while (planificacion_activa == true && a)
-        {
+        {   
+
             t_buffer *buffer_recibido = recibir_buffer_sin_cod_op(fd_cpu_dispatch);
             //[pid] [pc] [quantum] [registros] [nombre_interfaz] [operacion]
 
-            extraer_y_actualizar_pcb_en_excecute(buffer_recibido);
-
+            if(strcmp (algoritmo_planificacion, "VRR") != 0){
+                extraer_y_actualizar_pcb_en_excecute(buffer_recibido);
+            }
+            else{
+                extraer_y_actualizar_pcb_en_excecute_manteniendo_quantum(buffer_recibido);
+            }
             char *nombre_interfaz = extraer_string_al_buffer(buffer_recibido);
             char *operacion_a_realizar = extraer_string_al_buffer(buffer_recibido);
             // EXTRAIGO EL ELEMENTO DE EXCEC PERO SIN QUITARLO DE EXCEC
