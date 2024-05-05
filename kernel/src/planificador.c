@@ -70,38 +70,106 @@ void iniciar_planificador_de_largo_plazo()
 
 void mover_procesos_de_ready_a_excecute()
 {
-
-    while (planificacion_activa == true)
+    if (strcmp(algoritmo_planificacion, "VRR") != 0)
     {
-        if (procesos_excec->elements->elements_count == 0 && procesos_ready->elements->elements_count > 0)
+        while (planificacion_activa == true)
         {
-            pthread_mutex_lock(&mutex_procesos);
-            PCB *proceso_movido = queue_pop(procesos_ready);
-            queue_push(procesos_excec, proceso_movido);
-            pthread_mutex_unlock(&mutex_procesos);
+            if (procesos_excec->elements->elements_count == 0 && procesos_ready->elements->elements_count > 0)
+            {
+                pthread_mutex_lock(&mutex_procesos);
+                PCB *proceso_movido = queue_pop(procesos_ready);
+                queue_push(procesos_excec, proceso_movido);
+                pthread_mutex_unlock(&mutex_procesos);
 
-            t_buffer *buffer = crear_buffer();
+                t_buffer *buffer = crear_buffer();
 
-            cargar_uint16_al_buffer(buffer, proceso_movido->pid);
-            cargar_uint32_al_buffer(buffer, proceso_movido->pc);
-            cargar_int8_al_buffer(buffer, proceso_movido->quantum);
-            cargar_uint8_al_buffer(buffer, proceso_movido->registros.ax);
-            cargar_uint8_al_buffer(buffer, proceso_movido->registros.bx);
-            cargar_uint8_al_buffer(buffer, proceso_movido->registros.cx);
-            cargar_uint8_al_buffer(buffer, proceso_movido->registros.dx);
-            cargar_uint32_al_buffer(buffer, proceso_movido->registros.eax);
-            cargar_uint32_al_buffer(buffer, proceso_movido->registros.ebx);
-            cargar_uint32_al_buffer(buffer, proceso_movido->registros.ecx);
-            cargar_uint32_al_buffer(buffer, proceso_movido->registros.edx);
-            cargar_uint32_al_buffer(buffer, proceso_movido->registros.si);
-            cargar_uint32_al_buffer(buffer, proceso_movido->registros.di);
+                cargar_uint16_al_buffer(buffer, proceso_movido->pid);
+                cargar_uint32_al_buffer(buffer, proceso_movido->pc);
+                cargar_int8_al_buffer(buffer, proceso_movido->quantum);
+                cargar_uint8_al_buffer(buffer, proceso_movido->registros.ax);
+                cargar_uint8_al_buffer(buffer, proceso_movido->registros.bx);
+                cargar_uint8_al_buffer(buffer, proceso_movido->registros.cx);
+                cargar_uint8_al_buffer(buffer, proceso_movido->registros.dx);
+                cargar_uint32_al_buffer(buffer, proceso_movido->registros.eax);
+                cargar_uint32_al_buffer(buffer, proceso_movido->registros.ebx);
+                cargar_uint32_al_buffer(buffer, proceso_movido->registros.ecx);
+                cargar_uint32_al_buffer(buffer, proceso_movido->registros.edx);
+                cargar_uint32_al_buffer(buffer, proceso_movido->registros.si);
+                cargar_uint32_al_buffer(buffer, proceso_movido->registros.di);
 
-            t_paquete *a_enviar = crear_paquete(PROCESO_A_EJECUTAR, buffer);
+                t_paquete *a_enviar = crear_paquete(PROCESO_A_EJECUTAR, buffer);
 
-            log_info(kernel_logger, "PID: %u - Estado Anterior: READY - Estado Actual: EXCEC", proceso_movido->pid);
-            enviar_paquete(a_enviar, fd_cpu_dispatch);
-            // enviamos el proceso de ready a execute primero y luego lo enviamos a cpu
-            destruir_paquete(a_enviar);
+                log_info(kernel_logger, "PID: %u - Estado Anterior: READY - Estado Actual: EXCEC", proceso_movido->pid);
+                enviar_paquete(a_enviar, fd_cpu_dispatch);
+                // enviamos el proceso de ready a execute primero y luego lo enviamos a cpu
+                destruir_paquete(a_enviar);
+            }
+        }
+    }
+    else if (strcmp(algoritmo_planificacion, "VRR") == 0)
+    {
+        while (planificacion_activa == true)
+        {
+            if (procesos_excec->elements->elements_count == 0 && procesos_ready_con_prioridad->elements->elements_count > 0)
+            {
+                pthread_mutex_lock(&mutex_procesos);
+                PCB *proceso_movido = queue_pop(procesos_ready_con_prioridad);
+                queue_push(procesos_excec, proceso_movido);
+                pthread_mutex_unlock(&mutex_procesos);
+
+                t_buffer *buffer = crear_buffer();
+
+                cargar_uint16_al_buffer(buffer, proceso_movido->pid);
+                cargar_uint32_al_buffer(buffer, proceso_movido->pc);
+                cargar_int8_al_buffer(buffer, proceso_movido->quantum);
+                cargar_uint8_al_buffer(buffer, proceso_movido->registros.ax);
+                cargar_uint8_al_buffer(buffer, proceso_movido->registros.bx);
+                cargar_uint8_al_buffer(buffer, proceso_movido->registros.cx);
+                cargar_uint8_al_buffer(buffer, proceso_movido->registros.dx);
+                cargar_uint32_al_buffer(buffer, proceso_movido->registros.eax);
+                cargar_uint32_al_buffer(buffer, proceso_movido->registros.ebx);
+                cargar_uint32_al_buffer(buffer, proceso_movido->registros.ecx);
+                cargar_uint32_al_buffer(buffer, proceso_movido->registros.edx);
+                cargar_uint32_al_buffer(buffer, proceso_movido->registros.si);
+                cargar_uint32_al_buffer(buffer, proceso_movido->registros.di);
+
+                t_paquete *a_enviar = crear_paquete(PROCESO_A_EJECUTAR, buffer);
+
+                log_info(kernel_logger, "PID: %u - Estado Anterior: READY - Estado Actual: EXCEC", proceso_movido->pid);
+                enviar_paquete(a_enviar, fd_cpu_dispatch);
+                // enviamos el proceso de ready a execute primero y luego lo enviamos a cpu
+                destruir_paquete(a_enviar);
+            }
+            else if (procesos_excec->elements->elements_count == 0 && procesos_ready->elements->elements_count > 0)
+            {
+                pthread_mutex_lock(&mutex_procesos);
+                PCB *proceso_movido = queue_pop(procesos_ready);
+                queue_push(procesos_excec, proceso_movido);
+                pthread_mutex_unlock(&mutex_procesos);
+
+                t_buffer *buffer = crear_buffer();
+
+                cargar_uint16_al_buffer(buffer, proceso_movido->pid);
+                cargar_uint32_al_buffer(buffer, proceso_movido->pc);
+                cargar_int8_al_buffer(buffer, proceso_movido->quantum);
+                cargar_uint8_al_buffer(buffer, proceso_movido->registros.ax);
+                cargar_uint8_al_buffer(buffer, proceso_movido->registros.bx);
+                cargar_uint8_al_buffer(buffer, proceso_movido->registros.cx);
+                cargar_uint8_al_buffer(buffer, proceso_movido->registros.dx);
+                cargar_uint32_al_buffer(buffer, proceso_movido->registros.eax);
+                cargar_uint32_al_buffer(buffer, proceso_movido->registros.ebx);
+                cargar_uint32_al_buffer(buffer, proceso_movido->registros.ecx);
+                cargar_uint32_al_buffer(buffer, proceso_movido->registros.edx);
+                cargar_uint32_al_buffer(buffer, proceso_movido->registros.si);
+                cargar_uint32_al_buffer(buffer, proceso_movido->registros.di);
+
+                t_paquete *a_enviar = crear_paquete(PROCESO_A_EJECUTAR, buffer);
+
+                log_info(kernel_logger, "PID: %u - Estado Anterior: READY - Estado Actual: EXCEC", proceso_movido->pid);
+                enviar_paquete(a_enviar, fd_cpu_dispatch);
+                // enviamos el proceso de ready a execute primero y luego lo enviamos a cpu
+                destruir_paquete(a_enviar);
+            }
         }
     }
 }
@@ -137,14 +205,16 @@ void mover_de_excec_a_cola_bloqueado(char *nombre_de_la_io)
     }
 }
 
-void mover_a_io_si_hay_algun_proceso_encolado(char *nombre_io) //verificar si hay algun proceso en su cola de bloqueados, si hay, lo manda a 
+void mover_a_io_si_hay_algun_proceso_encolado(char *nombre_io) // verificar si hay algun proceso en su cola de bloqueados, si hay, lo manda a
 {
-    for(int i=0; i<contador_de_colas_bloqueados; i++){
-        
-        if ((strcmp(colas_bloqueados[i]->nombre, nombre_io) == 0 ) && (colas_bloqueados[i]->cola->elements->elements_count > 0 )){
+    for (int i = 0; i < contador_de_colas_bloqueados; i++)
+    {
+
+        if ((strcmp(colas_bloqueados[i]->nombre, nombre_io) == 0) && (colas_bloqueados[i]->cola->elements->elements_count > 0))
+        {
             pthread_mutex_lock(&mutex_procesos);
 
-            PCB* primer_pcb_de_la_cola = (PCB *)queue_peek(colas_bloqueados[i]->cola);
+            PCB *primer_pcb_de_la_cola = (PCB *)queue_peek(colas_bloqueados[i]->cola);
             // [nombre io][operacion][pid][unidades de trabajo]
             t_paquete *a_enviar_a_io = crear_paquete(TAREA, primer_pcb_de_la_cola->operacion_de_io_por_la_que_fue_bloqueado);
 
@@ -158,7 +228,8 @@ void mover_a_io_si_hay_algun_proceso_encolado(char *nombre_io) //verificar si ha
     }
 }
 
-void mover_de_excec_a_ready (){
+void mover_de_excec_a_ready()
+{
 
     pthread_mutex_lock(&mutex_procesos);
     PCB *proceso_movido = queue_pop(procesos_excec);
@@ -169,17 +240,19 @@ void mover_de_excec_a_ready (){
     log_info(kernel_logger, "PID: %u - Estado Anterior: EXCEC - Estado Actual: READY", proceso_movido->pid);
 }
 
-void avisarle_a_memoria_que_libere_recursos_de_proceso(uint16_t pid){
-    t_buffer* buffer_fin_proceso = crear_buffer(); // [pid]
+void avisarle_a_memoria_que_libere_recursos_de_proceso(uint16_t pid)
+{
+    t_buffer *buffer_fin_proceso = crear_buffer(); // [pid]
     cargar_uint16_al_buffer(buffer_fin_proceso, pid);
-    t_paquete* a_enviar = crear_paquete(FINALIZAR_PROCESO, buffer_fin_proceso);
+    t_paquete *a_enviar = crear_paquete(FINALIZAR_PROCESO, buffer_fin_proceso);
 
     enviar_paquete(a_enviar, fd_memoria);
 
     destruir_paquete(a_enviar);
 }
 
-void _mandar_de_excec_a_exit(char* motivo){
+void _mandar_de_excec_a_exit(char *motivo)
+{
 
     pthread_mutex_lock(&mutex_procesos);
     PCB *proceso_movido = queue_pop(procesos_excec);
@@ -187,7 +260,6 @@ void _mandar_de_excec_a_exit(char* motivo){
     pthread_mutex_unlock(&mutex_procesos);
 
     avisarle_a_memoria_que_libere_recursos_de_proceso(proceso_movido->pid);
-
 
     log_info(kernel_logger, "Finaliza el proceso %u - Motivo: %s", proceso_movido->pid, motivo);
 

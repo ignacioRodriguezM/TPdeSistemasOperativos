@@ -20,7 +20,9 @@ void finalizar_colas_sin_bloqueados()
     queue_destroy(procesos_excec);
     queue_destroy(procesos_exit);
 
-    if(strcmp(algoritmo_planificacion, "VRR")){
-    queue_destroy(procesos_ready_con_prioridad);
+
+    if(strcmp(algoritmo_planificacion, "VRR" ) == 0 ){
+        queue_destroy(procesos_ready_con_prioridad);
+
     }
 }
