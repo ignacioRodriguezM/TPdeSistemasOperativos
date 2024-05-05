@@ -140,6 +140,36 @@ void mover_procesos_de_ready_a_excecute()
                 // enviamos el proceso de ready a execute primero y luego lo enviamos a cpu
                 destruir_paquete(a_enviar);
             }
+            else if (procesos_excec->elements->elements_count == 0 && procesos_ready->elements->elements_count > 0)
+            {
+                pthread_mutex_lock(&mutex_procesos);
+                PCB *proceso_movido = queue_pop(procesos_ready);
+                queue_push(procesos_excec, proceso_movido);
+                pthread_mutex_unlock(&mutex_procesos);
+
+                t_buffer *buffer = crear_buffer();
+
+                cargar_uint16_al_buffer(buffer, proceso_movido->pid);
+                cargar_uint32_al_buffer(buffer, proceso_movido->pc);
+                cargar_int8_al_buffer(buffer, proceso_movido->quantum);
+                cargar_uint8_al_buffer(buffer, proceso_movido->registros.ax);
+                cargar_uint8_al_buffer(buffer, proceso_movido->registros.bx);
+                cargar_uint8_al_buffer(buffer, proceso_movido->registros.cx);
+                cargar_uint8_al_buffer(buffer, proceso_movido->registros.dx);
+                cargar_uint32_al_buffer(buffer, proceso_movido->registros.eax);
+                cargar_uint32_al_buffer(buffer, proceso_movido->registros.ebx);
+                cargar_uint32_al_buffer(buffer, proceso_movido->registros.ecx);
+                cargar_uint32_al_buffer(buffer, proceso_movido->registros.edx);
+                cargar_uint32_al_buffer(buffer, proceso_movido->registros.si);
+                cargar_uint32_al_buffer(buffer, proceso_movido->registros.di);
+
+                t_paquete *a_enviar = crear_paquete(PROCESO_A_EJECUTAR, buffer);
+
+                log_info(kernel_logger, "PID: %u - Estado Anterior: READY - Estado Actual: EXCEC", proceso_movido->pid);
+                enviar_paquete(a_enviar, fd_cpu_dispatch);
+                // enviamos el proceso de ready a execute primero y luego lo enviamos a cpu
+                destruir_paquete(a_enviar);
+            }
         }
     }
 }

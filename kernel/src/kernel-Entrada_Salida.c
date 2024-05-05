@@ -20,7 +20,7 @@ void atender_multiples_entrada_salida(int *socket_ptr)
     bool control_key = 1;
     while (control_key)
     {   
-        int posicion;
+        int posicion;  /// SE USA??
         int cod_op = recibir_operacion(client_socket);
         switch (cod_op)
         {
@@ -97,8 +97,14 @@ void atender_multiples_entrada_salida(int *socket_ptr)
                 char* nombre_de_io = extraer_string_al_buffer(buffer_recibido_fin_de_ejecucion);
                 uint16_t pid = extraer_uint16_al_buffer(buffer_recibido_fin_de_ejecucion);
                 destruir_buffer(buffer_recibido_fin_de_ejecucion);
-                _mover_de_cola_bloqueados_a_ready_o_aux(nombre_de_io, pid);
-                mover_a_io_si_hay_algun_proceso_encolado(nombre_de_io); //verificar si hay algun proceso en su cola de bloqueados, si hay, lo manda a "ejecutar" en la io
+                bool a = true;
+                while (a){
+                    while(planificacion_activa){
+                        _mover_de_cola_bloqueados_a_ready_o_aux(nombre_de_io, pid);
+                        mover_a_io_si_hay_algun_proceso_encolado(nombre_de_io); //verificar si hay algun proceso en su cola de bloqueados, si hay, lo manda a "ejecutar" en la io
+                        a = false;
+                    }
+                }
                 free(nombre_de_io);
             break;
 

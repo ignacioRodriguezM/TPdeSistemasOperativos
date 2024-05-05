@@ -198,10 +198,10 @@ void _atender_instruccion_validada(char *leido)
         }
         else
         {
+            log_info(kernel_logger, "La planificacion fue activada");
             planificacion_activa = true;
             iniciar_planificador_de_largo_plazo();
             iniciar_planificador_de_corto_plazo ();
-            log_info(kernel_logger, "La planificacion fue activada");
             
         }
     }
