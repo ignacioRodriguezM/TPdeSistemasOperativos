@@ -63,7 +63,6 @@ typedef struct{
 
 extern t_queue* procesos_new;
 extern t_queue* procesos_ready;
-extern t_queue* procesos_ready_con_prioridad; //PARA VRR
 extern t_queue* procesos_excec;
 extern t_queue* procesos_exit;
 extern Colas_bloqueados** colas_bloqueados;
