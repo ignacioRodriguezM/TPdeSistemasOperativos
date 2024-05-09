@@ -70,7 +70,7 @@ void _extraer_contexto_de_ejecucion()
     destruir_buffer(buffer_recibido);
 }
 
-void _desalojar_proceso()
+void _desalojar_proceso_por_quantum()
 {
     t_buffer *buffer = crear_buffer();
     //[pid] [pc] [quantum] [registros]
@@ -90,6 +90,32 @@ void _desalojar_proceso()
     cargar_uint32_al_buffer(buffer, DI_registro);
 
     t_paquete *a_enviar = crear_paquete(DESALOJO_POR_QUANTUM, buffer);
+
+    enviar_paquete(a_enviar, fd_kernel_dispatch);
+
+    destruir_paquete(a_enviar);
+}
+
+void _desalojar_proceso_por_exit()
+{
+    t_buffer *buffer = crear_buffer();
+    //[pid] [pc] [quantum] [registros]
+
+    cargar_uint16_al_buffer(buffer, PID);
+    cargar_uint32_al_buffer(buffer, PC_registro);
+    cargar_int8_al_buffer(buffer, QUANTUM);
+    cargar_uint8_al_buffer(buffer, AX_registro);
+    cargar_uint8_al_buffer(buffer, BX_registro);
+    cargar_uint8_al_buffer(buffer, CX_registro);
+    cargar_uint8_al_buffer(buffer, DX_registro);
+    cargar_uint32_al_buffer(buffer, EAX_registro);
+    cargar_uint32_al_buffer(buffer, EBX_registro);
+    cargar_uint32_al_buffer(buffer, ECX_registro);
+    cargar_uint32_al_buffer(buffer, EDX_registro);
+    cargar_uint32_al_buffer(buffer, SI_registro);
+    cargar_uint32_al_buffer(buffer, DI_registro);
+
+    t_paquete *a_enviar = crear_paquete(DESALOJO_POR_EXIT, buffer);
 
     enviar_paquete(a_enviar, fd_kernel_dispatch);
 
