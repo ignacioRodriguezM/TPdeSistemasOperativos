@@ -61,7 +61,7 @@ bool _validacion_de_instruccion_de_consola(char *leido)
     {
         resultado_validacion = true;
         //  INICIAR_PROCESO /Pruebas_bascas/Prueba_01  proceso de ejemplo
-        }
+    }
 
     else if (strcmp(comando_consola[0], "FINALIZAR_PROCESO") == 0)
     {
@@ -166,14 +166,16 @@ void _atender_instruccion_validada(char *leido)
     else if (strcmp(comando_consola[0], "INICIAR_PROCESO") == 0)
     {
         crear_proceso(comando_consola[1]);
-
     }
     else if (strcmp(comando_consola[0], "FINALIZAR_PROCESO") == 0)
     {
         int pid_a_finalizar = atoi(comando_consola[1]); // HAY QUE TRANSFORMAR EL INT A UINT16_T
-        if (pid_a_finalizar < 1)
+        if (pid_a_finalizar < 0)
         {
             log_error(kernel_logger, "El PID no puede ser : %d", pid_a_finalizar);
+        }
+        if(!buscar_en_colas_y_eliminar_el_proceso(pid_a_finalizar)){
+            log_error(kernel_log_debug, "EL PID A FINALIZAR NO SE ENCUENTRA EN LAS COLAS");
         }
     }
     else if (strcmp(comando_consola[0], "DETENER_PLANIFICACION") == 0)
@@ -201,8 +203,7 @@ void _atender_instruccion_validada(char *leido)
             log_info(kernel_logger, "La planificacion fue activada");
             planificacion_activa = true;
             iniciar_planificador_de_largo_plazo();
-            iniciar_planificador_de_corto_plazo ();
-            
+            iniciar_planificador_de_corto_plazo();
         }
     }
     else if (strcmp(comando_consola[0], "MULTIPROGRAMACION") == 0)
@@ -240,8 +241,11 @@ void _atender_instruccion_validada(char *leido)
         list_iterate(procesos_excec->elements, imprimo_elemento);
         printf("PROCESOS EXIT : \n");
         list_iterate(procesos_exit->elements, imprimo_elemento);
-        //FALTA LISTAR PROCESOS BLOQUEADOS
-        
+        for (int i = 0; i < contador_de_colas_bloqueados; i++)
+        {
+            printf("PROCESOS BLOQUEADOS POR %s: \n", colas_bloqueados[i]->nombre);
+            list_iterate(colas_bloqueados[i]->cola->elements, imprimo_elemento);
+        }
     }
     else
     {
@@ -251,3 +255,76 @@ void _atender_instruccion_validada(char *leido)
     string_array_destroy(comando_consola);
 }
 
+
+
+bool buscar_en_cola (int pid_a_finalizar, t_queue* cola, char* nombre_cola){
+    t_link_element *actual = cola->elements->head;
+        int index = 0;
+        for (int i = 0; i < cola->elements->elements_count; i++)
+        {
+            PCB *proceso = (PCB *)actual->data;
+            if (proceso->pid == pid_a_finalizar)
+            { // MOVER PROCESO A EXIT (eliminarlo)
+                pthread_mutex_lock(&mutex_procesos);
+                list_remove(cola->elements, index);
+                queue_push(procesos_exit, proceso);
+                pthread_mutex_unlock(&mutex_procesos);
+
+
+                avisarle_a_memoria_que_libere_recursos_de_proceso(proceso->pid);
+
+                log_info(kernel_logger, "Finaliza el proceso %u - Motivo: FINALIZADO_POR_CONSOLA", proceso->pid);
+
+                log_info(kernel_logger, "PID: %u - Estado Anterior: %s - Estado Actual: EXIT", proceso->pid, nombre_cola);
+
+                return true;
+                break;
+            }
+            else
+            {
+                actual = actual->next;
+                index++;
+            }
+        }
+        return false;
+        actual = NULL;
+}
+
+
+bool buscar_en_colas_y_eliminar_el_proceso(int pid_a_finalizar)
+{
+
+    ///////////////// BUSCAR EN NEW///////////////////////
+    if(buscar_en_cola (pid_a_finalizar, procesos_new, "NEW")){
+        return true;
+    }
+    
+    ////////////////// BUSCAR EN EXCECUTE /////////////////
+
+    //HAY Q INTERRUMPIR CPU Y "DESALOJAR EL PROCESO"
+    // TERMINAR
+
+    /////////////////// BUSCAR EN READY///////////////
+    if(buscar_en_cola (pid_a_finalizar, procesos_ready, "READY")){
+        return true;
+    }
+    
+
+    ////////////////// BUSCAR EN BLOQ////////////////
+    for (int i=0; i<contador_de_colas_bloqueados; i++){
+        if(colas_bloqueados[i]->conectado){
+            if(buscar_en_cola (pid_a_finalizar, colas_bloqueados[i]->cola, "BLOQUEADO")){
+            return true;
+            }
+        }
+    }
+
+    /////////////////// BUSCAR EN READY AUX///////////////
+    if(strcmp(algoritmo_planificacion, "VRR") == 0){
+        if(buscar_en_cola (pid_a_finalizar, procesos_ready_con_prioridad, "READY-PRIORIDAD")){
+            return true;
+        }
+    }
+
+    return false;
+}

@@ -3,6 +3,7 @@
 
 int main() {
     //incializo kernel;
+    
     inicializar_logger (&kernel_logger, "kernel_logs.log");
     inicializar_logger_debug (&kernel_log_debug, "kernel_debug.log");
     APP_config config_valores = cargar_configuracion_kernel();
@@ -10,6 +11,15 @@ int main() {
 
     grado_multiprogramacion = config_valores.grado_multiprogramacion;
     algoritmo_planificacion = config_valores.algoritmo_planificacion;
+
+
+    
+    if(strcmp(algoritmo_planificacion, "VRR") == 0){
+    procesos_ready_con_prioridad = queue_create();
+    } //sacar
+
+
+
     contador_de_colas_bloqueados = 0;
     procesos_en_programacion = 0;
     planificacion_activa = false;

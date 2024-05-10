@@ -26,7 +26,7 @@ void atender_cpu_kernel_dispatch()
                 {
 
                     bloq_flag = false;
-                    _desalojar_proceso();
+                    _desalojar_proceso_por_quantum();
                 }
 
                 else
