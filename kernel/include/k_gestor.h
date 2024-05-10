@@ -7,6 +7,7 @@
 #include <pthread.h>
 #include <commons/txt.h>
 #include <commons/collections/list.h>
+#include <semaphore.h>
 
 #include "./servicios_kernel.h"
 #include "./planificador.h"
@@ -42,6 +43,7 @@ typedef struct
     bool conectado;
 } Colas_bloqueados;
 
+
 // Variables GLOBALES
 extern t_log *kernel_logger;
 extern t_log *kernel_log_debug;
@@ -74,5 +76,10 @@ extern int procesos_en_programacion;
 extern int8_t quantum;
 extern bool planificacion_activa;
 extern char *algoritmo_planificacion;
+
+
+extern sem_t planificacion_activa_semaforo;
+extern sem_t grado_multiprogramacion_semaforo;
+extern sem_t proceso_creado_en_new_semaforo;
 
 #endif

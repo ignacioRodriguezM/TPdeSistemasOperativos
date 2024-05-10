@@ -45,4 +45,9 @@ bool planificacion_activa;
 char* algoritmo_planificacion;
 
 
+sem_t planificacion_activa_semaforo;
+sem_t grado_multiprogramacion_semaforo;
+sem_t proceso_creado_en_new_semaforo;
+
+
 #endif

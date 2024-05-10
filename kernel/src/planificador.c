@@ -2,13 +2,13 @@
 
 // PLANIFICADOR DE LARGO PLAZO
 
+
 PCB *_crear_pcb(uint16_t pid)
 {
     PCB *pcb_creado = malloc(sizeof(PCB));
     pcb_creado->pc = 0;
     pcb_creado->pid = pid;
     pcb_creado->quantum = quantum;
-
     return pcb_creado;
 }
 
@@ -33,6 +33,8 @@ void crear_proceso(char *path)
     pthread_mutex_unlock(&mutex_procesos);
 
     log_info(kernel_logger, "Se crea el proceso %u en NEW", pid);
+
+    sem_post(&proceso_creado_en_new_semaforo);
 }
 
 void mover_procesos_de_new_a_ready()
@@ -60,7 +62,7 @@ void mover_procesos_de_new_a_ready()
 }
 
 void iniciar_planificador_de_largo_plazo()
-{
+{   
     pthread_t hilo_planificador_largo_plazo;
     pthread_create(&hilo_planificador_largo_plazo, NULL, (void *)mover_procesos_de_new_a_ready, NULL);
     pthread_detach(hilo_planificador_largo_plazo);

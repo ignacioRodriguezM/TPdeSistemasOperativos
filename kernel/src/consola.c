@@ -204,6 +204,7 @@ void _atender_instruccion_validada(char *leido)
             planificacion_activa = true;
             iniciar_planificador_de_largo_plazo();
             iniciar_planificador_de_corto_plazo();
+            
         }
     }
     else if (strcmp(comando_consola[0], "MULTIPROGRAMACION") == 0)

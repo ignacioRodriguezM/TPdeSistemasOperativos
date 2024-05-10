@@ -3,7 +3,10 @@
 
 int main() {
     //incializo kernel;
-    
+    sem_init(&planificacion_activa_semaforo, 0, 0);
+    sem_init(&proceso_creado_en_new_semaforo, 0, 0);
+
+
     inicializar_logger (&kernel_logger, "kernel_logs.log");
     inicializar_logger_debug (&kernel_log_debug, "kernel_debug.log");
     APP_config config_valores = cargar_configuracion_kernel();
@@ -13,20 +16,13 @@ int main() {
     algoritmo_planificacion = config_valores.algoritmo_planificacion;
 
 
-    
-    if(strcmp(algoritmo_planificacion, "VRR") == 0){
-    procesos_ready_con_prioridad = queue_create();
-    } //sacar
-
-
-
     contador_de_colas_bloqueados = 0;
     procesos_en_programacion = 0;
     planificacion_activa = false;
     quantum = config_valores.quantum;
     inicializar_colas_sin_bloqueados(); //INICIALIZA LAS COLAS "NORMALES"
 
-
+    
 
 
     //iniciar servidor de kernel
