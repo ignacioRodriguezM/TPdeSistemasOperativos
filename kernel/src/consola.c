@@ -177,6 +177,7 @@ void _atender_instruccion_validada(char *leido)
         if(!buscar_en_colas_y_eliminar_el_proceso(pid_a_finalizar)){
             log_error(kernel_log_debug, "EL PID A FINALIZAR NO SE ENCUENTRA EN LAS COLAS");
         }
+        
     }
     else if (strcmp(comando_consola[0], "DETENER_PLANIFICACION") == 0)
     {
@@ -188,6 +189,9 @@ void _atender_instruccion_validada(char *leido)
         else
         {
             planificacion_activa = false;
+            for(int i=0; i< 9; i++){
+                sem_wait(&planificacion_activa_semaforo);
+            }
             log_info(kernel_logger, "La planificacion fue detenida");
         }
     }
@@ -199,11 +203,13 @@ void _atender_instruccion_validada(char *leido)
             log_info(kernel_logger, "La planificacion ya estaba activa");
         }
         else
-        {
-            log_info(kernel_logger, "La planificacion fue activada");
+        {   
             planificacion_activa = true;
-            iniciar_planificador_de_largo_plazo();
-            iniciar_planificador_de_corto_plazo();
+            log_info(kernel_logger, "La planificacion fue activada");
+            for(int i=0; i< 9; i++){
+                sem_post(&planificacion_activa_semaforo);
+            }
+            
         }
     }
     else if (strcmp(comando_consola[0], "MULTIPROGRAMACION") == 0)
@@ -296,6 +302,7 @@ bool buscar_en_colas_y_eliminar_el_proceso(int pid_a_finalizar)
 
     ///////////////// BUSCAR EN NEW///////////////////////
     if(buscar_en_cola (pid_a_finalizar, procesos_new, "NEW")){
+        sem_post(&grado_multiprogramacion_semaforo);
         return true;
     }
     
@@ -306,6 +313,7 @@ bool buscar_en_colas_y_eliminar_el_proceso(int pid_a_finalizar)
 
     /////////////////// BUSCAR EN READY///////////////
     if(buscar_en_cola (pid_a_finalizar, procesos_ready, "READY")){
+        sem_post(&grado_multiprogramacion_semaforo);
         return true;
     }
     
@@ -314,7 +322,8 @@ bool buscar_en_colas_y_eliminar_el_proceso(int pid_a_finalizar)
     for (int i=0; i<contador_de_colas_bloqueados; i++){
         if(colas_bloqueados[i]->conectado){
             if(buscar_en_cola (pid_a_finalizar, colas_bloqueados[i]->cola, "BLOQUEADO")){
-            return true;
+                sem_post(&grado_multiprogramacion_semaforo);
+                return true;
             }
         }
     }
@@ -322,6 +331,7 @@ bool buscar_en_colas_y_eliminar_el_proceso(int pid_a_finalizar)
     /////////////////// BUSCAR EN READY AUX///////////////
     if(strcmp(algoritmo_planificacion, "VRR") == 0){
         if(buscar_en_cola (pid_a_finalizar, procesos_ready_con_prioridad, "READY-PRIORIDAD")){
+            sem_post(&grado_multiprogramacion_semaforo);
             return true;
         }
     }

@@ -8,7 +8,6 @@ PCB *_crear_pcb(uint16_t pid)
     pcb_creado->pc = 0;
     pcb_creado->pid = pid;
     pcb_creado->quantum = quantum;
-
     return pcb_creado;
 }
 
@@ -33,29 +32,36 @@ void crear_proceso(char *path)
     pthread_mutex_unlock(&mutex_procesos);
 
     log_info(kernel_logger, "Se crea el proceso %u en NEW", pid);
+
+    sem_post(&proceso_creado_en_new_semaforo);
 }
 
 void mover_procesos_de_new_a_ready()
 {
-    while (planificacion_activa == true)
+    while (1)
     {
-        if (procesos_en_programacion < grado_multiprogramacion && procesos_new->elements->elements_count > 0)
-        {
-            pthread_mutex_lock(&mutex_procesos);
 
-            PCB *proceso_movido = queue_pop(procesos_new);
-            queue_push(procesos_ready, proceso_movido);
+        sem_wait(&proceso_creado_en_new_semaforo);
+        sem_wait(&grado_multiprogramacion_semaforo);
+        sem_wait(&planificacion_activa_semaforo);
+        sem_post(&planificacion_activa_semaforo);
 
-            procesos_en_programacion++;
+        pthread_mutex_lock(&mutex_procesos);
 
-            log_info(kernel_logger, "PID: %u - Estado Anterior: NEW - Estado Actual: READY", proceso_movido->pid);
+        PCB *proceso_movido = queue_pop(procesos_new);
+        queue_push(procesos_ready, proceso_movido);
 
-            // TERMINAR ESTE LOG
-            log_info(kernel_logger, "Cola Ready procesos_ready: [<LISTA DE PIDS>]");
-            // puedo crear un buffer y ahi ir guardandno todos lo s pids
+        procesos_en_programacion++;
 
-            pthread_mutex_unlock(&mutex_procesos);
-        }
+        log_info(kernel_logger, "PID: %u - Estado Anterior: NEW - Estado Actual: READY", proceso_movido->pid);
+
+        // TERMINAR ESTE LOG
+        log_info(kernel_logger, "Cola Ready procesos_ready: [<LISTA DE PIDS>]");
+        // puedo crear un buffer y ahi ir guardandno todos lo s pids
+
+        pthread_mutex_unlock(&mutex_procesos);
+
+        sem_post(&algun_ready);
     }
 }
 
@@ -69,11 +75,17 @@ void iniciar_planificador_de_largo_plazo()
 // PLANIFICADOR DE CORTO PLAZO
 
 void mover_procesos_de_ready_a_excecute()
-{
+{   
+    
+
     if (strcmp(algoritmo_planificacion, "VRR") != 0)
     {
-        while (planificacion_activa == true)
+        while (1)
         {
+            sem_wait(&algun_ready);
+            sem_wait(&cpu_vacia_semaforo);
+            sem_wait(&planificacion_activa_semaforo);
+            sem_post(&planificacion_activa_semaforo);
             if (procesos_excec->elements->elements_count == 0 && procesos_ready->elements->elements_count > 0)
             {
                 pthread_mutex_lock(&mutex_procesos);
@@ -104,12 +116,17 @@ void mover_procesos_de_ready_a_excecute()
                 // enviamos el proceso de ready a execute primero y luego lo enviamos a cpu
                 destruir_paquete(a_enviar);
             }
+            
         }
     }
     else if (strcmp(algoritmo_planificacion, "VRR") == 0)
     {
-        while (planificacion_activa == true)
+        while (1)
         {
+            sem_wait(&algun_ready);
+            sem_wait(&cpu_vacia_semaforo);
+            sem_wait(&planificacion_activa_semaforo);
+            sem_post(&planificacion_activa_semaforo);
             if (procesos_excec->elements->elements_count == 0 && procesos_ready_con_prioridad->elements->elements_count > 0)
             {
                 pthread_mutex_lock(&mutex_procesos);
@@ -170,6 +187,7 @@ void mover_procesos_de_ready_a_excecute()
                 // enviamos el proceso de ready a execute primero y luego lo enviamos a cpu
                 destruir_paquete(a_enviar);
             }
+            
         }
     }
 }
@@ -183,30 +201,30 @@ void iniciar_planificador_de_corto_plazo()
 
 void mover_de_excec_a_cola_bloqueado(char *nombre_de_la_io)
 {
-    bool a = true;
-    while (a)
-    {
-        while (planificacion_activa && a)
-        {
-            for (int i = 0; i < contador_de_colas_bloqueados; i++)
-            {
+    sem_wait(&planificacion_activa_semaforo);
+    sem_post(&planificacion_activa_semaforo);
 
-                if (strcmp(colas_bloqueados[i]->nombre, nombre_de_la_io) == 0)
-                {
-                    pthread_mutex_lock(&mutex_procesos);
-                    PCB *proceso_movido = queue_pop(procesos_excec);
-                    queue_push(colas_bloqueados[i]->cola, proceso_movido);
-                    pthread_mutex_unlock(&mutex_procesos);
-                    log_info(kernel_logger, "PID: %u - Estado Anterior: EXCEC - Estado Actual: BLOQUEADO", proceso_movido->pid);
-                }
-            }
-            a = false;
+    for (int i = 0; i < contador_de_colas_bloqueados; i++)
+    {
+
+        if (strcmp(colas_bloqueados[i]->nombre, nombre_de_la_io) == 0)
+        {
+            pthread_mutex_lock(&mutex_procesos);
+            PCB *proceso_movido = queue_pop(procesos_excec);
+            queue_push(colas_bloqueados[i]->cola, proceso_movido);
+            pthread_mutex_unlock(&mutex_procesos);
+            log_info(kernel_logger, "PID: %u - Estado Anterior: EXCEC - Estado Actual: BLOQUEADO", proceso_movido->pid);
         }
     }
+
+    sem_post(&cpu_vacia_semaforo);
+    
 }
 
 void mover_a_io_si_hay_algun_proceso_encolado(char *nombre_io) // verificar si hay algun proceso en su cola de bloqueados, si hay, lo manda a
 {
+    sem_wait(&planificacion_activa_semaforo);
+    sem_post(&planificacion_activa_semaforo);
     for (int i = 0; i < contador_de_colas_bloqueados; i++)
     {
 
@@ -226,11 +244,13 @@ void mover_a_io_si_hay_algun_proceso_encolado(char *nombre_io) // verificar si h
             break;
         }
     }
+    
 }
 
 void mover_de_excec_a_ready()
 {
-
+    sem_wait(&planificacion_activa_semaforo);
+    sem_post(&planificacion_activa_semaforo);
     pthread_mutex_lock(&mutex_procesos);
     PCB *proceso_movido = queue_pop(procesos_excec);
     queue_push(procesos_ready, proceso_movido);
@@ -238,6 +258,10 @@ void mover_de_excec_a_ready()
 
     log_info(kernel_logger, "PID: %u - Desalojado por fin de Quantum", proceso_movido->pid);
     log_info(kernel_logger, "PID: %u - Estado Anterior: EXCEC - Estado Actual: READY", proceso_movido->pid);
+
+    sem_post(&cpu_vacia_semaforo);
+    sem_post(&algun_ready);
+    
 }
 
 void avisarle_a_memoria_que_libere_recursos_de_proceso(uint16_t pid)
@@ -253,7 +277,8 @@ void avisarle_a_memoria_que_libere_recursos_de_proceso(uint16_t pid)
 
 void _mandar_de_excec_a_exit(char *motivo)
 {
-
+    sem_wait(&planificacion_activa_semaforo);
+    sem_post(&planificacion_activa_semaforo);
     pthread_mutex_lock(&mutex_procesos);
     PCB *proceso_movido = queue_pop(procesos_excec);
     queue_push(procesos_exit, proceso_movido);
@@ -264,4 +289,7 @@ void _mandar_de_excec_a_exit(char *motivo)
     log_info(kernel_logger, "Finaliza el proceso %u - Motivo: %s", proceso_movido->pid, motivo);
 
     log_info(kernel_logger, "PID: %u - Estado Anterior: EXCEC - Estado Actual: EXIT", proceso_movido->pid);
+
+    sem_post(&cpu_vacia_semaforo);
+    sem_post(&grado_multiprogramacion_semaforo);
 }
