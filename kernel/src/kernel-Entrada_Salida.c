@@ -97,14 +97,16 @@ void atender_multiples_entrada_salida(int *socket_ptr)
                 char* nombre_de_io = extraer_string_al_buffer(buffer_recibido_fin_de_ejecucion);
                 uint16_t pid = extraer_uint16_al_buffer(buffer_recibido_fin_de_ejecucion);
                 destruir_buffer(buffer_recibido_fin_de_ejecucion);
-                bool a = true;
-                while (a){
-                    while(planificacion_activa){
-                        _mover_de_cola_bloqueados_a_ready_o_aux(nombre_de_io, pid);
-                        mover_a_io_si_hay_algun_proceso_encolado(nombre_de_io); //verificar si hay algun proceso en su cola de bloqueados, si hay, lo manda a "ejecutar" en la io
-                        a = false;
-                    }
-                }
+                
+                sem_wait(&planificacion_activa_semaforo);
+                sem_post(&planificacion_activa_semaforo);  
+                
+                _mover_de_cola_bloqueados_a_ready_o_aux(nombre_de_io, pid);
+                mover_a_io_si_hay_algun_proceso_encolado(nombre_de_io); //verificar si hay algun proceso en su cola de bloqueados, si hay, lo manda a "ejecutar" en la io
+
+                   
+                    
+                
                 free(nombre_de_io);
             break;
 
@@ -143,7 +145,7 @@ void _mover_de_cola_bloqueados_a_ready_o_aux(char* nombre_de_io, uint16_t pid){
 
 
 
-
+            sem_post(&algun_ready);
 
             char* nombre_interfaz = extraer_string_al_buffer(pcb_que_cumplio_tarea_io->operacion_de_io_por_la_que_fue_bloqueado);
             char* operacion_a_realizar = extraer_string_al_buffer(pcb_que_cumplio_tarea_io->operacion_de_io_por_la_que_fue_bloqueado);

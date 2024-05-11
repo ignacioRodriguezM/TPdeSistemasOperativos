@@ -5,7 +5,8 @@ int main() {
     //incializo kernel;
     sem_init(&planificacion_activa_semaforo, 0, 0);
     sem_init(&proceso_creado_en_new_semaforo, 0, 0);
-
+    sem_init(&cpu_vacia_semaforo, 0, 1);
+    sem_init(&algun_ready, 0, 0);
 
     inicializar_logger (&kernel_logger, "kernel_logs.log");
     inicializar_logger_debug (&kernel_log_debug, "kernel_debug.log");
@@ -15,13 +16,15 @@ int main() {
     grado_multiprogramacion = config_valores.grado_multiprogramacion;
     algoritmo_planificacion = config_valores.algoritmo_planificacion;
 
+    sem_init(&grado_multiprogramacion_semaforo, 0, grado_multiprogramacion);
 
-    contador_de_colas_bloqueados = 0;
-    procesos_en_programacion = 0;
     planificacion_activa = false;
     quantum = config_valores.quantum;
     inicializar_colas_sin_bloqueados(); //INICIALIZA LAS COLAS "NORMALES"
 
+
+    iniciar_planificador_de_largo_plazo();
+    iniciar_planificador_de_corto_plazo();
     
 
 

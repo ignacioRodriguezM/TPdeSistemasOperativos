@@ -23,7 +23,6 @@ int fd_cpu_dispatch;
 int fd_cpu_interrupt;
 
 uint16_t identificador_PID = 1;
-uint16_t contador_pcbs = 1;
 
 pthread_mutex_t mutex_pid;
 pthread_mutex_t mutex_colas;
@@ -35,12 +34,12 @@ t_queue* procesos_ready_con_prioridad;
 t_queue* procesos_excec;
 t_queue* procesos_exit;
 Colas_bloqueados** colas_bloqueados;
-int contador_de_colas_bloqueados;
+int contador_de_colas_bloqueados = 0;
 
 
 int grado_multiprogramacion;
 int8_t quantum; //SI ES FIFO PONER -1
-int procesos_en_programacion;
+int procesos_en_programacion = 0;
 bool planificacion_activa;
 char* algoritmo_planificacion;
 
@@ -48,6 +47,8 @@ char* algoritmo_planificacion;
 sem_t planificacion_activa_semaforo;
 sem_t grado_multiprogramacion_semaforo;
 sem_t proceso_creado_en_new_semaforo;
+sem_t cpu_vacia_semaforo;
+sem_t algun_ready;
 
 
 #endif
