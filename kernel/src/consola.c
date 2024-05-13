@@ -189,7 +189,7 @@ void _atender_instruccion_validada(char *leido)
         else
         {
             planificacion_activa = false;
-            for(int i=0; i< 9; i++){
+            for(int i=0; i< 10; i++){
                 sem_wait(&planificacion_activa_semaforo);
             }
             log_info(kernel_logger, "La planificacion fue detenida");
@@ -206,7 +206,7 @@ void _atender_instruccion_validada(char *leido)
         {   
             planificacion_activa = true;
             log_info(kernel_logger, "La planificacion fue activada");
-            for(int i=0; i< 9; i++){
+            for(int i=0; i< 10; i++){
                 sem_post(&planificacion_activa_semaforo);
             }
             
@@ -279,7 +279,7 @@ bool buscar_en_cola (int pid_a_finalizar, t_queue* cola, char* nombre_cola){
 
                 avisarle_a_memoria_que_libere_recursos_de_proceso(proceso->pid);
 
-                log_info(kernel_logger, "Finaliza el proceso %u - Motivo: FINALIZADO_POR_CONSOLA", proceso->pid);
+                log_info(kernel_logger, "Finaliza el proceso %u - Motivo: INTERRUPTED_BY_USER", proceso->pid);
 
                 log_info(kernel_logger, "PID: %u - Estado Anterior: %s - Estado Actual: EXIT", proceso->pid, nombre_cola);
 

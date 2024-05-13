@@ -285,7 +285,7 @@ void _mandar_de_excec_a_exit(char *motivo)
     pthread_mutex_unlock(&mutex_procesos);
 
     avisarle_a_memoria_que_libere_recursos_de_proceso(proceso_movido->pid);
-
+    // LIBERAR RECURSOS
     log_info(kernel_logger, "Finaliza el proceso %u - Motivo: %s", proceso_movido->pid, motivo);
 
     log_info(kernel_logger, "PID: %u - Estado Anterior: EXCEC - Estado Actual: EXIT", proceso_movido->pid);
