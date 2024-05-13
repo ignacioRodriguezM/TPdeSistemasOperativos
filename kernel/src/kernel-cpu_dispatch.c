@@ -268,7 +268,12 @@ void _manejar_wait(){
 
             chequeo_si_alguna_coincide_nombre = false;
             if(recursos[i]->instancias < 0){
-                //BLOQUEAR
+                PCB *pcb_a_editar = (PCB *)queue_peek(procesos_excec);
+                pcb_a_editar->quantum = quantum;
+                bloquear_proceso_en_ejecucion_por_recurso(i);
+                free(nombre_recurso_recibido);
+                destruir_buffer(buffer_recibido);
+                return;
             }
             break;
         }
@@ -284,6 +289,7 @@ void _manejar_wait(){
         pthread_mutex_lock(&mutex_procesos);
         PCB *pcb_a_devolver_a_cpu = (PCB *)queue_pop(procesos_excec);
         queue_push(procesos_excec, pcb_a_devolver_a_cpu);
+        pthread_mutex_unlock(&mutex_procesos);
     }
 
     free(nombre_recurso_recibido);
@@ -313,6 +319,9 @@ void _manejar_signal(){
             log_info(kernel_log_debug, "SE SUMA UNA INSTANCIA AL RECURSO %s", nombre_recurso_recibido);
 
             chequeo_si_alguna_coincide_nombre = false;
+            if(recursos[i]->instancias <= 0){
+                desbloquear_proceso_bloqueado_por_recurso(i);
+            }
             break;
         }
         i++;
@@ -327,6 +336,7 @@ void _manejar_signal(){
         pthread_mutex_lock(&mutex_procesos);
         PCB *pcb_a_devolver_a_cpu = (PCB *)queue_pop(procesos_excec);
         queue_push(procesos_excec, pcb_a_devolver_a_cpu);
+        pthread_mutex_unlock(&mutex_procesos);
     }
 
     free(nombre_recurso_recibido);
