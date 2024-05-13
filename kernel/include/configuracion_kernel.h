@@ -20,6 +20,6 @@
 
 APP_config cargar_configuracion_kernel (void);
     
-uint16_t* convertirArrayCharAUInt16(char** array_char);
+int* convertirArrayCharAUInt16(char** array_char);
 
 #endif

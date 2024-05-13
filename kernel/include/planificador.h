@@ -11,7 +11,8 @@ void mover_a_io_si_hay_algun_proceso_encolado(char *nombre_io); //verificar si h
 void mover_de_excec_a_ready ();
 void _mandar_de_excec_a_exit(char* motivo);
 void avisarle_a_memoria_que_libere_recursos_de_proceso(uint16_t pid);
-
+void bloquear_proceso_en_ejecucion_por_recurso (int index_cola);
+void desbloquear_proceso_bloqueado_por_recurso (int index_cola);
 
 
 

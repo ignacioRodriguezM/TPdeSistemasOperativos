@@ -258,6 +258,7 @@ void mover_de_excec_a_ready()
 
     log_info(kernel_logger, "PID: %u - Desalojado por fin de Quantum", proceso_movido->pid);
     log_info(kernel_logger, "PID: %u - Estado Anterior: EXCEC - Estado Actual: READY", proceso_movido->pid);
+    log_info(kernel_logger, "Cola Ready procesos_ready: [<LISTA DE PIDS>]");
 
     sem_post(&cpu_vacia_semaforo);
     sem_post(&algun_ready);
@@ -285,11 +286,40 @@ void _mandar_de_excec_a_exit(char *motivo)
     pthread_mutex_unlock(&mutex_procesos);
 
     avisarle_a_memoria_que_libere_recursos_de_proceso(proceso_movido->pid);
-
+    // LIBERAR RECURSOS
     log_info(kernel_logger, "Finaliza el proceso %u - Motivo: %s", proceso_movido->pid, motivo);
 
     log_info(kernel_logger, "PID: %u - Estado Anterior: EXCEC - Estado Actual: EXIT", proceso_movido->pid);
 
     sem_post(&cpu_vacia_semaforo);
     sem_post(&grado_multiprogramacion_semaforo);
+}
+
+void bloquear_proceso_en_ejecucion_por_recurso (int index_cola){
+    sem_wait(&planificacion_activa_semaforo);
+    sem_post(&planificacion_activa_semaforo);
+
+    pthread_mutex_lock(&mutex_procesos);
+    PCB *proceso_movido = queue_pop(procesos_excec);
+    queue_push(recursos[index_cola]->cola_bloqueados_por_recursos, proceso_movido);
+    pthread_mutex_unlock(&mutex_procesos);
+
+    sem_post(&cpu_vacia_semaforo);
+    log_info(kernel_logger, "PID: %u - Bloqueado por: %s", proceso_movido->pid, recursos[index_cola]->nombre);
+    log_info(kernel_logger, "PID: %u - Estado Anterior: EXCEC - Estado Actual: BLOQ", proceso_movido->pid);
+}
+
+void desbloquear_proceso_bloqueado_por_recurso (int index_cola){
+    sem_wait(&planificacion_activa_semaforo);
+    sem_post(&planificacion_activa_semaforo);
+
+    pthread_mutex_lock(&mutex_procesos);
+    PCB *proceso_movido = queue_pop(recursos[index_cola]->cola_bloqueados_por_recursos);
+    queue_push(procesos_ready, proceso_movido);
+    pthread_mutex_unlock(&mutex_procesos);
+
+    log_info(kernel_logger, "PID: %u - Desbloqueado ", proceso_movido->pid);
+    log_info(kernel_logger, "PID: %u - Estado Anterior: BLOQ - Estado Actual: READY", proceso_movido->pid);
+    log_info(kernel_logger, "Cola Ready procesos_ready: [<LISTA DE PIDS>]");
+
 }

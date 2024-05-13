@@ -337,11 +337,13 @@ void _decode_and_excecute(char *palabra)
     }
     else if (strcmp(comandos[0], "WAIT") == 0)
     {
-        printf("CASO NO DESARROLLADO \n");
+        WAIT(comandos[1]);
+        log_info(cpu_logger, "PID: %u - Ejecutando: WAIT - %s ", PID, comandos[1]);
     }
     else if (strcmp(comandos[0], "SIGNAL") == 0)
     {
-        printf("CASO NO DESARROLLADO \n");
+        SIGNAL(comando[1]);
+        log_info(cpu_logger, "PID: %u - Ejecutando: SIGNAL - %s ", PID, comandos[1]);
     }
     else if (strcmp(comandos[0], "IO_FS_CREATE") == 0)
     {

@@ -11,7 +11,11 @@ int main() {
     inicializar_logger (&kernel_logger, "kernel_logs.log");
     inicializar_logger_debug (&kernel_log_debug, "kernel_debug.log");
     APP_config config_valores = cargar_configuracion_kernel();
-    // POR SI NECESITO PASAR EL ARRAY DE STRINGS A ARRAY DE INTS: uint16_t* instancias_Recursos = convertirArrayCharAUInt16 (config_valores.instancias_recursos);
+    // POR SI NECESITO PASAR EL ARRAY DE STRINGS A ARRAY DE INTS: 
+
+    int* instancias_recursos = convertirArrayCharAUInt16 (config_valores.instancias_recursos);
+    
+    iniciar_semaforos_de_recursos(config_valores.recursos, instancias_recursos);
 
     grado_multiprogramacion = config_valores.grado_multiprogramacion;
     algoritmo_planificacion = config_valores.algoritmo_planificacion;

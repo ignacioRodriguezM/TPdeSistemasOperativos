@@ -27,6 +27,13 @@ void atender_kernel_cpu_dispatch()
         case INTERRUPT:
 
             break;
+        case WAIT_op:
+            _manejar_wait();
+
+            break;
+        case SIGNAL_op:
+            _manejar_signal();
+            break;
 
         case DESALOJO_POR_QUANTUM:
 
@@ -239,6 +246,102 @@ void _manejar_exit()
 
     destruir_buffer(buffer_recibido);
 }
+void _manejar_wait(){
+    t_buffer *buffer_recibido = recibir_buffer_sin_cod_op(fd_cpu_dispatch);
+    extraer_y_actualizar_pcb_en_excecute_manteniendo_quantum(buffer_recibido);    
+    // [nombre_recurso]
+    char* nombre_recurso_recibido = extraer_string_al_buffer(buffer_recibido);
+
+    sem_wait(&planificacion_activa_semaforo);
+    sem_post(&planificacion_activa_semaforo);
+
+    int i = 0;
+    bool chequeo_si_alguna_coincide_nombre = true;
+    while(recursos[i]->nombre != NULL){
+        if(strcmp(recursos[i]->nombre, nombre_recurso_recibido)  == 0){
+
+            pthread_mutex_lock(&mutex_recursos);
+            recursos[i]->instancias --;
+            pthread_mutex_unlock(&mutex_recursos);
+
+            log_info(kernel_log_debug, "SE RESTA UNA INSTANCIA AL RECURSO %s", nombre_recurso_recibido);
+
+            chequeo_si_alguna_coincide_nombre = false;
+            if(recursos[i]->instancias < 0){
+                PCB *pcb_a_editar = (PCB *)queue_peek(procesos_excec);
+                pcb_a_editar->quantum = quantum;
+                bloquear_proceso_en_ejecucion_por_recurso(i);
+                free(nombre_recurso_recibido);
+                destruir_buffer(buffer_recibido);
+                return;
+            }
+            break;
+        }
+        i++;
+    }
+    if(chequeo_si_alguna_coincide_nombre){
+        //MANDAR A EXIT
+        _mandar_de_excec_a_exit("INVALID_RESOURCE");
+        //LIBERAR RECURSOS USADOS FALTA!!!!
+    }
+
+    else{
+        pthread_mutex_lock(&mutex_procesos);
+        PCB *pcb_a_devolver_a_cpu = (PCB *)queue_pop(procesos_excec);
+        queue_push(procesos_excec, pcb_a_devolver_a_cpu);
+        pthread_mutex_unlock(&mutex_procesos);
+    }
+
+    free(nombre_recurso_recibido);
+    destruir_buffer(buffer_recibido);
+}
+
+void _manejar_signal(){
+    t_buffer *buffer_recibido = recibir_buffer_sin_cod_op(fd_cpu_dispatch);
+
+    extraer_y_actualizar_pcb_en_excecute_manteniendo_quantum(buffer_recibido);
+    
+    // [nombre_recurso]
+    char* nombre_recurso_recibido = extraer_string_al_buffer(buffer_recibido);
+
+    sem_wait(&planificacion_activa_semaforo);
+    sem_post(&planificacion_activa_semaforo);
+
+    int i = 0;
+    bool chequeo_si_alguna_coincide_nombre = true;
+    while(recursos[i]->nombre != NULL){
+        if(strcmp(recursos[i]->nombre, nombre_recurso_recibido)  == 0){
+
+            pthread_mutex_lock(&mutex_recursos);
+            recursos[i]->instancias ++;
+            pthread_mutex_unlock(&mutex_recursos);
+
+            log_info(kernel_log_debug, "SE SUMA UNA INSTANCIA AL RECURSO %s", nombre_recurso_recibido);
+
+            chequeo_si_alguna_coincide_nombre = false;
+            if(recursos[i]->instancias <= 0){
+                desbloquear_proceso_bloqueado_por_recurso(i);
+            }
+            break;
+        }
+        i++;
+    }
+    if(chequeo_si_alguna_coincide_nombre){
+        //MANDAR A EXIT
+        _mandar_de_excec_a_exit("INVALID_RESOURCE");
+        //LIBERAR RECURSOS USADOS FALTA!!!!
+    }
+
+    else{
+        pthread_mutex_lock(&mutex_procesos);
+        PCB *pcb_a_devolver_a_cpu = (PCB *)queue_pop(procesos_excec);
+        queue_push(procesos_excec, pcb_a_devolver_a_cpu);
+        pthread_mutex_unlock(&mutex_procesos);
+    }
+
+    free(nombre_recurso_recibido);
+    destruir_buffer(buffer_recibido);
+}
 void _manejar_bloqueo()
 {
 
@@ -307,7 +410,7 @@ void _manejar_bloqueo()
     else
     {
 
-        _mandar_de_excec_a_exit("INVALID_RESOURCE");
+        _mandar_de_excec_a_exit("INVALID_INTERFACE");
     }
 
     destruir_buffer(buffer_recibido);

@@ -43,6 +43,14 @@ typedef struct
     bool conectado;
 } Colas_bloqueados;
 
+typedef struct
+{
+    char *nombre;
+    int instancias;
+    t_queue* cola_bloqueados_por_recursos;
+
+} Recursos;
+
 
 // Variables GLOBALES
 extern t_log *kernel_logger;
@@ -61,6 +69,7 @@ extern uint16_t identificador_PID;
 extern pthread_mutex_t mutex_pid;
 extern pthread_mutex_t mutex_colas;
 extern pthread_mutex_t mutex_procesos;
+extern pthread_mutex_t mutex_recursos;
 
 extern t_queue *procesos_new;
 extern t_queue *procesos_ready;
@@ -75,6 +84,8 @@ extern int procesos_en_programacion;
 extern int8_t quantum;
 extern bool planificacion_activa;
 extern char *algoritmo_planificacion;
+
+extern Recursos** recursos;
 
 
 extern sem_t planificacion_activa_semaforo;
