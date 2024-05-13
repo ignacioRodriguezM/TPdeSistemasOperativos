@@ -27,6 +27,13 @@ void atender_kernel_cpu_dispatch()
         case INTERRUPT:
 
             break;
+        case WAIT_op:
+            _manejar_wait();
+
+            break;
+        case SIGNAL_op:
+            _manejar_signal();
+            break;
 
         case DESALOJO_POR_QUANTUM:
 
@@ -238,6 +245,21 @@ void _manejar_exit()
     _mandar_de_excec_a_exit("SUCCES");
 
     destruir_buffer(buffer_recibido);
+}
+void _manejar_wait(){
+    t_buffer *buffer_recibido = recibir_buffer_sin_cod_op(fd_cpu_dispatch);
+    extraer_y_actualizar_pcb_en_excecute(buffer_recibido);
+    // [nombre_recurso]
+    char* nombre_recurso_recibido = extraer_string_al_buffer(buffer_recibido);
+
+}
+
+void _manejar_signal(){
+    t_buffer *buffer_recibido = recibir_buffer_sin_cod_op(fd_cpu_dispatch);
+    extraer_y_actualizar_pcb_en_excecute(buffer_recibido);
+    // [nombre_recurso]
+    char* nombre_recurso_recibido = extraer_string_al_buffer(buffer_recibido);
+
 }
 void _manejar_bloqueo()
 {

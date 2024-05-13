@@ -36,6 +36,8 @@ typedef enum
 	LLAMADA_A_IO,
 	DESALOJO_POR_QUANTUM,
 	INTERRUPT,
+	WAIT_op,
+	SIGNAL_op,
 
 	//----------------IO-KERNEL
 	PRESENTACION,

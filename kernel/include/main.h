@@ -9,6 +9,7 @@
 #include "./kernel-cpu_interrupt.h"
 #include "./consola.h"
 #include "./colas_estados.h"
+#include "./semaforos.h"
 
 
 
@@ -44,11 +45,16 @@ bool planificacion_activa;
 char* algoritmo_planificacion;
 
 
+Recursos** recursos;
+
+
 sem_t planificacion_activa_semaforo;
 sem_t grado_multiprogramacion_semaforo;
 sem_t proceso_creado_en_new_semaforo;
 sem_t cpu_vacia_semaforo;
 sem_t algun_ready;
+
+
 
 
 #endif
