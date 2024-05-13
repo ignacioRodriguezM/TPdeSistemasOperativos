@@ -12,10 +12,9 @@ void iniciar_semaforos_de_recursos(char** nombre_recursos, int* instancias_recur
     for(int i=0; i < cantidad; i++){
         recursos[i] = malloc(sizeof(Recursos));
         recursos[i]->nombre = nombre_recursos[i];
-        recursos[i]->instancias = instancias_recursos;
+        recursos[i]->instancias = instancias_recursos[i];
         recursos[i]->cola_bloqueados_por_recursos = queue_create();
     }
 
-    //free(nombre_recursos);
 }
 
