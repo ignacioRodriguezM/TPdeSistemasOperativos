@@ -28,6 +28,7 @@ uint16_t identificador_PID = 1;
 pthread_mutex_t mutex_pid;
 pthread_mutex_t mutex_colas;
 pthread_mutex_t mutex_procesos;
+pthread_mutex_t mutex_recursos;
 
 t_queue* procesos_new;
 t_queue* procesos_ready;

@@ -46,7 +46,7 @@ typedef struct
 typedef struct
 {
     char *nombre;
-    sem_t instancias;
+    int instancias;
     t_queue* cola_bloqueados_por_recursos;
 
 } Recursos;
@@ -69,6 +69,7 @@ extern uint16_t identificador_PID;
 extern pthread_mutex_t mutex_pid;
 extern pthread_mutex_t mutex_colas;
 extern pthread_mutex_t mutex_procesos;
+extern pthread_mutex_t mutex_recursos;
 
 extern t_queue *procesos_new;
 extern t_queue *procesos_ready;
