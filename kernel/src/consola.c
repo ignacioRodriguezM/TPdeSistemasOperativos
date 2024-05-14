@@ -252,6 +252,13 @@ void _atender_instruccion_validada(char *leido)
             printf("PROCESOS BLOQUEADOS POR %s: \n", colas_bloqueados[i]->nombre);
             list_iterate(colas_bloqueados[i]->cola->elements, imprimo_elemento);
         }
+        int i = 0;
+        while (recursos[i] != NULL)
+        {   
+            printf("PROCESOS BLOQUEADOS POR RECURSO: %s \n", recursos[i]->nombre);
+            list_iterate(recursos[i]->cola_bloqueados_por_recursos->elements,imprimo_elemento);
+            i++;
+        }
     }
     else
     {
