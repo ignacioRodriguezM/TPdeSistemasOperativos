@@ -23,6 +23,7 @@ PCB *_crear_pcb(uint16_t pid)
     PCB *pcb_creado = malloc(sizeof(PCB));
     pcb_creado->pc = 0;
     pcb_creado->pid = pid;
+
     pcb_creado->quantum = quantum;
     return pcb_creado;
 }
