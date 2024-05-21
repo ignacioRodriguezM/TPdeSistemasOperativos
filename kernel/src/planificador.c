@@ -2,8 +2,8 @@
 
 // PLANIFICADOR DE LARGO PLAZO
 
-void esperar (int8_t quantum){
-    esperarMilisegundos(quantum);
+void esperar (uint16_t* quantum){
+    esperarMilisegundos(*quantum);
     log_trace(kernel_log_debug, "Fin quantum");
     _enviar_interrupcion_quantum();
 }
@@ -14,7 +14,7 @@ void _enviar_interrupcion_quantum(){
     destruir_paquete(paq);
 }
 void manejar_quantum(PCB* proceso){
-    pthread_create(&hilo_quantum, NULL, (void *)esperar, NULL);
+    pthread_create(&hilo_quantum, NULL, (void *)esperar, (uint16_t*) &(proceso->quantum));
     pthread_detach(hilo_quantum);
 }
 
@@ -23,7 +23,6 @@ PCB *_crear_pcb(uint16_t pid)
     PCB *pcb_creado = malloc(sizeof(PCB));
     pcb_creado->pc = 0;
     pcb_creado->pid = pid;
-
     pcb_creado->quantum = quantum;
     return pcb_creado;
 }
@@ -129,11 +128,11 @@ void mover_procesos_de_ready_a_excecute()
 
                 log_info(kernel_logger, "PID: %u - Estado Anterior: READY - Estado Actual: EXCEC", proceso_movido->pid);
                 enviar_paquete(a_enviar, fd_cpu_dispatch);
-                // enviamos el proceso de ready a execute primero y luego lo enviamos a cpu
-                destruir_paquete(a_enviar);
                 if(strcmp(algoritmo_planificacion, "RR") == 0){
                 manejar_quantum(proceso_movido);
                 }
+                // enviamos el proceso de ready a execute primero y luego lo enviamos a cpu
+                destruir_paquete(a_enviar);
             }
             
         }
@@ -172,9 +171,9 @@ void mover_procesos_de_ready_a_excecute()
 
                 log_info(kernel_logger, "PID: %u - Estado Anterior: READY - Estado Actual: EXCEC", proceso_movido->pid);
                 enviar_paquete(a_enviar, fd_cpu_dispatch);
+                manejar_quantum(proceso_movido);
                 // enviamos el proceso de ready a execute primero y luego lo enviamos a cpu
                 destruir_paquete(a_enviar);
-                manejar_quantum(proceso_movido);
             }
             else if (procesos_excec->elements->elements_count == 0 && procesos_ready->elements->elements_count > 0)
             {
@@ -202,9 +201,9 @@ void mover_procesos_de_ready_a_excecute()
 
                 log_info(kernel_logger, "PID: %u - Estado Anterior: READY - Estado Actual: EXCEC", proceso_movido->pid);
                 enviar_paquete(a_enviar, fd_cpu_dispatch);
+                manejar_quantum(proceso_movido);
                 // enviamos el proceso de ready a execute primero y luego lo enviamos a cpu
                 destruir_paquete(a_enviar);
-                manejar_quantum(proceso_movido);
             }
             
         }

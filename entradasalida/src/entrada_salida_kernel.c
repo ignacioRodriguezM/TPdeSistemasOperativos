@@ -23,7 +23,7 @@ void atender_entrada_salida_kernel()
             {
                 //[pid][unidades de trabajo]
                 uint16_t pid = extraer_uint16_al_buffer(buffer_recibido);
-                uint8_t unidades_de_trabajo = extraer_uint8_al_buffer(buffer_recibido);
+                uint16_t unidades_de_trabajo = extraer_uint8_al_buffer(buffer_recibido);
                 destruir_buffer(buffer_recibido);
                 log_info(entrada_salida_logger, "PID: %u - Operacion: %s", pid, operacion_a_realizar);
                 esperarMilisegundos (unidades_de_trabajo * tiempo_unidad_trabajo);

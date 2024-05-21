@@ -40,7 +40,7 @@ int contador_de_colas_bloqueados = 0;
 
 
 int grado_multiprogramacion;
-int8_t quantum; //SI ES FIFO PONER -1
+uint16_t quantum; //SI ES FIFO PONER -1
 int procesos_en_programacion = 0;
 bool planificacion_activa;
 char* algoritmo_planificacion;

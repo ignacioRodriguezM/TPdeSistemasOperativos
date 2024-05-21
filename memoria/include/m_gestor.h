@@ -22,7 +22,7 @@ extern int fd_kernel;
 
 extern uint16_t tam_memoria; 
 extern uint16_t tam_pagina;
-extern uint8_t retardo_respuesta;
+extern uint16_t retardo_respuesta;
 extern char* path_base;
 
 extern t_list* lista_procesos;

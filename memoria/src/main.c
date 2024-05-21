@@ -8,7 +8,8 @@ int main() {
     APP_config config_valores = cargar_configuracion_memoria();
     tam_memoria = config_valores.tam_memoria;
     tam_pagina = config_valores.tam_pagina;
-    retardo_respuesta = config_valores.retardo_respuesta;
+    uint16_t aux = config_valores.retardo_respuesta;
+    retardo_respuesta = aux;
     path_base = config_valores.path_instrucciones;
     lista_procesos = list_create();
 

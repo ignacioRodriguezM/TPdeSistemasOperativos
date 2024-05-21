@@ -116,7 +116,7 @@ void enviar_paquete (t_paquete* paquete, int conexion);
 int recibir_size_del_buffer(int socket_cliente);
 t_buffer* recibir_buffer_sin_cod_op (int socket);
 
-void esperarMilisegundos(unsigned int milisegundos);
+void esperarMilisegundos(uint16_t milisegundos);
 
 
 

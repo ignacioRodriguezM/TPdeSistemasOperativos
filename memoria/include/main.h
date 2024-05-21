@@ -21,7 +21,7 @@ int fd_kernel;
 
 uint16_t tam_memoria; 
 uint16_t tam_pagina;
-uint8_t retardo_respuesta;
+uint16_t retardo_respuesta;
 char* path_base;
 
 t_list* lista_procesos;

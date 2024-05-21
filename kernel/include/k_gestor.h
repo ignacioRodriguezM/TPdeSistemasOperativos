@@ -28,7 +28,7 @@ typedef struct
 {
     uint16_t pid;
     uint32_t pc;
-    int8_t quantum;
+    uint16_t quantum;
     Registros registros;
     t_buffer *operacion_de_io_por_la_que_fue_bloqueado;
 } PCB;
@@ -83,7 +83,7 @@ extern int contador_de_colas_bloqueados;
 
 extern int grado_multiprogramacion;
 extern int procesos_en_programacion;
-extern int8_t quantum;
+extern uint16_t quantum;
 extern bool planificacion_activa;
 extern char *algoritmo_planificacion;
 

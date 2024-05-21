@@ -320,7 +320,7 @@ t_buffer* recibir_buffer_sin_cod_op (int socket){
 	return buffer_recibido;
 }
 
-void esperarMilisegundos(unsigned int milisegundos)
+void esperarMilisegundos(uint16_t milisegundos)
 {
     usleep(milisegundos * 1000); // Convertimos milisegundos a microsegundos
 }
