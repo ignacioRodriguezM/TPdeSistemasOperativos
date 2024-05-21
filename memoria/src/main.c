@@ -1,5 +1,5 @@
 #include "../include/main.h"
-
+#include "../include/tabla_de_paginas.h"
 
 int main() {
     //Inicializar memmoria
@@ -12,9 +12,13 @@ int main() {
     path_base = config_valores.path_instrucciones;
     lista_procesos = list_create();
 
+
+    crear_memoria_y_dividir_en_marcos();
+
     //iniciar servidor de memoria
     fd_memoria = iniciar_servidor (config_valores.puerto_escucha, memoria_logger, "MEMORIA INCIADA !!!");
 
+    
 
     /*
     //Esperiar conexion de i/o

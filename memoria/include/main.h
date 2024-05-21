@@ -8,6 +8,8 @@
 #include "./memoria_entrada_salida.h"
 
 
+
+
 //Variables GLOBALES
 t_log* memoria_logger; //log obligatorio
 t_log* memoria_log_debug; //log debug
@@ -25,6 +27,11 @@ char* path_base;
 t_list* lista_procesos;
 
 pthread_mutex_t mutex_procesos;
+pthread_mutex_t mutex_tabla_paginas;
+
+void* memoria_usuario;
+int cantidad_de_marcos;
+Marco** marcos_memoria;
 
 
 #endif

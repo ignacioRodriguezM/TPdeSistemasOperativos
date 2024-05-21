@@ -1,4 +1,5 @@
 #include "../include/memoria_kernel.h"
+#include "../include/tabla_de_paginas.h"
 
 void atender_memoria_kernel()
 {
@@ -99,6 +100,8 @@ void crear_proceso()
     }
     pthread_mutex_unlock(&mutex_procesos);
     free(path_recibido);
+
+    crear_tabla_de_paginas(proceso);
 }
 
 void finalizar_proceso()
