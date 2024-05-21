@@ -2,6 +2,22 @@
 
 // PLANIFICADOR DE LARGO PLAZO
 
+void esperar (int8_t quantum){
+    esperarMilisegundos(quantum);
+    log_trace(kernel_log_debug, "Fin quantum");
+    _enviar_interrupcion_quantum();
+}
+void _enviar_interrupcion_quantum(){
+    t_buffer* buff = crear_buffer();
+    t_paquete* paq = crear_paquete(FIN_QUANTUM, buff);
+    enviar_paquete(paq, fd_cpu_interrupt);
+    destruir_paquete(paq);
+}
+void manejar_quantum(PCB* proceso){
+    pthread_create(&hilo_quantum, NULL, (void *)esperar, NULL);
+    pthread_detach(hilo_quantum);
+}
+
 PCB *_crear_pcb(uint16_t pid)
 {
     PCB *pcb_creado = malloc(sizeof(PCB));
@@ -97,7 +113,6 @@ void mover_procesos_de_ready_a_excecute()
 
                 cargar_uint16_al_buffer(buffer, proceso_movido->pid);
                 cargar_uint32_al_buffer(buffer, proceso_movido->pc);
-                cargar_int8_al_buffer(buffer, proceso_movido->quantum);
                 cargar_uint8_al_buffer(buffer, proceso_movido->registros.ax);
                 cargar_uint8_al_buffer(buffer, proceso_movido->registros.bx);
                 cargar_uint8_al_buffer(buffer, proceso_movido->registros.cx);
@@ -115,6 +130,9 @@ void mover_procesos_de_ready_a_excecute()
                 enviar_paquete(a_enviar, fd_cpu_dispatch);
                 // enviamos el proceso de ready a execute primero y luego lo enviamos a cpu
                 destruir_paquete(a_enviar);
+                if(strcmp(algoritmo_planificacion, "RR") == 0){
+                manejar_quantum(proceso_movido);
+                }
             }
             
         }
@@ -138,7 +156,6 @@ void mover_procesos_de_ready_a_excecute()
 
                 cargar_uint16_al_buffer(buffer, proceso_movido->pid);
                 cargar_uint32_al_buffer(buffer, proceso_movido->pc);
-                cargar_int8_al_buffer(buffer, proceso_movido->quantum);
                 cargar_uint8_al_buffer(buffer, proceso_movido->registros.ax);
                 cargar_uint8_al_buffer(buffer, proceso_movido->registros.bx);
                 cargar_uint8_al_buffer(buffer, proceso_movido->registros.cx);
@@ -156,6 +173,7 @@ void mover_procesos_de_ready_a_excecute()
                 enviar_paquete(a_enviar, fd_cpu_dispatch);
                 // enviamos el proceso de ready a execute primero y luego lo enviamos a cpu
                 destruir_paquete(a_enviar);
+                manejar_quantum(proceso_movido);
             }
             else if (procesos_excec->elements->elements_count == 0 && procesos_ready->elements->elements_count > 0)
             {
@@ -168,7 +186,6 @@ void mover_procesos_de_ready_a_excecute()
 
                 cargar_uint16_al_buffer(buffer, proceso_movido->pid);
                 cargar_uint32_al_buffer(buffer, proceso_movido->pc);
-                cargar_int8_al_buffer(buffer, proceso_movido->quantum);
                 cargar_uint8_al_buffer(buffer, proceso_movido->registros.ax);
                 cargar_uint8_al_buffer(buffer, proceso_movido->registros.bx);
                 cargar_uint8_al_buffer(buffer, proceso_movido->registros.cx);
@@ -186,6 +203,7 @@ void mover_procesos_de_ready_a_excecute()
                 enviar_paquete(a_enviar, fd_cpu_dispatch);
                 // enviamos el proceso de ready a execute primero y luego lo enviamos a cpu
                 destruir_paquete(a_enviar);
+                manejar_quantum(proceso_movido);
             }
             
         }

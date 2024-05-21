@@ -121,12 +121,12 @@ void IO_GEN_SLEEP(char *nombre_interfaz, uint8_t unidades_de_trabajo)
 
     PC_registro++;
     bloq_flag = false;
+    interrupt_flag = false;
     t_buffer *buffer = crear_buffer();
-    //[pid] [pc] [quantum] [registros] [nombre_interfaz] [operacion] [unidades_de_trabajo]
+    //[pid] [pc] [registros] [nombre_interfaz] [operacion] [unidades_de_trabajo]
 
     cargar_uint16_al_buffer(buffer, PID);
     cargar_uint32_al_buffer(buffer, PC_registro);
-    cargar_int8_al_buffer(buffer, QUANTUM);
     cargar_uint8_al_buffer(buffer, AX_registro);
     cargar_uint8_al_buffer(buffer, BX_registro);
     cargar_uint8_al_buffer(buffer, CX_registro);
@@ -152,12 +152,12 @@ void IO_GEN_SLEEP(char *nombre_interfaz, uint8_t unidades_de_trabajo)
 void EXIT()
 {
     bloq_flag = false;
+    interrupt_flag = false;
     t_buffer *buffer = crear_buffer();
-    //[pid] [pc] [quantum] [registros]
+    //[pid] [pc]  [registros]
 
     cargar_uint16_al_buffer(buffer, PID);
     cargar_uint32_al_buffer(buffer, PC_registro);
-    cargar_int8_al_buffer(buffer, QUANTUM);
     cargar_uint8_al_buffer(buffer, AX_registro);
     cargar_uint8_al_buffer(buffer, BX_registro);
     cargar_uint8_al_buffer(buffer, CX_registro);
@@ -182,11 +182,10 @@ void WAIT(char *nombre_recurso)
     PC_registro++;
     bloq_flag = false;
     t_buffer *buffer = crear_buffer();
-    //[pid] [pc] [quantum] [registros] [nombre_recurso]
+    //[pid] [pc] [registros] [nombre_recurso]
 
     cargar_uint16_al_buffer(buffer, PID);
     cargar_uint32_al_buffer(buffer, PC_registro);
-    cargar_int8_al_buffer(buffer, QUANTUM);
     cargar_uint8_al_buffer(buffer, AX_registro);
     cargar_uint8_al_buffer(buffer, BX_registro);
     cargar_uint8_al_buffer(buffer, CX_registro);
@@ -208,17 +207,16 @@ void WAIT(char *nombre_recurso)
 
     
 }
-void SINGAL (char *nombre_recurso)
+void SIGNAL (char *nombre_recurso)
 {
 
     PC_registro++;
     bloq_flag = false;
     t_buffer *buffer = crear_buffer();
-    //[pid] [pc] [quantum] [registros] [nombre_recurso]
+    //[pid] [pc]  [registros] [nombre_recurso]
 
     cargar_uint16_al_buffer(buffer, PID);
     cargar_uint32_al_buffer(buffer, PC_registro);
-    cargar_int8_al_buffer(buffer, QUANTUM);
     cargar_uint8_al_buffer(buffer, AX_registro);
     cargar_uint8_al_buffer(buffer, BX_registro);
     cargar_uint8_al_buffer(buffer, CX_registro);

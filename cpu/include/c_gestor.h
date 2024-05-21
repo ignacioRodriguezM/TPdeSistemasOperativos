@@ -25,12 +25,13 @@ extern int fd_memoria;
 
 extern bool aviso_de_interrupt;
 extern bool bloq_flag;
+extern bool interrupt_flag;
 
 
 
 //COSAS RECIVIDAS DEL KERNEL QUE NO SON REGISTROS
 extern uint16_t PID;
-extern int8_t QUANTUM;
+
 
 //REGISTROS
 extern uint32_t PC_registro;

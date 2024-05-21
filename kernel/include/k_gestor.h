@@ -10,7 +10,6 @@
 #include <semaphore.h>
 
 #include "./servicios_kernel.h"
-#include "./planificador.h"
 
 typedef struct
 {
@@ -25,7 +24,6 @@ typedef struct
     uint32_t si;
     uint32_t di;
 } Registros;
-
 typedef struct
 {
     uint16_t pid;
@@ -34,6 +32,10 @@ typedef struct
     Registros registros;
     t_buffer *operacion_de_io_por_la_que_fue_bloqueado;
 } PCB;
+
+#include "./planificador.h"
+
+
 typedef struct
 {
     char *nombre;
@@ -93,5 +95,8 @@ extern sem_t grado_multiprogramacion_semaforo;
 extern sem_t proceso_creado_en_new_semaforo;
 extern sem_t cpu_vacia_semaforo;
 extern sem_t algun_ready;
+
+
+extern pthread_t hilo_quantum;
 
 #endif

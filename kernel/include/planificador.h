@@ -13,6 +13,8 @@ void _mandar_de_excec_a_exit(char* motivo);
 void avisarle_a_memoria_que_libere_recursos_de_proceso(uint16_t pid);
 void bloquear_proceso_en_ejecucion_por_recurso (int index_cola);
 void desbloquear_proceso_bloqueado_por_recurso (int index_cola);
+void _enviar_interrupcion_quantum();
+void manejar_quantum(PCB* proceso);
 
 
 

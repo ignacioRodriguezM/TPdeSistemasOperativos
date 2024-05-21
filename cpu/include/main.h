@@ -21,10 +21,11 @@ int fd_memoria;
 
 bool aviso_de_interrupt;
 bool bloq_flag;
+bool interrupt_flag;
 
 //COSAS RECIVIDAS DEL KERNEL QUE NO SON REGISTROS
 uint16_t PID;
-int8_t QUANTUM;
+
 
 
 //REGISTROS

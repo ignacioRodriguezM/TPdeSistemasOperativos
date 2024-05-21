@@ -6,8 +6,12 @@ void atender_cpu_kernel_interrupt (){
 		int cod_op = recibir_operacion(fd_kernel_interrupt);
         aviso_de_interrupt = true;
 		switch (cod_op) {
-            case MENSAJE:
-                //
+            case FIN_QUANTUM:
+                t_buffer* buff_vacio = recibir_buffer_sin_cod_op(fd_kernel_interrupt);
+                if(interrupt_flag){
+                    aviso_de_interrupt = true;
+                }
+                destruir_buffer(buff_vacio);
                 break;
             case PAQUETE:
                 //

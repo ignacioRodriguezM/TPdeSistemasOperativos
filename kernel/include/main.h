@@ -56,6 +56,6 @@ sem_t cpu_vacia_semaforo;
 sem_t algun_ready;
 
 
-
+pthread_t hilo_quantum;
 
 #endif
