@@ -26,10 +26,19 @@ typedef struct
 } Registros;
 typedef struct
 {
+    int posicion;
+    int instancias_asignadas;
+} Recursos_asignados;
+typedef struct
+{
     uint16_t pid;
     uint32_t pc;
     uint16_t quantum;
     Registros registros;
+    
+    Recursos_asignados** recursos_asignados;
+    int cantidad_recursos_asignados;
+
     t_buffer *operacion_de_io_por_la_que_fue_bloqueado;
 } PCB;
 
