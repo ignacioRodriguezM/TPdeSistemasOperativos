@@ -35,7 +35,6 @@ void atender_kernel_cpu_dispatch()
             _manejar_signal();
             break;
 
-
         case -1:
             log_error(kernel_logger, "Desconexion de KERNEL-CPU_DISPATCH");
             control_key = 0;
@@ -176,7 +175,10 @@ bool _chequear_la_io(char *nombre_interfaz, char *operacion)
 
 void _manejar_desalojo()
 {
-
+    if(strcmp(algoritmo_planificacion, "VRR") == 0){
+            temporal_stop(timer_quantum);
+            temporal_destroy(timer_quantum);
+        }
     t_buffer *buffer_recibido = recibir_buffer_sin_cod_op(fd_cpu_dispatch);
     extraer_y_actualizar_pcb_en_excecute(buffer_recibido);
 
@@ -186,8 +188,13 @@ void _manejar_desalojo()
 }
 void _manejar_exit()
 {
-    if(strcmp(algoritmo_planificacion, "FIFO") != 0){
+    if (strcmp(algoritmo_planificacion, "FIFO") != 0)
+    {
         pthread_cancel(hilo_quantum);
+        if(strcmp(algoritmo_planificacion, "VRR") == 0){
+            temporal_stop(timer_quantum);
+            temporal_destroy(timer_quantum);
+        }
     }
     t_buffer *buffer_recibido = recibir_buffer_sin_cod_op(fd_cpu_dispatch);
     extraer_y_actualizar_pcb_en_excecute(buffer_recibido);
@@ -196,30 +203,48 @@ void _manejar_exit()
 
     destruir_buffer(buffer_recibido);
 }
-void _manejar_wait(){
+void _manejar_wait()
+{
     t_buffer *buffer_recibido = recibir_buffer_sin_cod_op(fd_cpu_dispatch);
-    extraer_y_actualizar_pcb_en_excecute(buffer_recibido);    
+    extraer_y_actualizar_pcb_en_excecute(buffer_recibido);
     // [nombre_recurso]
-    char* nombre_recurso_recibido = extraer_string_al_buffer(buffer_recibido);
+    char *nombre_recurso_recibido = extraer_string_al_buffer(buffer_recibido);
 
     sem_wait(&planificacion_activa_semaforo);
     sem_post(&planificacion_activa_semaforo);
 
     int i = 0;
     bool chequeo_si_alguna_coincide_nombre = true;
-    while(recursos[i]->nombre != NULL){
-        if(strcmp(recursos[i]->nombre, nombre_recurso_recibido)  == 0){
+    while (recursos[i]->nombre != NULL)
+    {
+        if (strcmp(recursos[i]->nombre, nombre_recurso_recibido) == 0)
+        {
 
             pthread_mutex_lock(&mutex_recursos);
-            recursos[i]->instancias --;
+            recursos[i]->instancias--;
             pthread_mutex_unlock(&mutex_recursos);
 
             log_info(kernel_log_debug, "SE RESTA UNA INSTANCIA AL RECURSO %s", nombre_recurso_recibido);
 
             chequeo_si_alguna_coincide_nombre = false;
-            if(recursos[i]->instancias < 0){
-                PCB *pcb_a_editar = (PCB *)queue_peek(procesos_excec);
-                pcb_a_editar->quantum = quantum;
+            if (recursos[i]->instancias < 0)
+            {
+                if (strcmp(algoritmo_planificacion, "FIFO") != 0)
+                {
+                    pthread_cancel(hilo_quantum);
+                    if (strcmp(algoritmo_planificacion, "VRR") == 0)
+                    {
+                        temporal_stop(timer_quantum);
+                        uint16_t quantum_usado = temporal_gettime(timer_quantum);
+                        if (quantum_usado != quantum)
+                        {
+                            PCB *pcb_que_ejecuto_menos_quantum = (PCB *)queue_peek(procesos_excec);
+                            pcb_que_ejecuto_menos_quantum->quantum -= quantum_usado;
+                        }
+                        temporal_destroy(timer_quantum);
+                    }
+                }
+
                 bloquear_proceso_en_ejecucion_por_recurso(i);
                 free(nombre_recurso_recibido);
                 destruir_buffer(buffer_recibido);
@@ -229,13 +254,15 @@ void _manejar_wait(){
         }
         i++;
     }
-    if(chequeo_si_alguna_coincide_nombre){
-        //MANDAR A EXIT
+    if (chequeo_si_alguna_coincide_nombre)
+    {
+        // MANDAR A EXIT
         _mandar_de_excec_a_exit("INVALID_RESOURCE");
-        //LIBERAR RECURSOS USADOS FALTA!!!!
+        // LIBERAR RECURSOS USADOS FALTA!!!!
     }
 
-    else{
+    else
+    {
         pthread_mutex_lock(&mutex_procesos);
         PCB *pcb_a_devolver_a_cpu = (PCB *)queue_pop(procesos_excec);
         queue_push(procesos_excec, pcb_a_devolver_a_cpu);
@@ -246,43 +273,49 @@ void _manejar_wait(){
     destruir_buffer(buffer_recibido);
 }
 
-void _manejar_signal(){
+void _manejar_signal()
+{
     t_buffer *buffer_recibido = recibir_buffer_sin_cod_op(fd_cpu_dispatch);
 
     extraer_y_actualizar_pcb_en_excecute(buffer_recibido);
-    
+
     // [nombre_recurso]
-    char* nombre_recurso_recibido = extraer_string_al_buffer(buffer_recibido);
+    char *nombre_recurso_recibido = extraer_string_al_buffer(buffer_recibido);
 
     sem_wait(&planificacion_activa_semaforo);
     sem_post(&planificacion_activa_semaforo);
 
     int i = 0;
     bool chequeo_si_alguna_coincide_nombre = true;
-    while(recursos[i]->nombre != NULL){
-        if(strcmp(recursos[i]->nombre, nombre_recurso_recibido)  == 0){
+    while (recursos[i]->nombre != NULL)
+    {
+        if (strcmp(recursos[i]->nombre, nombre_recurso_recibido) == 0)
+        {
 
             pthread_mutex_lock(&mutex_recursos);
-            recursos[i]->instancias ++;
+            recursos[i]->instancias++;
             pthread_mutex_unlock(&mutex_recursos);
 
             log_info(kernel_log_debug, "SE SUMA UNA INSTANCIA AL RECURSO %s", nombre_recurso_recibido);
 
             chequeo_si_alguna_coincide_nombre = false;
-            if(recursos[i]->instancias <= 0){
+            if (recursos[i]->instancias <= 0)
+            {
                 desbloquear_proceso_bloqueado_por_recurso(i);
             }
             break;
         }
         i++;
     }
-    if(chequeo_si_alguna_coincide_nombre){
-        //MANDAR A EXIT
+    if (chequeo_si_alguna_coincide_nombre)
+    {
+        // MANDAR A EXIT
         _mandar_de_excec_a_exit("INVALID_RESOURCE");
-        //LIBERAR RECURSOS USADOS FALTA!!!!
+        // LIBERAR RECURSOS USADOS FALTA!!!!
     }
 
-    else{
+    else
+    {
         pthread_mutex_lock(&mutex_procesos);
         PCB *pcb_a_devolver_a_cpu = (PCB *)queue_pop(procesos_excec);
         queue_push(procesos_excec, pcb_a_devolver_a_cpu);
@@ -294,17 +327,27 @@ void _manejar_signal(){
 }
 void _manejar_bloqueo()
 {
-    if(strcmp(algoritmo_planificacion, "FIFO") != 0){
-       pthread_cancel(hilo_quantum);
+    if (strcmp(algoritmo_planificacion, "FIFO") != 0)
+    {
+        pthread_cancel(hilo_quantum);
+        if (strcmp(algoritmo_planificacion, "VRR") == 0)
+        {
+            temporal_stop(timer_quantum);
+            uint16_t quantum_usado = temporal_gettime(timer_quantum);
+            if (quantum_usado != quantum)
+            {
+                PCB *pcb_que_ejecuto_menos_quantum = (PCB *)queue_peek(procesos_excec);
+                pcb_que_ejecuto_menos_quantum->quantum -= quantum_usado;
+            }
+            temporal_destroy(timer_quantum);
+        }
     }
-    
+
     t_buffer *buffer_recibido = recibir_buffer_sin_cod_op(fd_cpu_dispatch);
     //[pid] [pc] [registros] [nombre_interfaz] [operacion]
 
-    
     extraer_y_actualizar_pcb_en_excecute(buffer_recibido);
-    
-    
+
     char *nombre_interfaz = extraer_string_al_buffer(buffer_recibido);
     char *operacion_a_realizar = extraer_string_al_buffer(buffer_recibido);
     // EXTRAIGO EL ELEMENTO DE EXCEC PERO SIN QUITARLO DE EXCEC
@@ -337,7 +380,7 @@ void _manejar_bloqueo()
                     enviar_paquete(a_enviar_a_io, colas_bloqueados[i]->fd);
 
                     free(a_enviar_a_io);
-                    
+
                     break;
                 }
             }
@@ -352,7 +395,6 @@ void _manejar_bloqueo()
         else if (strcmp(operacion_a_realizar, "IO_STDOUT_WRITE") == 0)
         {
         }
-        
 
         // HACER RESTO DE IFs
     }
@@ -361,6 +403,6 @@ void _manejar_bloqueo()
 
         _mandar_de_excec_a_exit("INVALID_INTERFACE");
     }
-    
+
     destruir_buffer(buffer_recibido);
 }

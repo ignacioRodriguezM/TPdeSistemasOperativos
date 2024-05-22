@@ -57,5 +57,7 @@ sem_t algun_ready;
 
 
 pthread_t hilo_quantum;
+t_temporal* timer_quantum;
+
 
 #endif

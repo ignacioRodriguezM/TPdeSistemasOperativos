@@ -14,8 +14,12 @@ void _enviar_interrupcion_quantum(){
     destruir_paquete(paq);
 }
 void manejar_quantum(PCB* proceso){
+
     pthread_create(&hilo_quantum, NULL, (void *)esperar, (uint16_t*) &(proceso->quantum));
     pthread_detach(hilo_quantum);
+    if(strcmp(algoritmo_planificacion, "VRR") == 0){
+        timer_quantum = temporal_create();
+    }
 }
 
 PCB *_crear_pcb(uint16_t pid)
@@ -169,7 +173,7 @@ void mover_procesos_de_ready_a_excecute()
 
                 t_paquete *a_enviar = crear_paquete(PROCESO_A_EJECUTAR, buffer);
 
-                log_info(kernel_logger, "PID: %u - Estado Anterior: READY - Estado Actual: EXCEC", proceso_movido->pid);
+                log_info(kernel_logger, "PID: %u - Estado Anterior: READY_PRIO - Estado Actual: EXCEC", proceso_movido->pid);
                 enviar_paquete(a_enviar, fd_cpu_dispatch);
                 manejar_quantum(proceso_movido);
                 // enviamos el proceso de ready a execute primero y luego lo enviamos a cpu
@@ -333,8 +337,17 @@ void desbloquear_proceso_bloqueado_por_recurso (int index_cola){
 
     pthread_mutex_lock(&mutex_procesos);
     PCB *proceso_movido = queue_pop(recursos[index_cola]->cola_bloqueados_por_recursos);
-    queue_push(procesos_ready, proceso_movido);
+    if(proceso_movido->quantum == quantum){
+        queue_push(procesos_ready, proceso_movido);
+    }
+    if(proceso_movido->quantum < quantum && strcmp(algoritmo_planificacion, "VRR") == 0){
+        queue_push(procesos_ready_con_prioridad, proceso_movido);
+    }
+    else{
+        log_error(kernel_log_debug, "ERROR EL QUANTUM DEL PROCESO A DESBLOQUEAR POR SIGNAL NO ESTA BIEN");
+    }
     pthread_mutex_unlock(&mutex_procesos);
+    
 
     log_info(kernel_logger, "PID: %u - Desbloqueado ", proceso_movido->pid);
     log_info(kernel_logger, "PID: %u - Estado Anterior: BLOQ - Estado Actual: READY", proceso_movido->pid);

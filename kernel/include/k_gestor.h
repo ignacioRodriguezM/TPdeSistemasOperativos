@@ -98,5 +98,6 @@ extern sem_t algun_ready;
 
 
 extern pthread_t hilo_quantum;
+extern t_temporal* timer_quantum;
 
 #endif

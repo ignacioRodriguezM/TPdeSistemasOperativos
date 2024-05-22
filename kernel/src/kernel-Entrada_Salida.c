@@ -136,13 +136,16 @@ void _mover_de_cola_bloqueados_a_ready_o_aux(char* nombre_de_io, uint16_t pid){
                 log_info(kernel_logger, "PID: %u - Estado Anterior: BLOQUEADO - Estado Actual: READY", pid);
                 log_info(kernel_logger, "Cola Ready procesos_ready: [<LISTA DE PIDS>]");
             }
-            else{
+            if(pcb_que_cumplio_tarea_io ->quantum < quantum)
+            {
                 queue_push(procesos_ready_con_prioridad, pcb_que_cumplio_tarea_io);
-                log_info(kernel_logger, "PID: %u - Estado Anterior: BLOQUEADO - Estado Actual: READY", pid);
+                log_info(kernel_logger, "PID: %u - Estado Anterior: BLOQUEADO - Estado Actual: READY_PRIO", pid);
                 log_info(kernel_logger, "Cola Ready procesos_con_prioridad_ready: [<LISTA DE PIDS>]");
             }
+            else{
+                log_error(kernel_log_debug, "ERROR EL QUANTUM DEL PROCESO A DESBLOQUEAR POR IO NO ESTA BIEN");
+            }
             pthread_mutex_unlock(&mutex_procesos);
-
 
 
             sem_post(&algun_ready);

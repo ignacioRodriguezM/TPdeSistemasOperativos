@@ -9,12 +9,10 @@ void atender_cpu_kernel_dispatch()
         int cod_op = recibir_operacion(fd_kernel_dispatch);
         switch (cod_op)
         {
-        case PAQUETE:
-            //
-            break;
-
+        
         case PROCESO_A_EJECUTAR:
 
+            aviso_de_interrupt = false;
             bloq_flag = true;
             interrupt_flag = true;
 
