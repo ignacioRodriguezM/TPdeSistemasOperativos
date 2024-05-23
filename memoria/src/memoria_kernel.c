@@ -142,8 +142,7 @@ void finalizar_proceso()
     }
     current = NULL;
 
-
-    ////////////////LIBERAR ESPACIOS DE MEMORIA
+    ////////////////LIBERAR ESPACIOS DE MEMORIA USUARIO
 
 
     /// A DESARROLLAR

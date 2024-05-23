@@ -38,6 +38,8 @@ typedef struct{
     uint16_t PID;
     char** instrucciones;
     int cantidad_instrucciones;
+
+    
     Tabla_paginas** tabla_de_paginas;
     int cantidad_paginas;
 
