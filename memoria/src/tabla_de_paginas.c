@@ -58,7 +58,7 @@ char *ajustar_tam_proceso(uint16_t PID, uint16_t nuevo_tam_en_bytes)
     {
         int paginas_a_desocupar = paginas_ocupadas - paginas_ajustado;
         desocupar_marcos(proceso_a_ajustar, paginas_a_desocupar);
-        return "OK"
+        return "OK";
     }
     else
     {
@@ -82,7 +82,7 @@ bool chequear_si_hay_marcos_libres(int paginas_a_ocupar)
 
 void ocupar_marcos(Proceso *proceso, int paginas_a_ocupar)
 {
-    proceso->tabla_de_paginas = realloc(sizeof(Tabla_paginas *) * (proceso->cantidad_paginas + paginas_a_ocupar));
+    proceso->tabla_de_paginas = realloc(proceso->tabla_de_paginas, sizeof(Tabla_paginas *) * (proceso->cantidad_paginas + paginas_a_ocupar));
 
     for (int i = proceso->cantidad_paginas; i < (paginas_a_ocupar + proceso->cantidad_paginas); i++)
     {
@@ -111,5 +111,5 @@ void desocupar_marcos(Proceso *proceso, int paginas_a_desocupar)
     }
 
     proceso->cantidad_paginas -= paginas_a_desocupar;
-    proceso->tabla_de_paginas = realloc(sizeof(Tabla_paginas *) * proceso->cantidad_paginas);
+    proceso->tabla_de_paginas = realloc(proceso->tabla_de_paginas, sizeof(Tabla_paginas *) * proceso->cantidad_paginas);
 }

@@ -225,6 +225,18 @@ void _atender_instruccion_validada(char *leido)
         }
         else
         {
+            if(nuevo_grado_multiprogramacion > grado_multiprogramacion){
+                int diferencia = nuevo_grado_multiprogramacion - grado_multiprogramacion;
+                for(int i=0; i< diferencia; i++){
+                    sem_post(&grado_multiprogramacion_semaforo);
+                }
+            }
+            else if(nuevo_grado_multiprogramacion < grado_multiprogramacion){
+                int diferencia = grado_multiprogramacion - nuevo_grado_multiprogramacion;
+                for(int i=0; i< diferencia; i++){
+                    sem_wait(&grado_multiprogramacion_semaforo);
+                }
+            }
             grado_multiprogramacion = nuevo_grado_multiprogramacion;
             log_info(kernel_logger, "El grado de multiprogramacion cambio a %d", grado_multiprogramacion);
         }
