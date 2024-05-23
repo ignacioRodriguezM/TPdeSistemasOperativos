@@ -20,7 +20,7 @@ void crear_tabla_de_paginas(Proceso *proceso)
     proceso->cantidad_paginas = 0;
 }
 
-char* ajustar_tam_proceso(uint16_t PID, uint16_t nuevo_tam_en_bytes)
+char *ajustar_tam_proceso(uint16_t PID, uint16_t nuevo_tam_en_bytes)
 {
     int paginas_ocupadas;
     int paginas_ajustado = nuevo_tam_en_bytes / tam_pagina;
@@ -38,26 +38,41 @@ char* ajustar_tam_proceso(uint16_t PID, uint16_t nuevo_tam_en_bytes)
             current = current->next;
         }
     }
-    
+
     Proceso *proceso_a_ajustar = (Proceso *)current->data;
 
-    if(paginas_ajustado > paginas_ocupadas){
+    if (paginas_ajustado > paginas_ocupadas)
+    {
         int paginas_a_ocupar = paginas_ajustado - paginas_ocupadas;
-        if(chequear_si_hay_marcos_libres(paginas_a_ocupar)){
-            ocupar_espacio(proceso_a_ajustar, paginas_a_ocupar);
+        if (chequear_si_hay_marcos_libres(paginas_a_ocupar))
+        {
+            ocupar_marcos(proceso_a_ajustar, paginas_a_ocupar);
             return "OK";
         }
-        else{
+        else
+        {
             return "Out Of Memory";
         }
     }
-
-    else if()
+    if (paginas_ajustado < paginas_ocupadas)
+    {
+        int paginas_a_desocupar = paginas_ocupadas - paginas_ajustado;
+        desocupar_marcos(proceso_a_ajustar, paginas_a_desocupar);
+        return "OK"
+    }
+    else
+    {
+        log_error(memoria_log_debug, "EL PROCESO SOLICITA UN RESIZE DE SU MISMO TAMANIO!!");
+        return "Error";
+    }
 }
-bool chequear_si_hay_marcos_libres (int paginas_a_ocupar){
+bool chequear_si_hay_marcos_libres(int paginas_a_ocupar)
+{
     int contador = 0;
-    for(int i=0; i < cantidad_de_marcos; i++){
-        if(marcos_memoria[i]->esta_libre){
+    for (int i = 0; i < cantidad_de_marcos; i++)
+    {
+        if (marcos_memoria[i]->esta_libre)
+        {
             contador++;
         }
     }
@@ -65,8 +80,36 @@ bool chequear_si_hay_marcos_libres (int paginas_a_ocupar){
     return (contador >= paginas_a_ocupar);
 }
 
-void ocupar_espacio(Proceso* proceso, int paginas_a_ocupar){
-    proceso->cantidad_paginas += paginas_a_ocupar;
+void ocupar_marcos(Proceso *proceso, int paginas_a_ocupar)
+{
+    proceso->tabla_de_paginas = realloc(sizeof(Tabla_paginas *) * (proceso->cantidad_paginas + paginas_a_ocupar));
 
-    proceso->tabla_de_paginas = realloc (sizeof(Tabla_paginas *) * (proceso->cantidad_paginas));
+    for (int i = proceso->cantidad_paginas; i < (paginas_a_ocupar + proceso->cantidad_paginas); i++)
+    {
+        // Inicializar nuevos punteros de tabla de páginas
+        proceso->tabla_de_paginas[i] = malloc(sizeof(Tabla_paginas));
+        for (int j = 0; j < cantidad_de_marcos; j++)
+        {
+            if (marcos_memoria[j]->esta_libre)
+            {
+                proceso->tabla_de_paginas[i]->pagina = i + 1;
+                proceso->tabla_de_paginas[i]->marco = j + 1;
+                marcos_memoria[j]->esta_libre = false;
+                break;
+            }
+        }
+    }
+
+    proceso->cantidad_paginas += paginas_a_ocupar;
+}
+
+void desocupar_marcos(Proceso *proceso, int paginas_a_desocupar)
+{
+    for (int i = 1; i <= paginas_a_desocupar; i++)
+    {
+        marcos_memoria[proceso->tabla_de_paginas[proceso->cantidad_paginas - i]->marco]->esta_libre = true;
+    }
+
+    proceso->cantidad_paginas -= paginas_a_desocupar;
+    proceso->tabla_de_paginas = realloc(sizeof(Tabla_paginas *) * proceso->cantidad_paginas);
 }
