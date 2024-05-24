@@ -35,8 +35,21 @@ void atender_memoria_cpu (){
 
 
                 break;
-            
 
+            case AJUSTAR_TAMANIO_PROCESO:
+                t_buffer* buffer_recibido = recibir_buffer_sin_cod_op(fd_cpu);
+                uint16_t pid_recibido = extraer_uint16_al_buffer(buffer_recibido);
+                uint16_t nuevo_tam_en_bytes = extraer_uint16_al_buffer(buffer_recibido);
+                destruir_buffer(buffer_recibido);
+                ajustar_tam_proceso(pid_recibido,nuevo_tam_en_bytes);
+                if(paginas_ajustado > paginas_ocupadas){
+                    log_info(memoria_logger, "PID: %u - Tamaño Actual: %d - Tamaño a Ampliar: %d",proceso_a_ajustar->PID,proceso_a_ajustar->cantidad_paginas,proceso->cantidad_paginas);
+                }
+                else if(paginas_ajustado < paginas_ocupadas){
+                    log_info(memoria_logger, "PID: %u - Tamaño Actual: %d - Tamaño a Reducir: %d ",proceso_a_ajustar->PID, proceso_a_ajustar->cantidad_paginas, proceso->cantidad_paginas);  
+                }
+
+                break;
             case -1:
                 log_error(memoria_logger, "Desconexion de CPU");
                 control_key = 0;

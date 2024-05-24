@@ -142,8 +142,9 @@ void finalizar_proceso()
     }
     current = NULL;
 
-    ////////////////LIBERAR ESPACIOS DE MEMORIA USUARIO
 
+    ////////////////LIBERAR ESPACIOS DE MEMORIA USUARIO
+    ajustar_tam_proceso(pid_a_finalizar, 0);
 
     /// A DESARROLLAR
 
