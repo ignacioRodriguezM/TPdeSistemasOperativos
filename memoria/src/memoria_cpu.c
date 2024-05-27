@@ -43,7 +43,9 @@ void atender_memoria_cpu()
             break;
 
         case AJUSTAR_TAMANIO_PROCESO:
+        
             _ajustar_tamanio_proceso();
+
             break;
         case -1:
             log_error(memoria_logger, "Desconexion de CPU");

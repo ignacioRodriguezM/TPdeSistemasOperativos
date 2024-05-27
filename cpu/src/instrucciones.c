@@ -282,15 +282,5 @@ void RESIZE(uint16_t pid, uint16_t tamanio_ajustado){
         }
         
         break;
-
-    case -1:
-        log_error(cpu_logger, "Desconexion de memoria");
-        return "Error";
-        break;
-
-    default:
-        log_warning(cpu_logger, "Operacion desconocida de memoria");
-        return "Error";
-        break;
     }
 }

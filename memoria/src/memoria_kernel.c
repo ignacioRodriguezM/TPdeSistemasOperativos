@@ -144,7 +144,7 @@ void finalizar_proceso()
 
 
     ////////////////LIBERAR ESPACIOS DE MEMORIA USUARIO
-    ajustar_tam_proceso(pid_a_finalizar, 0);
+    
 
     /// A DESARROLLAR
 
