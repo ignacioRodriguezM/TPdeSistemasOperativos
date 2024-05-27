@@ -41,14 +41,13 @@ void atender_memoria_cpu (){
                 uint16_t pid_recibido = extraer_uint16_al_buffer(buffer_recibido);
                 uint16_t nuevo_tam_en_bytes = extraer_uint16_al_buffer(buffer_recibido);
                 destruir_buffer(buffer_recibido);
-                ajustar_tam_proceso(pid_recibido,nuevo_tam_en_bytes);
-                if(paginas_ajustado > paginas_ocupadas){
-                    log_info(memoria_logger, "PID: %u - Tamaño Actual: %d - Tamaño a Ampliar: %d",proceso_a_ajustar->PID,proceso_a_ajustar->cantidad_paginas,proceso->cantidad_paginas);
-                }
-                else if(paginas_ajustado < paginas_ocupadas){
-                    log_info(memoria_logger, "PID: %u - Tamaño Actual: %d - Tamaño a Reducir: %d ",proceso_a_ajustar->PID, proceso_a_ajustar->cantidad_paginas, proceso->cantidad_paginas);  
-                }
-
+                esperarMilisegundos(retardo_respuesta);
+                t_buffer* buff = crear_buffer();
+                cargar_string_al_buffer(buff, ajustar_tam_proceso(pid_recibido, nuevo_tam_en_bytes));
+                t_paquete* a_enviar = crear_paquete(RESPUESTA_RESIZE, buff);
+                enviar_paquete(a_enviar, fd_cpu);
+                destruir_paquete(a_enviar);
+                
                 break;
             case -1:
                 log_error(memoria_logger, "Desconexion de CPU");

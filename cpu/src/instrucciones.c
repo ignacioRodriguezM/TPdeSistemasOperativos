@@ -238,3 +238,59 @@ void SIGNAL (char *nombre_recurso)
 
     
 }
+void RESIZE(uint16_t pid, uint16_t tamanio_ajustado){
+    t_buffer* buffer_a_enviar = crear_buffer();
+    cargar_uint16_al_buffer(buffer_a_enviar, pid);
+    cargar_uint16_al_buffer(buffer_a_enviar, tamanio_ajustado);
+    t_paquete* a_enviar = crear_paquete(AJUSTAR_TAMANIO_PROCESO, buffer_a_enviar);
+    enviar_paquete(a_enviar, fd_memoria);
+    destruir_paquete(a_enviar);
+
+    int cod_op = recibir_operacion(fd_memoria);
+    switch (cod_op)
+    {
+    case RESPUESTA_RESIZE:
+
+        t_buffer *recibido = recibir_buffer_sin_cod_op(fd_memoria);
+
+        char *mensaje_de_respuesta = extraer_string_al_buffer(recibido);
+
+        destruir_buffer(recibido);
+
+        if (strcmp(mensaje_de_respuesta, "Out Of Memory") == 0){
+            t_buffer *buffer = crear_buffer();
+            //[pid] [pc] [registros]
+
+            cargar_uint16_al_buffer(buffer, PID);
+            cargar_uint32_al_buffer(buffer, PC_registro);
+            cargar_uint8_al_buffer(buffer, AX_registro);
+            cargar_uint8_al_buffer(buffer, BX_registro);
+            cargar_uint8_al_buffer(buffer, CX_registro);
+            cargar_uint8_al_buffer(buffer, DX_registro);
+            cargar_uint32_al_buffer(buffer, EAX_registro);
+            cargar_uint32_al_buffer(buffer, EBX_registro);
+            cargar_uint32_al_buffer(buffer, ECX_registro);
+            cargar_uint32_al_buffer(buffer, EDX_registro);
+            cargar_uint32_al_buffer(buffer, SI_registro);
+            cargar_uint32_al_buffer(buffer, DI_registro);
+
+            t_paquete *a_enviar = crear_paquete(OUT_OF_MEMORY, buffer);
+
+            enviar_paquete(a_enviar, fd_kernel_dispatch);
+
+            destruir_paquete(a_enviar);
+        }
+        
+        break;
+
+    case -1:
+        log_error(cpu_logger, "Desconexion de memoria");
+        return "Error";
+        break;
+
+    default:
+        log_warning(cpu_logger, "Operacion desconocida de memoria");
+        return "Error";
+        break;
+    }
+}

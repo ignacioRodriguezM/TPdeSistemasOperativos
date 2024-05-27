@@ -13,6 +13,11 @@ void atender_kernel_cpu_dispatch()
             _manejar_exit();
 
             break;
+
+        case OUT_OF_MEMORY:
+            _manejar_out_of_memory();
+            break;
+
         case INVALID_RESOURCE:
 
             break;
@@ -175,10 +180,11 @@ bool _chequear_la_io(char *nombre_interfaz, char *operacion)
 
 void _manejar_desalojo()
 {
-    if(strcmp(algoritmo_planificacion, "VRR") == 0){
-            temporal_stop(timer_quantum);
-            temporal_destroy(timer_quantum);
-        }
+    if (strcmp(algoritmo_planificacion, "VRR") == 0)
+    {
+        temporal_stop(timer_quantum);
+        temporal_destroy(timer_quantum);
+    }
     t_buffer *buffer_recibido = recibir_buffer_sin_cod_op(fd_cpu_dispatch);
     extraer_y_actualizar_pcb_en_excecute(buffer_recibido);
 
@@ -191,7 +197,8 @@ void _manejar_exit()
     if (strcmp(algoritmo_planificacion, "FIFO") != 0)
     {
         pthread_cancel(hilo_quantum);
-        if(strcmp(algoritmo_planificacion, "VRR") == 0){
+        if (strcmp(algoritmo_planificacion, "VRR") == 0)
+        {
             temporal_stop(timer_quantum);
             temporal_destroy(timer_quantum);
         }
@@ -258,7 +265,7 @@ void _manejar_wait()
     {
         // MANDAR A EXIT
         _mandar_de_excec_a_exit("INVALID_RESOURCE");
-        // LIBERAR RECURSOS USADOS FALTA!!!!
+        // _LIBERAR RECURSOS USADOS FALTA!!!!
     }
 
     else
@@ -395,6 +402,15 @@ void _manejar_bloqueo()
         else if (strcmp(operacion_a_realizar, "IO_STDOUT_WRITE") == 0)
         {
         }
+        else if (strcmp(operacion_a_realizar, "IO_FS_CREATE") == 0)
+        {
+        }
+        else if (strcmp(operacion_a_realizar, "IO_FS_DELETE") == 0)
+        {
+        }
+        else if (strcmp(operacion_a_realizar, "IO_FS_TRUNCATE") == 0)
+        {
+        }
 
         // HACER RESTO DE IFs
     }
@@ -403,6 +419,25 @@ void _manejar_bloqueo()
 
         _mandar_de_excec_a_exit("INVALID_INTERFACE");
     }
+
+    destruir_buffer(buffer_recibido);
+}
+
+void _manejar_out_of_memory()
+{
+    if (strcmp(algoritmo_planificacion, "FIFO") != 0)
+    {
+        pthread_cancel(hilo_quantum);
+        if (strcmp(algoritmo_planificacion, "VRR") == 0)
+        {
+            temporal_stop(timer_quantum);
+            temporal_destroy(timer_quantum);
+        }
+    }
+    t_buffer *buffer_recibido = recibir_buffer_sin_cod_op(fd_cpu_dispatch);
+    extraer_y_actualizar_pcb_en_excecute(buffer_recibido);
+
+    _mandar_de_excec_a_exit("OUT_OF_MEMORY");
 
     destruir_buffer(buffer_recibido);
 }

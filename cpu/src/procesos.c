@@ -28,14 +28,6 @@ void ejecutar_ciclo_de_cpu()
         }
     }
 }
-void* resize_proceso(uint16_t pid, uint16_t tamanio_ajustado){
-    t_buffer* buffer_a_enviar = crear_buffer();
-    cargar_uint16_al_buffer(buffer_a_enviar, pid);
-    cargar_uint16_al_buffer(buffer_a_enviar, tamanio_ajustado);
-    t_paquete* a_enviar = crear_paquete(AJUSTAR_TAMANIO_PROCESO, buffer_a_enviar);
-    enviar_paquete(a_enviar, fd_memoria);
-    destruir_paquete(a_enviar);
-}
 
 void _desalojar_proceso()
 {
@@ -352,9 +344,10 @@ void _decode_and_excecute(char *palabra)
         printf("CASO NO DESARROLLADO \n");
     }
     else if (strcmp(comandos[0], "RESIZE") == 0)
-    {
-        resize_proceso()
-        printf("CASO NO DESARROLLADO \n");
+    {  
+        uint16_t tamanio_ajustado = atoi(comandos[1]);
+        RESIZE(PID, tamanio_ajustado);
+        log_info(cpu_logger, "PID: %u - Ejecutando: RESIZE - %u", PID, tamanio_ajustado);
     }
     else if (strcmp(comandos[0], "COPY_STRING") == 0)
     {

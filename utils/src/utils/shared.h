@@ -39,6 +39,7 @@ typedef enum
 	INTERRUPT,
 	WAIT_op,
 	SIGNAL_op,
+	OUT_OF_MEMORY,
 
 	//-------------------KERNEL-CPU INT
 	FIN_QUANTUM,
@@ -53,7 +54,8 @@ typedef enum
 	//---------------- CPU-MEMORIA
 	SOLICITUD_DE_PROXIMA_INSTRUCCION,
 	PROXIMA_INSTRUCCION,
-	AJUSTAR_TAMANIO_PROCESO
+	AJUSTAR_TAMANIO_PROCESO,
+	RESPUESTA_RESIZE
 
 }op_code;
 
@@ -119,7 +121,6 @@ int recibir_size_del_buffer(int socket_cliente);
 t_buffer* recibir_buffer_sin_cod_op (int socket);
 
 void esperarMilisegundos(uint16_t milisegundos);
-
 
 
 #endif

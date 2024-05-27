@@ -46,8 +46,8 @@ char *ajustar_tam_proceso(uint16_t PID, uint16_t nuevo_tam_en_bytes)
         int paginas_a_ocupar = paginas_ajustado - paginas_ocupadas;
         if (chequear_si_hay_marcos_libres(paginas_a_ocupar))
         {
+            log_info(memoria_logger, "PID: %u - Tamaño Actual: %d - Tamaño a Ampliar: %d ",proceso_a_ajustar->PID, proceso_a_ajustar->cantidad_paginas, (paginas_a_ocupar * tam_pagina));
             ocupar_marcos(proceso_a_ajustar, paginas_a_ocupar);
-            //
             return "OK";
         }
         else
@@ -58,8 +58,9 @@ char *ajustar_tam_proceso(uint16_t PID, uint16_t nuevo_tam_en_bytes)
     if (paginas_ajustado < paginas_ocupadas)
     {
         int paginas_a_desocupar = paginas_ocupadas - paginas_ajustado;
+        log_info(memoria_logger, "PID: %u - Tamaño Actual: %d - Tamaño a Reducir: %d ",proceso_a_ajustar->PID, proceso_a_ajustar->cantidad_paginas, (paginas_a_desocupar * tam_pagina));
         desocupar_marcos(proceso_a_ajustar, paginas_a_desocupar);
-       // 
+       // acatanvien
         return "OK";
     }
     else

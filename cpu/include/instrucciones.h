@@ -11,6 +11,6 @@ void IO_GEN_SLEEP (char* nombre_interfaz, uint8_t unidades_de_trabajo);
 void EXIT();
 void WAIT(char *nombre_recurso);
 void SIGNAL (char *nombre_recurso);
-
+void RESIZE(uint16_t pid, uint16_t tamanio_ajustado);
 
 #endif

@@ -177,6 +177,13 @@ void _atender_instruccion_validada(char *leido)
         if(!buscar_en_colas_y_eliminar_el_proceso(pid_a_finalizar)){
             log_error(kernel_log_debug, "EL PID A FINALIZAR NO SE ENCUENTRA EN LAS COLAS");
         }
+        else {
+            t_buffer* buffer_a_enviar = crear_buffer();
+            cargar_uint16_al_buffer(buffer_a_enviar, pid_a_finalizar);
+            t_paquete* a_enviar = crear_paquete(FINALIZAR_PROCESO, buffer_a_enviar);
+            enviar_paquete(a_enviar, fd_memoria);
+            destruir_paquete(a_enviar);
+        }
         
     }
     else if (strcmp(comando_consola[0], "DETENER_PLANIFICACION") == 0)
@@ -244,9 +251,7 @@ void _atender_instruccion_validada(char *leido)
     else if (strcmp(comando_consola[0], "PROCESO_ESTADO") == 0)
     {
 
-        void imprimo_elemento(void *elemento)
-        {
-            // Assuming your process structure has a field 'pid'
+        void imprimo_elemento(void *elemento){
             printf("%d\n", ((PCB *)elemento)->pid);
         }
 
@@ -326,7 +331,7 @@ bool buscar_en_colas_y_eliminar_el_proceso(int pid_a_finalizar)
     }
     
     ////////////////// BUSCAR EN EXCECUTE /////////////////
-
+    
     //HAY Q INTERRUMPIR CPU Y "DESALOJAR EL PROCESO"
     // TERMINAR
 
