@@ -239,6 +239,9 @@ void SIGNAL (char *nombre_recurso)
     
 }
 void RESIZE(uint16_t pid, uint16_t tamanio_ajustado){
+
+    PC_registro++;
+
     t_buffer* buffer_a_enviar = crear_buffer();
     cargar_uint16_al_buffer(buffer_a_enviar, pid);
     cargar_uint16_al_buffer(buffer_a_enviar, tamanio_ajustado);
@@ -254,7 +257,7 @@ void RESIZE(uint16_t pid, uint16_t tamanio_ajustado){
         t_buffer *recibido = recibir_buffer_sin_cod_op(fd_memoria);
 
         char *mensaje_de_respuesta = extraer_string_al_buffer(recibido);
-
+        log_info(cpu_log_debug, "RESPUESTA MEMORIA : %s", mensaje_de_respuesta);
         destruir_buffer(recibido);
 
         if (strcmp(mensaje_de_respuesta, "Out Of Memory") == 0){

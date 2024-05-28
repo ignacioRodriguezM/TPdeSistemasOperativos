@@ -20,10 +20,23 @@ void crear_tabla_de_paginas(Proceso *proceso)
     proceso->cantidad_paginas = 0;
 }
 
+int division_entera_redondear_arriba(int numerador, int denominador) {
+    // Verificar que el denominador no sea 0 para evitar la división por cero
+    if (denominador == 0) {
+        printf("Error: división por cero.\n");
+        return -1; // O cualquier valor de error adecuado
+    }
+
+    // División entera redondeando hacia arriba
+    int resultado = (numerador + denominador - 1) / denominador;
+
+    return resultado;
+}
+
 char *ajustar_tam_proceso(uint16_t PID, uint16_t nuevo_tam_en_bytes)
 {
     int paginas_ocupadas;
-    int paginas_ajustado = nuevo_tam_en_bytes / tam_pagina;
+    int paginas_ajustado = division_entera_redondear_arriba(nuevo_tam_en_bytes, tam_pagina);
     t_link_element *current = lista_procesos->head;
     for (int i = 0; i < lista_procesos->elements_count; i++)
     {
@@ -66,7 +79,7 @@ char *ajustar_tam_proceso(uint16_t PID, uint16_t nuevo_tam_en_bytes)
     else
     {
         log_error(memoria_log_debug, "EL PROCESO SOLICITA UN RESIZE DE SU MISMO TAMANIO!!");
-        return "Error";
+        return "OK";
     }
 }
 bool chequear_si_hay_marcos_libres(int paginas_a_ocupar)
