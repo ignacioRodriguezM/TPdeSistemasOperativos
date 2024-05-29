@@ -4,5 +4,5 @@
 #include "./m_gestor.h"
 
 void atender_memoria_entrada_salida ();
-
+void atender_multiples_entrada_salida(int *socket_ptr);
 #endif

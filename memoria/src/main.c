@@ -21,11 +21,11 @@ int main() {
 
     
 
-    /*
-    //Esperiar conexion de i/o
+    
+    //Esperar conexion de i/o
     log_info(memoria_logger, "Esperando a entrada_salida...");
     fd_entrada_salida = esperar_cliente (fd_memoria, memoria_logger, "ENTRADA SALIDA");
-    */
+    
 
     //Esperar conexion KERNEL
     log_info(memoria_logger, "Esperando a KERNEL...");
@@ -41,23 +41,15 @@ int main() {
     pthread_create(&hilo_cpu, NULL, (void*) atender_memoria_cpu, NULL);
     pthread_detach (hilo_cpu);
 
-    //Atender los mensajes de KERNEL
-    pthread_t hilo_kernel;
-    pthread_create(&hilo_kernel, NULL, (void*) atender_memoria_kernel, NULL);
-    pthread_join (hilo_kernel, NULL);
-
-
-
-    /*
     //Atender los mensajes de I/O
     pthread_t hilo_entrada_salida;
     pthread_create(&hilo_entrada_salida, NULL, (void*) atender_memoria_entrada_salida, NULL);
     pthread_detach(hilo_entrada_salida);
-    */
-
-
-
-
+    
+    //Atender los mensajes de KERNEL
+    pthread_t hilo_kernel;
+    pthread_create(&hilo_kernel, NULL, (void*) atender_memoria_kernel, NULL);
+    pthread_join (hilo_kernel, NULL);
 
     return 0;
 }

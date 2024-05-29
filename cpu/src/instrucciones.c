@@ -297,31 +297,42 @@ void RESIZE(void* parametro){
     }
 }
 
-/*
+
 //MOV_IN (void registroDatos, int registroDirección): 
 //Lee el valor de memoria correspondiente a la Dirección Lógica que se encuentra en el Registro Dirección y lo almacena en el Registro Datos.
-void MOV_IN (){ //lee de memoria y lo guarda en un registro
+void MOV_IN (void *registroDatos, void* direccion_fisica){ //lee de memoria y lo guarda en un registro
+
     PC_registro++;
+    uint16_t registroDireccion = *(uint16_t*)direccion_fisica;
+    uint8_t tam_reg = sizeof(*registroDatos);
 
     t_buffer* buffer_a_enviar = crear_buffer();
-    cargar_void_al_buffer(buffer_a_enviar, registroDatos);
-    cargar_int_al_buffer(buffer_a_enviar, registroDireccion);
+    cargar_uint16_al_buffer(buffer_a_enviar, registroDireccion);
+    cargar_uint8_al_buffer(buffer_a_enviar, tam_reg);
     t_paquete* a_enviar = crear_paquete(MOVE_IN, buffer_a_enviar);
     enviar_paquete(a_enviar, fd_memoria);
     destruir_paquete(a_enviar);
+
+    int cod_op = recibir_operacion(fd_memoria);
+    switch (cod_op)
+    {
+    case RESPUESTA_MOVES:
+
+        t_buffer *recibido = recibir_buffer_sin_cod_op(fd_memoria);
+        
+        registroDatos = extraer_choclo_al_buffer(recibido);
+        
+        destruir_buffer(recibido);
+        
+        break;
+    }
 }
 
 //MOV_OUT (Registro Dirección, Registro Datos): 
 //Lee el valor del Registro Datos y lo escribe en la dirección física de memoria obtenida a partir de la Dirección Lógica almacenada en el Registro Dirección.
-void MOV_OUT (){ //escribe en memoria
+void MOV_OUT (void *direccion_fisica, void* registroDatos){ //escribe en memoria
     PC_registro++;
 
-    t_buffer* buffer_a_enviar = crear_buffer();
-    cargar_void_al_buffer(buffer_a_enviar, registroDatos);
-    cargar_int_al_buffer(buffer_a_enviar, registroDireccion);
-    t_paquete* a_enviar = crear_paquete(MOVE_OUT, buffer_a_enviar);
-    enviar_paquete(a_enviar, fd_memoria);
-    destruir_paquete(a_enviar);
+    
 }
 
-*/

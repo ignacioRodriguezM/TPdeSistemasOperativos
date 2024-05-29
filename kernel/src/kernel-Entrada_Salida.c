@@ -113,6 +113,7 @@ void atender_multiples_entrada_salida(int *socket_ptr)
         case -1:
             log_error(kernel_logger, "Desconexion de KERNEL-i/o ");
             colas_bloqueados[posicion]->conectado = false;
+            free(socket_ptr);
             control_key = 0;
             break;
         default:

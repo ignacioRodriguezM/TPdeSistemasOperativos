@@ -1,27 +1,32 @@
 #include "../include/memoria_entrada_salida.h"
 
-void atender_memoria_entrada_salida (){
-    bool control_key = 1;
-    while (control_key) {
-		int cod_op = recibir_operacion(fd_entrada_salida);
-		switch (cod_op) {
-            case MENSAJE:
-                //
-                break;
-            case PAQUETE:
-                //
-                break;
-            //case ACCESO_A_ESPACIO_DE_USUARIO:
-            //hacer lo que io quiera (escribir en memoria o cargar un valor de la misma en un registro externo)
-            
+void atender_memoria_entrada_salida()
+{
+    while (1)
+    {
 
-            case -1:
-                log_error(memoria_logger, "Desconexion de ENTRADA SALIDA");
-                control_key = 0;
-                break;
-            default:
-                log_warning(memoria_logger,"Operacion desconocida de ENTRADA SALIDA");
-                break;
-            }
-	}
+        fd_entrada_salida = esperar_cliente(fd_kernel, memoria_logger, "ENTRADA SALIDA");
+
+        int *client_socket_ptr = malloc(sizeof(int));
+        *client_socket_ptr = fd_entrada_salida;
+
+        pthread_t hilo_multipes_entrada_salida;
+        pthread_create(&hilo_multipes_entrada_salida, NULL, (void *)atender_multiples_entrada_salida, (int *)client_socket_ptr);
+        pthread_detach(hilo_multipes_entrada_salida);
+    }
+}
+void atender_multiples_entrada_salida(int *socket_ptr)
+{
+    int client_socket = *socket_ptr;
+    bool control_key = 1;
+    while (control_key)
+    {
+        int cod_op = recibir_operacion(client_socket);
+        switch (cod_op)
+        {
+
+        case PRESENTACION:
+            break;
+        }
+    }
 }

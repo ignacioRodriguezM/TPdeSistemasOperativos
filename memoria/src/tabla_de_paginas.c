@@ -32,6 +32,7 @@ int marco_correspondiente_a_pagina_consultada(uint16_t pid_recibido, int pagina_
             current = current->next;
         }
     }
+    return -1;
 }
 /*
 void devolver_valor_de_memoria(void registroDeDatos , int pagina){ //mov_in

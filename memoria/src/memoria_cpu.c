@@ -62,18 +62,18 @@ void atender_memoria_cpu()
         // case MOVE_IN:
             
         //     t_buffer *buffer_recibido = recibir_buffer_sin_cod_op(fd_cpu);
-        //     void registroDatos = extraer_void_al_buffer(buffer_recibido);
-        //     int registroDireccion = extraer_int_al_buffer(buffer_recibido);
+        //     uint8_t tam_a_leer = extraer_uint8_al_buffer(buffer_recibido);
+        //     uint16_t registroDireccion = extraer_uint16_al_buffer(buffer_recibido);
         //     destruir_buffer(buffer_recibido);
-            // devolver_valor_de_memoria(registroDatos, RegistroDireccion);
+        //     registroDatos = devolver_valor_de_memoria()
 
         // case MOVE_OUT:
             
         //     t_buffer *buffer_recibido = recibir_buffer_sin_cod_op(fd_cpu);
-        //     void registroDatos = extraer_void_al_buffer(buffer_recibido);
-        //     int registroDireccion = extraer_int_al_buffer(buffer_recibido);
+        //     uint8_t tam_a_leer = extraer_uint8_al_buffer(buffer_recibido);
+        //     uint16_t registroDireccion = extraer_uint16_al_buffer(buffer_recibido);
         //     destruir_buffer(buffer_recibido);
-            // escribir_valor_en_memoria(registroDireccion, registroDatos);
+            // escribir_valor_en_memoria(
 
         case -1:
             log_error(memoria_logger, "Desconexion de CPU");
