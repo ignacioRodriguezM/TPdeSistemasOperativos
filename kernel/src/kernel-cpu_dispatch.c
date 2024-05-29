@@ -18,9 +18,6 @@ void atender_kernel_cpu_dispatch()
             _manejar_out_of_memory();
             break;
 
-        case INVALID_RESOURCE:
-
-            break;
         case INVALID_WRITE:
 
             break;
@@ -38,6 +35,10 @@ void atender_kernel_cpu_dispatch()
             break;
         case SIGNAL_op:
             _manejar_signal();
+            break;
+
+        case INTERRUPTED_BY_USER:
+            _manejar_interrupcion_de_usuario();
             break;
 
         case -1:
@@ -207,6 +208,23 @@ void _manejar_exit()
     extraer_y_actualizar_pcb_en_excecute(buffer_recibido);
 
     _mandar_de_excec_a_exit("SUCCES");
+
+    destruir_buffer(buffer_recibido);
+}
+void _manejar_interrupcion_de_usuario(){
+    if (strcmp(algoritmo_planificacion, "FIFO") != 0)
+    {
+        pthread_cancel(hilo_quantum);
+        if (strcmp(algoritmo_planificacion, "VRR") == 0)
+        {
+            temporal_stop(timer_quantum);
+            temporal_destroy(timer_quantum);
+        }
+    }
+    t_buffer *buffer_recibido = recibir_buffer_sin_cod_op(fd_cpu_dispatch);
+    extraer_y_actualizar_pcb_en_excecute(buffer_recibido);
+
+    _mandar_de_excec_a_exit("INTERRUPTED_BY_USER");
 
     destruir_buffer(buffer_recibido);
 }

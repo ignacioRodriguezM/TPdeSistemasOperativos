@@ -43,6 +43,7 @@ typedef enum
 
 	//-------------------KERNEL-CPU INT
 	FIN_QUANTUM,
+	INTERRUPTED_BY_USER,
 
 	//----------------IO-KERNEL
 	PRESENTACION,

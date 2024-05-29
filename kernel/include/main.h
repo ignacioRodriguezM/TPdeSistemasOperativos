@@ -6,7 +6,6 @@
 #include "./kernel-Entrada_Salida.h"
 #include "./kernel-memoria.h"
 #include "./kernel-cpu_dispatch.h"
-#include "./kernel-cpu_interrupt.h"
 #include "./consola.h"
 #include "./colas_estados.h"
 #include "./semaforos.h"

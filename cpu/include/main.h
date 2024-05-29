@@ -22,6 +22,8 @@ int fd_memoria;
 bool aviso_de_interrupt;
 bool bloq_flag;
 bool interrupt_flag;
+bool desalojo;
+bool interrupcion_de_usuarios;
 
 //COSAS RECIVIDAS DEL KERNEL QUE NO SON REGISTROS
 uint16_t PID;

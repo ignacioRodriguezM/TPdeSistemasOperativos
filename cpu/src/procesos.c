@@ -21,8 +21,12 @@ void ejecutar_ciclo_de_cpu()
     if(interrupt_flag){
         if (aviso_de_interrupt)
         {
-            // protocolo_de_interrupcion
-            _desalojar_proceso();
+            if(desalojo){
+                _desalojar_proceso();
+            }
+            if(interrupcion_de_usuarios){
+                _desalojar_proceso_interrumpido_por_usuario();
+            }
             bloq_flag = false;
             aviso_de_interrupt = false;
         }
@@ -48,6 +52,31 @@ void _desalojar_proceso()
     cargar_uint32_al_buffer(buffer, DI_registro);
 
     t_paquete *a_enviar = crear_paquete(DESALOJO, buffer);
+
+    enviar_paquete(a_enviar, fd_kernel_dispatch);
+
+    destruir_paquete(a_enviar);
+}
+
+void _desalojar_proceso_interrumpido_por_usuario()
+{
+    t_buffer *buffer = crear_buffer();
+    //[pid] [pc] [registros]
+
+    cargar_uint16_al_buffer(buffer, PID);
+    cargar_uint32_al_buffer(buffer, PC_registro);
+    cargar_uint8_al_buffer(buffer, AX_registro);
+    cargar_uint8_al_buffer(buffer, BX_registro);
+    cargar_uint8_al_buffer(buffer, CX_registro);
+    cargar_uint8_al_buffer(buffer, DX_registro);
+    cargar_uint32_al_buffer(buffer, EAX_registro);
+    cargar_uint32_al_buffer(buffer, EBX_registro);
+    cargar_uint32_al_buffer(buffer, ECX_registro);
+    cargar_uint32_al_buffer(buffer, EDX_registro);
+    cargar_uint32_al_buffer(buffer, SI_registro);
+    cargar_uint32_al_buffer(buffer, DI_registro);
+
+    t_paquete *a_enviar = crear_paquete(INTERRUPTED_BY_USER, buffer);
 
     enviar_paquete(a_enviar, fd_kernel_dispatch);
 

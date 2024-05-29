@@ -26,6 +26,8 @@ extern int fd_memoria;
 extern bool aviso_de_interrupt;
 extern bool bloq_flag;
 extern bool interrupt_flag;
+extern bool desalojo;
+extern bool interrupcion_de_usuarios;
 
 
 

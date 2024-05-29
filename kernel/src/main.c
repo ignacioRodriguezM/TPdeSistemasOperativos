@@ -58,10 +58,6 @@ int main()
     pthread_create(&hilo_kernel_cpu_dispatch, NULL, (void *)atender_kernel_cpu_dispatch, NULL);
     pthread_detach(hilo_kernel_cpu_dispatch);
 
-    // atender cpu interrupt
-    pthread_t hilo_kernel_cpu_interrupt;
-    pthread_create(&hilo_kernel_cpu_interrupt, NULL, (void *)atender_kernel_cpu_inerrupt, NULL);
-    pthread_detach(hilo_kernel_cpu_interrupt);
 
     // atender entrada/salida
     pthread_t hilo_kernel_entrada_salida;

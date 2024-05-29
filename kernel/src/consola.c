@@ -320,10 +320,24 @@ bool buscar_en_cola (int pid_a_finalizar, t_queue* cola, char* nombre_cola){
         actual = NULL;
 }
 
+void enviar_interrupcion_a_cpu(){
+    t_buffer* buff = crear_buffer();
+    t_paquete* paq = crear_paquete(INTERRUPTED_BY_USER, buff);
+    enviar_paquete(paq, fd_cpu_interrupt);
+    destruir_paquete(paq);
+}
+
+bool esta_en_excec(int pid_buscado){
+    pthread_mutex_lock(&mutex_procesos);
+    PCB *proceso = queue_peek (procesos_excec);
+    pthread_mutex_unlock(&mutex_procesos);
+
+    return (pid_buscado == proceso->pid);
+}
+
 
 bool buscar_en_colas_y_eliminar_el_proceso(int pid_a_finalizar)
 {
-
     ///////////////// BUSCAR EN NEW///////////////////////
     if(buscar_en_cola (pid_a_finalizar, procesos_new, "NEW")){
         sem_post(&grado_multiprogramacion_semaforo);
@@ -331,12 +345,11 @@ bool buscar_en_colas_y_eliminar_el_proceso(int pid_a_finalizar)
     }
     
     ////////////////// BUSCAR EN EXCECUTE /////////////////
-    
-    //HAY Q INTERRUMPIR CPU Y "DESALOJAR EL PROCESO"
-    // TERMINAR
-
+    if(esta_en_excec(pid_a_finalizar)){
+        enviar_interrupcion_a_cpu();
+    }
     /////////////////// BUSCAR EN READY///////////////
-    if(buscar_en_cola (pid_a_finalizar, procesos_ready, "READY")){
+    else if(buscar_en_cola (pid_a_finalizar, procesos_ready, "READY")){
         sem_post(&grado_multiprogramacion_semaforo);
         return true;
     }

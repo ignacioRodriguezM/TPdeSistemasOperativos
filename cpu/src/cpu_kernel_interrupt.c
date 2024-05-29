@@ -10,11 +10,17 @@ void atender_cpu_kernel_interrupt (){
                 t_buffer* buff_vacio = recibir_buffer_sin_cod_op(fd_kernel_interrupt);
                 if(interrupt_flag){
                     aviso_de_interrupt = true;
+                    desalojo = true;
                 }
                 destruir_buffer(buff_vacio);
                 break;
-            case PAQUETE:
-                //
+            case INTERRUPTED_BY_USER:
+                t_buffer* buff_vacio2 = recibir_buffer_sin_cod_op(fd_kernel_interrupt);
+                if(interrupt_flag){
+                    aviso_de_interrupt = true;
+                    interrupcion_de_usuarios = true;
+                }
+                destruir_buffer(buff_vacio2);
                 break;
             case -1:
                 log_error(cpu_logger, "Desconexion de KERNEL - interrupt");

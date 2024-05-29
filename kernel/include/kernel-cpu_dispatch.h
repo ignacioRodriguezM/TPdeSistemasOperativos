@@ -11,6 +11,7 @@ void _manejar_bloqueo ();
 void _manejar_wait();
 void _manejar_signal();
 void _manejar_out_of_memory();
+void _manejar_interrupcion_de_usuario();
 
 
 
