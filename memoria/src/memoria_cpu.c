@@ -47,7 +47,7 @@ void atender_memoria_cpu()
             _ajustar_tamanio_proceso();
 
             break;
-
+/*
         case MARCO_DE_PAGINA:
 
             t_buffer *buffer_recibido = recibir_buffer_sin_cod_op(fd_cpu);
@@ -57,6 +57,7 @@ void atender_memoria_cpu()
             marco_correspondiente_a_pagina_consultada(pid_recibido, pagina_a_consultar);
 
             break;
+            */
 
         // case MOVE_IN:
             

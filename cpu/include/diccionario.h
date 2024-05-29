@@ -5,6 +5,6 @@
 
 
 void incializar_diccionarios();
-void decode(char* funcion, ...);
+void decode(char* funcion, int num_params, char** params);
 
 #endif

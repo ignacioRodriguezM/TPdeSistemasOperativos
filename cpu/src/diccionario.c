@@ -48,6 +48,7 @@ void incializar_diccionarios(){
 
 void decode(char* funcion, int num_params, char** params) {
     // Obtener la operación
+    typedef void (*OperationFunc)(void*, ...);
     OperationFunc operacion = (OperationFunc)dictionary_get(instrucciones, funcion);
     if (operacion == NULL) {
         printf("Operación no encontrada: %s\n", funcion);
@@ -57,11 +58,12 @@ void decode(char* funcion, int num_params, char** params) {
     // Convertir cadenas a punteros a void y llamar a la operación con los parámetros
     void* void_params[num_params];
     for (int i = 0; i < num_params; ++i) {
-        void_params[i] = dictionary_get(parametros, funcion); 
+        void_params[i] = dictionary_get(parametros, funcion);
+    }
 
     // Llamar a la operación con los parámetros como punteros a void
     switch (num_params) {
-        case 0: operacion(); break;
+        case 0: operacion(NULL); break;
         case 1: operacion(void_params[0]); break;
         case 2: operacion(void_params[0], void_params[1]); break;
         case 3: operacion(void_params[0], void_params[1], void_params[2]); break;

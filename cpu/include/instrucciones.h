@@ -3,14 +3,14 @@
 
 #include "./c_gestor.h"
 
-void SET (void* registro, int valor);
+void SET (void* registro, void* parametro);
 void SUM(void *registroDestino, void *registroOrigen);
 void SUB(void *registroDestino, void *registroOrigen);
-void JNZ(void* registro, unsigned int valor_salto);
-void IO_GEN_SLEEP (char* nombre_interfaz, uint8_t unidades_de_trabajo);
+void JNZ(void *registro, void* parametro);
+void IO_GEN_SLEEP(void* parametro, void* parametro2);
 void EXIT();
-void WAIT(char *nombre_recurso);
-void SIGNAL (char *nombre_recurso);
-void RESIZE(uint16_t pid, uint16_t tamanio_ajustado);
+void WAIT(void* parametro);
+void SIGNAL (void* parametro);
+void RESIZE(void* parametro);
 
 #endif

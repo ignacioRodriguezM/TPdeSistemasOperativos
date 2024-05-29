@@ -11,7 +11,7 @@ void SET_uint32(uint32_t *registro, int valor)
 
 void SET(void *registro, void* parametro)
 {
-    int valor = *parametro;
+    int valor = *(int*)parametro;
 
     if (sizeof(*(uint8_t *)registro) == sizeof(uint8_t))
     {
@@ -111,17 +111,18 @@ void SUB(void *registroDestino, void *registroOrigen)
 
 void JNZ(void *registro, void* parametro)
 {
-    unsigned int = *parametro
+    unsigned int valor_salto = *(unsigned int*)parametro;
     if (*(uint32_t *)registro != 0)
     {
         PC_registro = valor_salto;
     }
 }
 
-void IO_GEN_SLEEP(char *nombre_interfaz, void* parametro)
+void IO_GEN_SLEEP(void* parametro, void* parametro2)
 {
+    char* nombre_interfaz = (char *) parametro;
 
-    uint8_t unidades_de_trabajo = *parametro;
+    uint8_t unidades_de_trabajo = *(uint8_t*)parametro2;
 
     PC_registro++;
     bloq_flag = false;
@@ -214,7 +215,7 @@ void WAIT(void* parametro)
 }
 void SIGNAL (void* parametro)
 {
-    char* nombre_recurso = * parametro;
+    char* nombre_recurso = (char *) parametro;
 
     PC_registro++;
     bloq_flag = false;
@@ -246,7 +247,7 @@ void SIGNAL (void* parametro)
 }
 void RESIZE(void* parametro){
 
-    uint16_t tamanio_ajustado = *parametro;
+    uint16_t tamanio_ajustado = *(uint16_t*)parametro;
 
     PC_registro++;
 
