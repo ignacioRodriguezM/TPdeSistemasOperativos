@@ -9,8 +9,9 @@ void SET_uint32(uint32_t *registro, int valor)
     *registro = valor;
 }
 
-void SET(void *registro, int valor)
+void SET(void *registro, void* parametro)
 {
+    int valor = *parametro;
 
     if (sizeof(*(uint8_t *)registro) == sizeof(uint8_t))
     {
@@ -108,16 +109,19 @@ void SUB(void *registroDestino, void *registroOrigen)
     PC_registro++;
 }
 
-void JNZ(void *registro, unsigned int valor_salto)
+void JNZ(void *registro, void* parametro)
 {
+    unsigned int = *parametro
     if (*(uint32_t *)registro != 0)
     {
         PC_registro = valor_salto;
     }
 }
 
-void IO_GEN_SLEEP(char *nombre_interfaz, uint8_t unidades_de_trabajo)
+void IO_GEN_SLEEP(char *nombre_interfaz, void* parametro)
 {
+
+    uint8_t unidades_de_trabajo = *parametro;
 
     PC_registro++;
     bloq_flag = false;
@@ -176,8 +180,9 @@ void EXIT()
     destruir_paquete(a_enviar);
 }
 
-void WAIT(char *nombre_recurso)
+void WAIT(void* parametro)
 {
+    char* nombre_recurso = (char *) parametro;
 
     PC_registro++;
     bloq_flag = false;
@@ -207,8 +212,9 @@ void WAIT(char *nombre_recurso)
 
     
 }
-void SIGNAL (char *nombre_recurso)
+void SIGNAL (void* parametro)
 {
+    char* nombre_recurso = * parametro;
 
     PC_registro++;
     bloq_flag = false;
@@ -238,12 +244,14 @@ void SIGNAL (char *nombre_recurso)
 
     
 }
-void RESIZE(uint16_t pid, uint16_t tamanio_ajustado){
+void RESIZE(void* parametro){
+
+    uint16_t tamanio_ajustado = *parametro;
 
     PC_registro++;
 
     t_buffer* buffer_a_enviar = crear_buffer();
-    cargar_uint16_al_buffer(buffer_a_enviar, pid);
+    cargar_uint16_al_buffer(buffer_a_enviar, PID);
     cargar_uint16_al_buffer(buffer_a_enviar, tamanio_ajustado);
     t_paquete* a_enviar = crear_paquete(AJUSTAR_TAMANIO_PROCESO, buffer_a_enviar);
     enviar_paquete(a_enviar, fd_memoria);
@@ -287,3 +295,32 @@ void RESIZE(uint16_t pid, uint16_t tamanio_ajustado){
         break;
     }
 }
+
+/*
+//MOV_IN (void registroDatos, int registroDirección): 
+//Lee el valor de memoria correspondiente a la Dirección Lógica que se encuentra en el Registro Dirección y lo almacena en el Registro Datos.
+void MOV_IN (){ //lee de memoria y lo guarda en un registro
+    PC_registro++;
+
+    t_buffer* buffer_a_enviar = crear_buffer();
+    cargar_void_al_buffer(buffer_a_enviar, registroDatos);
+    cargar_int_al_buffer(buffer_a_enviar, registroDireccion);
+    t_paquete* a_enviar = crear_paquete(MOVE_IN, buffer_a_enviar);
+    enviar_paquete(a_enviar, fd_memoria);
+    destruir_paquete(a_enviar);
+}
+
+//MOV_OUT (Registro Dirección, Registro Datos): 
+//Lee el valor del Registro Datos y lo escribe en la dirección física de memoria obtenida a partir de la Dirección Lógica almacenada en el Registro Dirección.
+void MOV_OUT (){ //escribe en memoria
+    PC_registro++;
+
+    t_buffer* buffer_a_enviar = crear_buffer();
+    cargar_void_al_buffer(buffer_a_enviar, registroDatos);
+    cargar_int_al_buffer(buffer_a_enviar, registroDireccion);
+    t_paquete* a_enviar = crear_paquete(MOVE_OUT, buffer_a_enviar);
+    enviar_paquete(a_enviar, fd_memoria);
+    destruir_paquete(a_enviar);
+}
+
+*/

@@ -3,11 +3,11 @@
 
 #include "./c_gestor.h"
 
-
-
 #include "./cpu_kernel_dispatch.h"
 #include "./cpu_kernel_interrupt.h"
 #include "./cpu_memoria.h"
+
+#include "./diccionario.h"
 
 //Variables GLOBALES
 t_log* cpu_logger;
@@ -25,13 +25,12 @@ bool interrupt_flag;
 bool desalojo;
 bool interrupcion_de_usuarios;
 
-//COSAS RECIVIDAS DEL KERNEL QUE NO SON REGISTROS
+//COSAS RECIBIDAS DEL KERNEL QUE NO SON REGISTROS
 uint16_t PID;
 
 
 
 //REGISTROS
-uint32_t PC_registro;
 uint8_t AX_registro;
 uint8_t BX_registro;
 uint8_t CX_registro;
@@ -42,5 +41,8 @@ uint32_t ECX_registro;
 uint32_t EDX_registro;
 uint32_t SI_registro;
 uint32_t DI_registro;
+uint32_t PC_registro;
+
+
 
 #endif

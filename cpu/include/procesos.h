@@ -3,6 +3,7 @@
 
 #include "./c_gestor.h"
 
+
 void ejecutar_ciclo_de_cpu ();
 
 

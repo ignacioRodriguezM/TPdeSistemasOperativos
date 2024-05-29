@@ -11,7 +11,8 @@ void atender_memoria_entrada_salida (){
             case PAQUETE:
                 //
                 break;
-
+            case ACCESO_A_ESPACIO_DE_USUARIO:
+            //hacer lo que io quiera (escribir en memoria o cargar un valor de la misma en un registro externo)
             
 
             case -1:

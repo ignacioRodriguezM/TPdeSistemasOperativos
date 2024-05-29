@@ -8,6 +8,8 @@ int main (){
     APP_config config_valores = cargar_configuracion_cpu();
     aviso_de_interrupt = false;
 
+    incializar_diccionarios();
+
     // iniciar servidor de cpu dispach
     fd_cpu_dispatch = iniciar_servidor(config_valores.puerto_escucha_dispatch, cpu_logger, "CPU DISPACH INCIADO !!!");
 

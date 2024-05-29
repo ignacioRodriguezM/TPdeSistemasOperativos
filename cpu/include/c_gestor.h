@@ -8,9 +8,14 @@
 #include <commons/txt.h>
 #include <commons/collections/list.h>
 
+#include <commons/collections/dictionary.h>
+
 #include "./configuracion_cpu.h"
 #include "./instrucciones.h"
 #include "./procesos.h"
+
+
+
 
 
 //Variables GLOBALES
@@ -47,5 +52,6 @@ extern uint32_t ECX_registro;
 extern uint32_t EDX_registro;
 extern uint32_t SI_registro;
 extern uint32_t DI_registro;
+
 
 #endif
