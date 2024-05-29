@@ -1,8 +1,10 @@
-#ifdef DICCIONARIO_H_
+#ifndef DICCIONARIO_H_
 #define DICCIONARIO_H_
 
 #include "./c_gestor.h"
-#include <commons/collections/dictionary.h>
 
+
+void incializar_diccionarios();
+void decode(char* funcion, ...);
 
 #endif

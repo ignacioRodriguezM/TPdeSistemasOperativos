@@ -1,4 +1,5 @@
 #include "../include/procesos.h"
+#include "../include/diccionario.h"
 
 void ejecutar_ciclo_de_cpu()
 {
@@ -13,12 +14,14 @@ void ejecutar_ciclo_de_cpu()
 
     /////////////////////////  DECODE && EXCECUTE   /////////////////////////
 
-    _decode_and_excecute(instruccion);
+    //_decode_and_excecute(instruccion);
+    decodear(instruccion);
 
     free(instruccion);
 
     /////////////////////////  CHECK INTERRUPT   /////////////////////////
-    if(interrupt_flag){
+    if (interrupt_flag)
+    {
         if (aviso_de_interrupt)
         {
             // protocolo_de_interrupcion
@@ -27,6 +30,21 @@ void ejecutar_ciclo_de_cpu()
             aviso_de_interrupt = false;
         }
     }
+}
+
+void decodear(char *palabra)
+{
+    char **comandos = string_split(palabra, " ");
+
+    int num_params = 0;
+    while (comandos[num_params] != NULL)
+    {
+        num_params++;
+    }
+
+    decode(comandos[0], num_params - 1, &comandos[1]);
+    
+    string_array_destroy(comandos);
 }
 
 void _desalojar_proceso()
@@ -94,6 +112,7 @@ char *_esperar_respuesta_de_memoria()
 }
 void _aplicar_sum_a_registro(char **comandos, void *regist)
 {
+
     if (strcmp(comandos[2], "AX") == 0)
         SUM(regist, &AX_registro);
     else if (strcmp(comandos[2], "BX") == 0)
@@ -119,6 +138,7 @@ void _aplicar_sum_a_registro(char **comandos, void *regist)
 }
 void _aplicar_sub_a_registro(char **comandos, void *regist)
 {
+
     if (strcmp(comandos[2], "AX") == 0)
         SUB(regist, &AX_registro);
     else if (strcmp(comandos[2], "BX") == 0)
@@ -337,14 +357,16 @@ void _decode_and_excecute(char *palabra)
 
     else if (strcmp(comandos[0], "MOV_IN") == 0)
     {
+        // desarroolando en instrucciones todavia, MOV_OUT tmb
         printf("CASO NO DESARROLLADO \n");
     }
     else if (strcmp(comandos[0], "MOV_OUT") == 0)
     {
+        // 
         printf("CASO NO DESARROLLADO \n");
     }
     else if (strcmp(comandos[0], "RESIZE") == 0)
-    {  
+    {
         uint16_t tamanio_ajustado = atoi(comandos[1]);
         RESIZE(PID, tamanio_ajustado);
         log_info(cpu_logger, "PID: %u - Ejecutando: RESIZE - %u", PID, tamanio_ajustado);

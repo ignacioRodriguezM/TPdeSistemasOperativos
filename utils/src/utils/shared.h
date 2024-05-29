@@ -1,6 +1,11 @@
 #ifndef UTILS_SHARED_H_
 #define UTILS_SHARED_H_
 
+
+#include <stdarg.h>
+
+
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <signal.h>
@@ -16,6 +21,7 @@
 #include <commons/collections/list.h>
 #include <commons/collections/queue.h>
 #include <commons/temporal.h>
+
 
 typedef enum
 {

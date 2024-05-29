@@ -47,6 +47,33 @@ void atender_memoria_cpu()
             _ajustar_tamanio_proceso();
 
             break;
+
+        case MARCO_DE_PAGINA:
+
+            t_buffer *buffer_recibido = recibir_buffer_sin_cod_op(fd_cpu);
+            uint16_t pid_recibido = extraer_uint16_al_buffer(buffer_recibido);
+            int pagina_a_consultar= extraer_int_al_buffer(buffer_recibido);
+            destruir_buffer(buffer_recibido);
+            marco_correspondiente_a_pagina_consultada(pid_recibido, pagina_a_consultar);
+
+            break;
+
+        // case MOVE_IN:
+            
+        //     t_buffer *buffer_recibido = recibir_buffer_sin_cod_op(fd_cpu);
+        //     void registroDatos = extraer_void_al_buffer(buffer_recibido);
+        //     int registroDireccion = extraer_int_al_buffer(buffer_recibido);
+        //     destruir_buffer(buffer_recibido);
+            // devolver_valor_de_memoria(registroDatos, RegistroDireccion);
+
+        // case MOVE_OUT:
+            
+        //     t_buffer *buffer_recibido = recibir_buffer_sin_cod_op(fd_cpu);
+        //     void registroDatos = extraer_void_al_buffer(buffer_recibido);
+        //     int registroDireccion = extraer_int_al_buffer(buffer_recibido);
+        //     destruir_buffer(buffer_recibido);
+            // escribir_valor_en_memoria(registroDireccion, registroDatos);
+
         case -1:
             log_error(memoria_logger, "Desconexion de CPU");
             control_key = 0;
