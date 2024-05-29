@@ -211,6 +211,7 @@ void _manejar_exit()
 
     destruir_buffer(buffer_recibido);
 }
+
 void _manejar_interrupcion_de_usuario(){
     if (strcmp(algoritmo_planificacion, "FIFO") != 0)
     {
@@ -228,6 +229,7 @@ void _manejar_interrupcion_de_usuario(){
 
     destruir_buffer(buffer_recibido);
 }
+
 void _manejar_wait()
 {
     t_buffer *buffer_recibido = recibir_buffer_sin_cod_op(fd_cpu_dispatch);
