@@ -5,7 +5,7 @@ void atender_memoria_entrada_salida()
     while (1)
     {
 
-        fd_entrada_salida = esperar_cliente(fd_kernel, memoria_logger, "ENTRADA SALIDA");
+        fd_entrada_salida = esperar_cliente(fd_memoria, memoria_logger, "ENTRADA SALIDA");
 
         int *client_socket_ptr = malloc(sizeof(int));
         *client_socket_ptr = fd_entrada_salida;

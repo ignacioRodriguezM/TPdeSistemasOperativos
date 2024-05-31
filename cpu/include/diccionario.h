@@ -4,7 +4,7 @@
 #include "./c_gestor.h"
 
 
-void incializar_diccionarios();
+void inicializar_diccionarios();
 void decode(char* funcion, int num_params, char** params);
 
 #endif
