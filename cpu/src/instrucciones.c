@@ -300,7 +300,7 @@ void RESIZE(void* parametro){
 
 //MOV_IN (void registroDatos, int registroDirección): 
 //Lee el valor de memoria correspondiente a la Dirección Lógica que se encuentra en el Registro Dirección y lo almacena en el Registro Datos.
-void MOV_IN (void *registroDatos, void* direccion_fisica){ //lee de memoria y lo guarda en un registro
+void MOV_IN (void *registroDatos, void* registroDireccion){ //lee de memoria y lo guarda en un registro
 
     PC_registro++;
     uint16_t registroDireccion = *(uint16_t*)direccion_fisica;
@@ -330,7 +330,7 @@ void MOV_IN (void *registroDatos, void* direccion_fisica){ //lee de memoria y lo
 
 //MOV_OUT (Registro Dirección, Registro Datos): 
 //Lee el valor del Registro Datos y lo escribe en la dirección física de memoria obtenida a partir de la Dirección Lógica almacenada en el Registro Dirección.
-void MOV_OUT (void *direccion_fisica, void* registroDatos){ //escribe en memoria
+void MOV_OUT (void *registroDireccion, void* registroDatos){ //escribe en memoria
     PC_registro++;
 
     

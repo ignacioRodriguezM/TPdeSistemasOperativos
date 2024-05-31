@@ -12,7 +12,7 @@ void EXIT();
 void WAIT(void* parametro);
 void SIGNAL (void* parametro);
 void RESIZE(void* parametro);
-void MOV_IN (void *registroDatos, void* direccion_fisica);
-void MOV_OUT (void *direccion_fisica, void* registroDatos);
+void MOV_IN (void *registroDatos, void* registroDireccion);
+void MOV_OUT (void *registroDireccion, void* registroDatos);
 
 #endif

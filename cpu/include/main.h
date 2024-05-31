@@ -43,6 +43,8 @@ uint32_t SI_registro;
 uint32_t DI_registro;
 uint32_t PC_registro;
 
+//memo
+uint16_t tam_pagina;
 
 
 #endif

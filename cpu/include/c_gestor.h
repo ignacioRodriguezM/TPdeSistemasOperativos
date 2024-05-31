@@ -16,7 +16,12 @@
 
 
 
+typedef struct
+{
+    uint16_t numero_pagina;
+    uint32_t desplazamiento;
 
+} Direccion_Logica;
 
 //Variables GLOBALES
 extern t_log* cpu_logger;
@@ -53,5 +58,7 @@ extern uint32_t EDX_registro;
 extern uint32_t SI_registro;
 extern uint32_t DI_registro;
 
+//memo
+extern uint16_t tam_pagina;
 
 #endif

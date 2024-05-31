@@ -74,8 +74,6 @@ void decode(char* funcion, int num_params, char** params) {
         case 1: {
             // MOV_IN
             log_info(cpu_logger, "PID: <%u> - Ejecutando: <%s> - <%s, %s>", PID, funcion, params[0], params[1]);
-            int direccion_fisica = atoi(params[1]);
-            MOV_IN(params[0], &direccion_fisica);
             break;
         }
         case 2:
