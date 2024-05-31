@@ -14,7 +14,6 @@ void ejecutar_ciclo_de_cpu()
 
     /////////////////////////  DECODE && EXCECUTE   /////////////////////////
 
-    //_decode_and_excecute(instruccion);
     decodear(instruccion);
 
     free(instruccion);

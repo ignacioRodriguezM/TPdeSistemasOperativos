@@ -122,7 +122,7 @@ char *ajustar_tam_proceso(uint16_t PID, uint16_t nuevo_tam_en_bytes)
     }
     else
     {
-        log_error(memoria_log_debug, "EL PROCESO SOLICITA UN RESIZE DE SU MISMO TAMANIO!!");
+        log_error(memoria_log_debug, "EL PROCESO: %u SOLICITA UN RESIZE DE SU MISMO TAMANIO!!", proceso_a_ajustar->PID);
         return "OK";
     }
 }

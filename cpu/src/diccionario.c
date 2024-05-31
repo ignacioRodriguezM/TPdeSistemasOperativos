@@ -61,47 +61,47 @@ void decode(char* funcion, int num_params, char** params) {
     for (int i = 0; i < num_params; ++i) {
         void_params[i] = dictionary_get(parametros, params[i]);
     }
-
+    
     // Ejecutar la operación correspondiente
     switch (op_switcher) {
         case 0: {
             // SET
-            log_info(cpu_logger, "PID: <%u> - Ejecutando: <%s> - <%s, %s>", PID, params[0], (params[1]));
+            log_info(cpu_logger, "PID: <%u> - Ejecutando: <%s> - <%s, %s>", PID, funcion,  params[0], params[1]);
             int valor0 = atoi(params[1]);
             SET(void_params[0], &valor0);
             break;
         }
         case 1: {
             // MOV_IN
-            log_info(cpu_logger, "PID: <%u> - Ejecutando: <%s> - <%s, %s>", PID, params[0], (params[1]));
+            log_info(cpu_logger, "PID: <%u> - Ejecutando: <%s> - <%s, %s>", PID, funcion, params[0], params[1]);
             int direccion_fisica = atoi(params[1]);
             MOV_IN(params[0], &direccion_fisica);
             break;
         }
         case 2:
             // MOV_OUT
-            log_info(cpu_logger, "PID: <%u> - Ejecutando: <%s> - <%s, %s>", PID, params[0], (params[1]));
+            log_info(cpu_logger, "PID: <%u> - Ejecutando: <%s> - <%s, %s>", PID, funcion, params[0], params[1]);
             break;
         case 3:
             // SUM
-            log_info(cpu_logger, "PID: <%u> - Ejecutando: <%s> - <%s, %s>", PID, params[0], (params[1]));
+            log_info(cpu_logger, "PID: <%u> - Ejecutando: <%s> - <%s, %s>", PID, funcion, params[0], params[1]);
             SUM(void_params[0], void_params[1]);
             break;
         case 4:
             // SUB
-            log_info(cpu_logger, "PID: <%u> - Ejecutando: <%s> - <%s, %s>", PID, params[0], (params[1]));
+            log_info(cpu_logger, "PID: <%u> - Ejecutando: <%s> - <%s, %s>", PID, funcion, params[0], params[1]);
             SUB(void_params[0], void_params[1]);
             break;
         case 5: {
             // JNZ
-            log_info(cpu_logger, "PID: <%u> - Ejecutando: <%s> - <%s, %s>", PID, params[0], (params[1]));
+            log_info(cpu_logger, "PID: <%u> - Ejecutando: <%s> - <%s, %s>", PID, funcion, params[0], params[1]);
             int valor5 = atoi(params[1]);
             JNZ(void_params[0], &valor5);
             break;
         }
         case 6: {
             // RESIZE
-            log_info(cpu_logger, "PID: <%u> - Ejecutando: <%s> - <%s>", PID, (params[1]));
+            log_info(cpu_logger, "PID: <%u> - Ejecutando: <%s> - <%s>", PID, funcion, params[1]);
             int valor6 = atoi(params[0]);
             RESIZE(&valor6);
             break;
@@ -111,21 +111,21 @@ void decode(char* funcion, int num_params, char** params) {
             break;
         case 8: {
             // WAIT
-            log_info(cpu_logger, "PID: <%u> - Ejecutando: <%s> - <%s>", PID, params[0]);
+            log_info(cpu_logger, "PID: <%u> - Ejecutando: <%s> - <%s>", PID, funcion, params[0]);
             char* nombre_recurso8 = params[0];
             WAIT(nombre_recurso8);
             break;
         }
         case 9: {
             // SIGNAL
-            log_info(cpu_logger, "PID: <%u> - Ejecutando: <%s> - <%s>", PID, params[0]);
+            log_info(cpu_logger, "PID: <%u> - Ejecutando: <%s> - <%s>", PID, funcion, params[0]);
             char* nombre_recurso9 = params[0];
             SIGNAL(nombre_recurso9);
             break;
         }
         case 10: {
             // IO_GEN_SLEEP
-            log_info(cpu_logger, "PID: <%u> - Ejecutando: <%s> - <%s, %s>", PID, params[0], (params[1]));
+            log_info(cpu_logger, "PID: <%u> - Ejecutando: <%s> - <%s, %s>", PID, funcion, params[0], params[1]);
             char* nombre_interfaz = params[0];
             int valor10 = atoi(params[1]);
             IO_GEN_SLEEP(nombre_interfaz, &valor10);
@@ -154,7 +154,7 @@ void decode(char* funcion, int num_params, char** params) {
             break;
         case 18:
             // EXIT
-            log_info(cpu_logger, "PID: <%u> - Ejecutando: <%s>");
+            log_info(cpu_logger, "PID: <%u> - Ejecutando: <%s>", PID, funcion);
             EXIT();
             break;
         default:
