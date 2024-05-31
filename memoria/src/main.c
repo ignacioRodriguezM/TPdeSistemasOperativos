@@ -20,11 +20,6 @@ int main() {
     fd_memoria = iniciar_servidor (config_valores.puerto_escucha, memoria_logger, "MEMORIA INCIADA !!!");
 
     
-
-    
-    //Esperar conexion de i/o
-    log_info(memoria_logger, "Esperando a entrada_salida...");
-    fd_entrada_salida = esperar_cliente (fd_memoria, memoria_logger, "ENTRADA SALIDA");
     
 
     //Esperar conexion KERNEL
@@ -41,7 +36,7 @@ int main() {
     pthread_create(&hilo_cpu, NULL, (void*) atender_memoria_cpu, NULL);
     pthread_detach (hilo_cpu);
 
-    //Atender los mensajes de I/O
+    //Atender I/Os
     pthread_t hilo_entrada_salida;
     pthread_create(&hilo_entrada_salida, NULL, (void*) atender_memoria_entrada_salida, NULL);
     pthread_detach(hilo_entrada_salida);
