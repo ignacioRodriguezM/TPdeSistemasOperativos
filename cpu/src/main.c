@@ -8,6 +8,10 @@ int main (){
     APP_config config_valores = cargar_configuracion_cpu();
     aviso_de_interrupt = false;
 
+    CANTIDAD_ENTRADAS_TLB = config_valores.cantidad_entradas_TLB;
+    ALGORITMO_TLB = config_valores.algoritmo_TLB;
+
+    inicializar_tlb();
     inicializar_diccionarios();
 
     // iniciar servidor de cpu dispach
@@ -48,6 +52,8 @@ int main (){
     pthread_join(hilo_memoria, NULL);
 */
 
+
+    finalizar_tlb();
 
     return 0;
 }

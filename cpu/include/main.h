@@ -7,6 +7,7 @@
 #include "./cpu_kernel_interrupt.h"
 #include "./cpu_memoria.h"
 
+#include "./tlb.h"
 #include "./diccionario.h"
 
 //Variables GLOBALES
@@ -28,7 +29,10 @@ bool interrupcion_de_usuarios;
 //COSAS RECIBIDAS DEL KERNEL QUE NO SON REGISTROS
 uint16_t PID;
 
-
+//TLB
+t_queue* TLB;
+uint16_t CANTIDAD_ENTRADAS_TLB;
+char* ALGORITMO_TLB;
 
 //REGISTROS
 uint8_t AX_registro;

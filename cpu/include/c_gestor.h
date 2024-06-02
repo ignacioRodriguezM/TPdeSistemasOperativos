@@ -21,7 +21,14 @@ typedef struct
     uint16_t numero_pagina;
     uint32_t desplazamiento;
 
-} Direccion_Logica;
+} Direccion_t;
+typedef struct
+{
+    uint16_t pid;
+    uint16_t numero_pagina;
+    uint16_t numero_marco;
+
+} TLB_ENTRY;
 
 //Variables GLOBALES
 extern t_log* cpu_logger;
@@ -39,10 +46,13 @@ extern bool interrupt_flag;
 extern bool desalojo;
 extern bool interrupcion_de_usuarios;
 
-
+//TLB
+extern t_queue* TLB;
 
 //COSAS RECIVIDAS DEL KERNEL QUE NO SON REGISTROS
 extern uint16_t PID;
+extern uint16_t CANTIDAD_ENTRADAS_TLB;
+extern char* ALGORITMO_TLB;
 
 
 //REGISTROS

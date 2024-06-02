@@ -1,5 +1,7 @@
 #include "../include/mmu.h"
 
+#define ERROR_VALUE 0xFFFF
+
 double floor(double x) {
     int result = (int)x; // Truncate the decimal part
     // Check if x is negative and has a non-zero fractional part
@@ -9,11 +11,11 @@ double floor(double x) {
     return (double)result;
 }
 
-Direccion_Logica _componer_direccion_logica (void* registroDireccion){
+Direccion_t _componer_direccion_logica (void* registroDireccion){
 
     uint32_t valor_registro_direccion = *registroDireccion;
 
-    Direccion_Logica direccion_logica;
+    Direccion_t direccion_logica;
 
     direccion_logica.numero_pagina = floor(valor_registro_direccion/tam_pagina);
 
@@ -53,13 +55,13 @@ uint16_t solicitar_marco_a_memoria (uint16_t pid, uint16_t pagina){
     }
 }
 
-uint32_t traducir_direccion_logica_a_fisica (void* registroDireccion){
+Direccion_t traducir_direccion_logica_a_fisica (void* registroDireccion){
 
-    Direccion_Logica direccion_logica = _componer_direccion_logica (registroDireccion);
+    Direccion_t direccion_logica = _componer_direccion_logica (registroDireccion);
 
     uint16_t marco = consultar_tlb(PID, direccion_logica.numero_pagina);
 
-    if(marco!= -1){
+    if(marco!= ERROR_VALUE){
         uint32_t direccion_fisica = marco + direccion_logica.desplazamiento;
         return direccion_fisica;
     }
@@ -68,6 +70,10 @@ uint32_t traducir_direccion_logica_a_fisica (void* registroDireccion){
 
     actualizar_tlb(PID, direccion_logica.numero_pagina, marco);
 
-    return (marco + direccion_logica.desplazamiento);
-    
+    Direccion_t direccion_fisica;
+
+    direccion_fisica.numero_pagina = marco;
+    direccion_fisica.desplazamiento = direccion_logica.desplazamiento;
+
+    return direccion_fisica;
 }
