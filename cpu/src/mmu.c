@@ -74,7 +74,9 @@ Direccion_t traducir_direccion_logica_a_fisica(void *registroDireccion)
 
     if (marco != ERROR_VALUE)
     {
+        uint16_t pagina = floor(*(uint32_t *)registroDireccion / tam_pagina);
 
+        log_info(cpu_logger, "PID: <%u> - OBTENER MARCO - Página: <%u> - Marco: <%u>", PID, pagina, marco);
         direccion_fisica.numero_pagina = marco;
         direccion_fisica.desplazamiento = direccion_logica.desplazamiento;
 
@@ -82,6 +84,10 @@ Direccion_t traducir_direccion_logica_a_fisica(void *registroDireccion)
     }
 
     marco = solicitar_marco_a_memoria(PID, direccion_logica.numero_pagina);
+
+    uint16_t pagina = floor(*(uint32_t *)registroDireccion / tam_pagina);
+
+    log_info(cpu_logger, "PID: <%u> - OBTENER MARCO - Página: <%u> - Marco: <%u>", PID, pagina, marco);
 
     actualizar_tlb(PID, direccion_logica.numero_pagina, marco);
 

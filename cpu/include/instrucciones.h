@@ -14,6 +14,6 @@ void WAIT(void* parametro);
 void SIGNAL (void* parametro);
 void RESIZE(void* parametro);
 void MOV_IN (void *registroDatos, void* registroDireccion, uint8_t tamanio_de_registro_datos);
-void MOV_OUT (void *registroDireccion, void* registroDatos);
+void MOV_OUT (void *registroDireccion, void* registroDatos, uint8_t tamanio_de_registro_datos);
 
 #endif

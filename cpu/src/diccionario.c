@@ -88,6 +88,14 @@ void decode(char* funcion, int num_params, char** params) {
         case 2:
             // MOV_OUT
             log_info(cpu_logger, "PID: <%u> - Ejecutando: <%s> - <%s, %s>", PID, funcion, params[0], params[1]);
+            if(es_un_registro_de_8 (params[0])){
+                uint8_t tam = sizeof(uint8_t);
+                MOV_IN(void_params[0], void_params[1], tam);
+            }
+            else{
+                uint8_t tam = sizeof(uint32_t);
+                MOV_IN(void_params[0], void_params[1], tam);
+            }
             break;
         case 3:
             // SUM
