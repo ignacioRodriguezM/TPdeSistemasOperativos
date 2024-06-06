@@ -11,10 +11,6 @@
 #include <commons/collections/dictionary.h>
 
 #include "./configuracion_cpu.h"
-#include "./instrucciones.h"
-#include "./procesos.h"
-
-
 
 typedef struct
 {
@@ -22,6 +18,11 @@ typedef struct
     uint32_t desplazamiento;
 
 } Direccion_t;
+
+#include "./instrucciones.h"
+#include "./procesos.h"
+
+
 typedef struct
 {
     uint16_t pid;

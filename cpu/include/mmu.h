@@ -2,7 +2,9 @@
 #define CPU_MMU_H_
 
 #include "./c_gestor.h"
+#include "./tlb.h"
 
-uint32_t traducir_direccion_logica_a_fisica (void* registroDireccion);
+Direccion_t traducir_direccion_logica_a_fisica (void* registroDireccion);
+
 
 #endif

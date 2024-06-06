@@ -9,7 +9,7 @@ void inicializar_tlb()
 
 void finalizar_tlb()
 {
-    queue_destroy_and_destroy_elements(TLB);
+    //queue_destroy_and_destroy_elements(TLB);
 }
 
 uint16_t consultar_tlb(uint16_t pid, uint16_t pagina)
@@ -21,8 +21,11 @@ uint16_t consultar_tlb(uint16_t pid, uint16_t pagina)
         TLB_ENTRY *entrada_tlb = (TLB_ENTRY *)current->data;
         if (entrada_tlb->pid == pid && entrada_tlb->numero_pagina == pagina)
         {
-            // FALTA HACER LOGICA PARA LRU ACA!!! (hacer que el elemento salga de la cola, 
-            // y se vuelva a encolar al final, para evitar que se le haga pop)
+            if(strcmp(ALGORITMO_TLB, "LRU") == 0){
+                TLB_ENTRY* a_reencolar = (TLB_ENTRY*)list_remove(TLB->elements, i);
+                queue_push(TLB, a_reencolar);
+            }
+            // si no es LRU, es FIFO. Y con fifo no hay que hacer nada
             log_info(cpu_logger, "PID: <%u> - TLB HIT - Pagina: <%u>", pid, pagina);
             return entrada_tlb->numero_marco;
         }
@@ -31,8 +34,7 @@ uint16_t consultar_tlb(uint16_t pid, uint16_t pagina)
             current = current->next;
         }
     }
-    current = NULL;
-
+    
     // error value funciona mal si el numero de marco es el 65535. !!!!!!!!!!!!!
     log_info(cpu_logger, "PID: <%u> - TLB MISS - Pagina: <%u>", pid, pagina);
     return ERROR_VALUE;

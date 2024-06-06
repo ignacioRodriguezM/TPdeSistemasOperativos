@@ -43,17 +43,18 @@ void inicializar_diccionarios() {
     dictionary_put(parametros, "DI", &DI_registro);
     dictionary_put(parametros, "PC", &PC_registro);
 
+
+
+}
+bool es_un_registro_de_8 (char* nombre_registro){
+    return ((strcmp(nombre_registro, "AX") == 0) || (strcmp(nombre_registro, "BX") == 0) || (strcmp(nombre_registro, "CX") == 0) || (strcmp(nombre_registro, "DX") == 0));
 }
 
 void decode(char* funcion, int num_params, char** params) {
     
     // Obtener la operación
     void* result = dictionary_get(operation_switcher, funcion);
-    /*
-    if (result == NULL) {
-        fprintf(stderr, "Error: Operación '%s' no encontrada.\n", funcion);
-        return;
-    }*/
+    
     int op_switcher = (int)(uintptr_t)result;
 
     // Obtener los parámetros
@@ -74,6 +75,14 @@ void decode(char* funcion, int num_params, char** params) {
         case 1: {
             // MOV_IN
             log_info(cpu_logger, "PID: <%u> - Ejecutando: <%s> - <%s, %s>", PID, funcion, params[0], params[1]);
+            if(es_un_registro_de_8 (params[0])){
+                uint8_t tam = sizeof(uint8_t);
+                MOV_IN(void_params[0], void_params[1], tam);
+            }
+            else{
+                uint8_t tam = sizeof(uint32_t);
+                MOV_IN(void_params[0], void_params[1], tam);
+            }
             break;
         }
         case 2:

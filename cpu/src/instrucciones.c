@@ -298,30 +298,43 @@ void RESIZE(void* parametro){
 }
 
 
-//MOV_IN (void registroDatos, int registroDirección): 
+
 //Lee el valor de memoria correspondiente a la Dirección Lógica que se encuentra en el Registro Dirección y lo almacena en el Registro Datos.
-void MOV_IN (void *registroDatos, void* registroDireccion){ //lee de memoria y lo guarda en un registro
+void MOV_IN (void *registroDatos, void* registroDireccion, uint8_t tamanio_de_registro_datos){ //lee de memoria y lo guarda en un registro
 
     PC_registro++;
-    uint16_t registroDireccion = *(uint16_t*)direccion_fisica;
-    uint8_t tam_reg = sizeof(*registroDatos);
+    Direccion_t direccion_fisica = traducir_direccion_logica_a_fisica(registroDireccion);
 
-    t_buffer* buffer_a_enviar = crear_buffer();
-    cargar_uint16_al_buffer(buffer_a_enviar, registroDireccion);
-    cargar_uint8_al_buffer(buffer_a_enviar, tam_reg);
-    t_paquete* a_enviar = crear_paquete(MOVE_IN, buffer_a_enviar);
+
+    t_buffer* solicitud_de_lectura = crear_buffer();
+
+//  [TAM_A_LEER] [MARCO] [DESPLAZAMIENTO]
+    
+    cargar_uint8_al_buffer(solicitud_de_lectura, tamanio_de_registro_datos);
+    cargar_uint16_al_buffer(solicitud_de_lectura, direccion_fisica.numero_pagina);
+    cargar_uint16_al_buffer(solicitud_de_lectura, direccion_fisica.desplazamiento);
+
+    t_paquete* a_enviar = crear_paquete(LECTURA, solicitud_de_lectura);
+
     enviar_paquete(a_enviar, fd_memoria);
+
     destruir_paquete(a_enviar);
 
     int cod_op = recibir_operacion(fd_memoria);
     switch (cod_op)
     {
-    case RESPUESTA_MOVES:
+    case LECTURA:
 
         t_buffer *recibido = recibir_buffer_sin_cod_op(fd_memoria);
         
-        registroDatos = extraer_choclo_al_buffer(recibido);
-        
+        if(tamanio_de_registro_datos == sizeof(uint32_t)){
+            uint32_t valor_recibido = extraer_uint32_al_buffer(recibido);
+            *(uint32_t *)registroDatos = valor_recibido;
+        }
+        else if(tamanio_de_registro_datos == sizeof(uint8_t)){
+            uint8_t valor_recibido = extraer_uint8_al_buffer(recibido);
+            *(uint8_t *)registroDatos = valor_recibido;
+        }
         destruir_buffer(recibido);
         
         break;
