@@ -20,8 +20,8 @@ void inicializar_diccionarios() {
     dictionary_put(operation_switcher, "WAIT", (void*)(uintptr_t)8);
     dictionary_put(operation_switcher, "SIGNAL", (void*)(uintptr_t)9);
     dictionary_put(operation_switcher, "IO_GEN_SLEEP", (void*)(uintptr_t)10);
-    //dictionary_put(operation_switcher, "IO_STDIN_READ", (void*)(uintptr_t)11);
-    //dictionary_put(operation_switcher, "IO_STDOUT_WRITE", (void*)(uintptr_t)12);
+    dictionary_put(operation_switcher, "IO_STDIN_READ", (void*)(uintptr_t)11);
+    dictionary_put(operation_switcher, "IO_STDOUT_WRITE", (void*)(uintptr_t)12);
     //dictionary_put(operation_switcher, "IO_FS_CREATE", (void*)(uintptr_t)13);
     //dictionary_put(operation_switcher, "IO_FS_DELETE", (void*)(uintptr_t)14);
     //dictionary_put(operation_switcher, "IO_FS_TRUNCATE", (void*)(uintptr_t)15);
@@ -69,7 +69,15 @@ void decode(char* funcion, int num_params, char** params) {
             // SET
             log_info(cpu_logger, "PID: <%u> - Ejecutando: <%s> - <%s, %s>", PID, funcion,  params[0], params[1]);
             int valor0 = atoi(params[1]);
-            SET(void_params[0], &valor0);
+            if(es_un_registro_de_8 (params[0])){
+                uint8_t tam = sizeof(uint8_t);
+                SET(void_params[0], &valor0, tam);
+            }
+            else{
+                uint8_t tam = sizeof(uint32_t);
+                SET(void_params[0], &valor0, tam);
+            }
+            
             break;
         }
         case 1: {
@@ -100,12 +108,52 @@ void decode(char* funcion, int num_params, char** params) {
         case 3:
             // SUM
             log_info(cpu_logger, "PID: <%u> - Ejecutando: <%s> - <%s, %s>", PID, funcion, params[0], params[1]);
-            SUM(void_params[0], void_params[1]);
+            if(es_un_registro_de_8 (params[0]) && es_un_registro_de_8(params[1])){
+                uint8_t tam1 = sizeof(uint8_t);
+                uint8_t tam2 = sizeof(uint8_t);
+                SUM(void_params[0], void_params[1], tam1, tam2);
+            }
+            else if(es_un_registro_de_8 (params[0])){
+                uint8_t tam1 = sizeof(uint8_t);
+                uint8_t tam2 = sizeof(uint32_t);
+                SUM(void_params[0], void_params[1], tam1, tam2);
+            }
+            else if(es_un_registro_de_8 (params[1])){
+                uint8_t tam1 = sizeof(uint32_t);
+                uint8_t tam2 = sizeof(uint8_t);
+                SUM(void_params[0], void_params[1], tam1, tam2);
+            }
+            else{
+                uint8_t tam1 = sizeof(uint32_t);
+                uint8_t tam2 = sizeof(uint32_t);
+                SUM(void_params[0], void_params[1], tam1, tam2);
+            }
+            
             break;
         case 4:
             // SUB
             log_info(cpu_logger, "PID: <%u> - Ejecutando: <%s> - <%s, %s>", PID, funcion, params[0], params[1]);
-            SUB(void_params[0], void_params[1]);
+            if(es_un_registro_de_8 (params[0]) && es_un_registro_de_8(params[1])){
+                uint8_t tam1 = sizeof(uint8_t);
+                uint8_t tam2 = sizeof(uint8_t);
+                SUB(void_params[0], void_params[1], tam1, tam2);
+            }
+            else if(es_un_registro_de_8 (params[0])){
+                uint8_t tam1 = sizeof(uint8_t);
+                uint8_t tam2 = sizeof(uint32_t);
+                SUB(void_params[0], void_params[1], tam1, tam2);
+            }
+            else if(es_un_registro_de_8 (params[1])){
+                uint8_t tam1 = sizeof(uint32_t);
+                uint8_t tam2 = sizeof(uint8_t);
+                SUB(void_params[0], void_params[1], tam1, tam2);
+            }
+            else{
+                uint8_t tam1 = sizeof(uint32_t);
+                uint8_t tam2 = sizeof(uint32_t);
+                SUB(void_params[0], void_params[1], tam1, tam2);
+            }
+            
             break;
         case 5: {
             // JNZ
