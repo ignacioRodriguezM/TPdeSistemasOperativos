@@ -6,7 +6,7 @@
 //          int pagina_a_consultar= extraer_int_al_buffer(buffer_recibido);
 //          destruir_buffer(buffer_recibido);
 
-int marco_correspondiente_a_pagina_consultada(uint16_t pid_recibido, int pagina_a_consultar)
+uint16_t marco_correspondiente_a_pagina_consultada(uint16_t pid_recibido, uint16_t pagina_a_consultar)
 {
 
     t_link_element *current = lista_procesos->head;

@@ -250,7 +250,7 @@ void MOV_IN(void *registroDatos, void *registroDireccion, uint8_t tamanio_de_reg
 
     cargar_uint8_al_buffer(solicitud_de_lectura, tamanio_de_registro_datos);
     cargar_uint16_al_buffer(solicitud_de_lectura, direccion_fisica.numero_pagina);
-    cargar_uint16_al_buffer(solicitud_de_lectura, direccion_fisica.desplazamiento);
+    cargar_uint32_al_buffer(solicitud_de_lectura, direccion_fisica.desplazamiento);
 
     t_paquete *a_enviar = crear_paquete(LECTURA, solicitud_de_lectura);
 

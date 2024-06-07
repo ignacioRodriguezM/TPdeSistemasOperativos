@@ -16,6 +16,7 @@ typedef struct
 {
     uint16_t numero_pagina;
     uint32_t desplazamiento;
+    u
 
 } Direccion_t;
 

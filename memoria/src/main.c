@@ -29,7 +29,7 @@ int main() {
     //Esperar conexion CPU
     log_info(memoria_logger, "Esperando a CPU...");
     fd_cpu = esperar_cliente (fd_memoria, memoria_logger, "CPU");
-
+    enviar_tam_paginas_a_cpu();
     
     //Atender los mensajes de CPU
     pthread_t hilo_cpu;

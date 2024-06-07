@@ -3,6 +3,7 @@
 
 #include "./m_gestor.h"
 
+uint16_t marco_correspondiente_a_pagina_consultada(uint16_t pid_recibido, uint16_t pagina_a_consultar);
 void crear_memoria_y_dividir_en_marcos();
 void crear_tabla_de_paginas (Proceso* proceso);
 char *ajustar_tam_proceso(uint16_t PID, uint16_t nuevo_tam_en_bytes);

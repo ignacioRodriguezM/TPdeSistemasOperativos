@@ -25,10 +25,8 @@
 
 typedef enum
 {
-	MENSAJE,
-	PAQUETE,
-    HANDSHAKE,
-    RTA_HANDSHAKE,
+	TAM_PAG,
+	
     //------------------------KERNEL- MEMORIA
     INICIAR_PROCESO,
 	FINALIZAR_PROCESO,
