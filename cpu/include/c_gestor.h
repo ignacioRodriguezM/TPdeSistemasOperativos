@@ -16,9 +16,16 @@ typedef struct
 {
     uint16_t numero_pagina;
     uint32_t desplazamiento;
-    u
+    uint8_t tamanio;
 
 } Direccion_t;
+
+typedef struct
+{
+    Direccion_t* direcciones;
+    uint8_t cantidad_direcciones;
+
+} Direcciones;
 
 #include "./instrucciones.h"
 #include "./procesos.h"

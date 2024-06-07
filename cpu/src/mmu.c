@@ -13,18 +13,81 @@ double floor(double x)
     return (double)result;
 }
 
-Direccion_t _componer_direccion_logica(void *registroDireccion)
+int division_entera_redondear_arriba(int numerador, int denominador)
 {
+
+    // Verificar que el denominador no sea 0 para evitar la división por cero
+    if (denominador == 0)
+    {
+        printf("Error: división por cero.\n");
+        return -1; // O cualquier valor de error adecuado
+    }
+
+    // División entera redondeando hacia arriba
+    int resultado = (numerador + denominador - 1) / denominador;
+
+    return resultado;
+}
+
+Direcciones _componer_direcciones(void *registroDireccion, uint8_t espacio)
+{
+
+    Direcciones direcciones;
 
     uint32_t valor_registro_direccion = *(uint32_t *)registroDireccion;
 
-    Direccion_t direccion_logica;
+    direcciones.cantidad_direcciones = 1;
 
-    direccion_logica.numero_pagina = floor(valor_registro_direccion / tam_pagina);
+    Direccion_t direccion_fisica;
+    direccion_fisica.numero_pagina = floor(valor_registro_direccion / tam_pagina);
+    direccion_fisica.desplazamiento = valor_registro_direccion - (direccion_logica.numero_pagina * tam_pagina);
 
-    direccion_logica.numero_pagina = valor_registro_direccion - (direccion_logica.numero_pagina * tam_pagina);
+    if (tam_pagina - direccion_fisica.desplazamiento < espacio)
+    {
+        direccion_fisica.tamanio = tam_pagina - direccion_fisica.desplazamiento;
+        uint8_t cantidad_de_paginas_a_ocupar = division_entera_redondear_arriba((espacio - direccion_fisica.tamanio), tam_pagina);
 
-    return direccion_logica;
+        direcciones.direcciones = malloc(cantidad_de_paginas_a_ocupar * sizeof(Direccion_t *));
+        direcciones.direcciones[0] = malloc(sizeof(Direccion_t));
+        direcciones.cantidad_direcciones = 1 + cantidad_de_paginas_a_ocupar;
+
+        uint8_t desplazamiento_final = (espacio - direccion_fisica.tamanio) % tam_pagina;
+
+        direcciones.direcciones[0] = direccion_fisica;
+
+        for (int i = 0; i < cantidad_de_paginas_a_ocupar; i++)
+        {
+
+            Direccion_t siguiente_direccion;
+            siguiente_direccion.numero_pagina = i + 1 + direccion_fisica.numero_pagina;
+
+            if (i == (cantidad_de_paginas_a_ocupar - 1))
+            {
+                siguiente_direccion.desplazamiento = 0;
+                siguiente_direccion.tamanio = desplazamiento_final;
+            }
+
+            else
+            {
+                siguiente_direccion.desplazamiento = 0;
+                siguiente_direccion.tamanio = tam_pagina;
+            }
+
+            direcciones.direcciones[i + 1] = malloc(sizeof(Direccion_t));
+            direcciones.direcciones[i + 1] = siguiente_direccion;
+        }
+    }
+    else
+    {
+        direccion_fisica.tamanio = espacio;
+
+        direcciones.direcciones = malloc(cantidad_de_paginas_a_ocupar * sizeof(Direccion_t *));
+        direcciones.direcciones[0] = malloc(sizeof(Direccion_t));
+        direcciones.cantidad_direcciones = 1 + cantidad_de_paginas_a_ocupar;
+        direcciones.direcciones[0] = direccion_fisica;
+    }
+
+    return direcciones;
 }
 
 uint16_t solicitar_marco_a_memoria(uint16_t pid, uint16_t pagina)
@@ -56,43 +119,45 @@ uint16_t solicitar_marco_a_memoria(uint16_t pid, uint16_t pagina)
 
         break;
     default:
-    
+
         log_error(cpu_log_debug, "solicitar_marco_a_memoria rompio");
         return 0;
         break;
     }
 }
 
-Direccion_t traducir_direccion_logica_a_fisica(void *registroDireccion)
+Direcciones traducir_direccion_logica_a_fisicas(void *registroDireccion, uint8_t espacio)
 {
 
-    Direccion_t direccion_logica = _componer_direccion_logica(registroDireccion);
+    Direcciones direcciones = _componer_direcciones(registroDireccion, espacio);
 
-    uint16_t marco = consultar_tlb(PID, direccion_logica.numero_pagina);
-
-    Direccion_t direccion_fisica;
-
-    if (marco != ERROR_VALUE)
+    for (int i = 0; direcciones.cantidad_direcciones; i++)
     {
-        uint16_t pagina = floor(*(uint32_t *)registroDireccion / tam_pagina);
+        uint16_t marco = consultar_tlb(PID, direcciones.direcciones->numero_pagina);
 
-        log_info(cpu_logger, "PID: <%u> - OBTENER MARCO - Página: <%u> - Marco: <%u>", PID, pagina, marco);
-        direccion_fisica.numero_pagina = marco;
-        direccion_fisica.desplazamiento = direccion_logica.desplazamiento;
+        if (marco != ERROR_VALUE)
+        {
+            uint16_t pagina = floor(*(uint32_t *)registroDireccion / tam_pagina);
 
-        return direccion_fisica;
+            log_info(cpu_logger, "PID: <%u> - OBTENER MARCO - Página: <%u> - Marco: <%u>", PID, pagina, marco);
+            direccion_fisica.numero_pagina = marco;
+            direccion_fisica.desplazamiento = direccion_logica.desplazamiento;
+        }
+        else
+        {
+
+            marco = solicitar_marco_a_memoria(PID, direccion_logica.numero_pagina);
+
+            uint16_t pagina = floor(*(uint32_t *)registroDireccion / tam_pagina);
+
+            log_info(cpu_logger, "PID: <%u> - OBTENER MARCO - Página: <%u> - Marco: <%u>", PID, pagina, marco);
+
+            actualizar_tlb(PID, direccion_logica.numero_pagina, marco);
+
+            direccion_fisica.numero_pagina = marco;
+            direccion_fisica.desplazamiento = direccion_logica.desplazamiento;
+        }
     }
 
-    marco = solicitar_marco_a_memoria(PID, direccion_logica.numero_pagina);
-
-    uint16_t pagina = floor(*(uint32_t *)registroDireccion / tam_pagina);
-
-    log_info(cpu_logger, "PID: <%u> - OBTENER MARCO - Página: <%u> - Marco: <%u>", PID, pagina, marco);
-
-    actualizar_tlb(PID, direccion_logica.numero_pagina, marco);
-
-    direccion_fisica.numero_pagina = marco;
-    direccion_fisica.desplazamiento = direccion_logica.desplazamiento;
-
-    return direccion_fisica;
+    return direcciones;
 }

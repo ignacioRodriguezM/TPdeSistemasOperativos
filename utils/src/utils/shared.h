@@ -25,7 +25,7 @@
 
 typedef enum
 {
-	TAM_PAG,
+	TAM_,
 	
     //------------------------KERNEL- MEMORIA
     INICIAR_PROCESO,

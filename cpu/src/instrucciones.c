@@ -240,9 +240,9 @@ void RESIZE(void *parametro)
 // Lee el valor de memoria correspondiente a la Dirección Lógica que se encuentra en el Registro Dirección y lo almacena en el Registro Datos.
 void MOV_IN(void *registroDatos, void *registroDireccion, uint8_t tamanio_de_registro_datos)
 { // lee de memoria y lo guarda en un registro
-
+//aca debemos agregar la cantidad de marcos, etc respetando la manera de leer que esta en memoria
     PC_registro++;
-    Direccion_t direccion_fisica = traducir_direccion_logica_a_fisica(registroDireccion);
+    Direcciones direccion_fisica = traducir_direccion_logica_a_fisicas(registroDireccion, tamanio_de_registro_datos);
 
     t_buffer *solicitud_de_lectura = crear_buffer();
 
@@ -290,7 +290,7 @@ void MOV_IN(void *registroDatos, void *registroDireccion, uint8_t tamanio_de_reg
 void MOV_OUT(void *registroDireccion, void *registroDatos, uint8_t tamanio_de_registro_datos)
 { // escribe en memoria
     PC_registro++;
-    Direccion_t direccion_fisica = traducir_direccion_logica_a_fisica(registroDireccion);
+    Direccion_t direccion_fisica = traducir_direccion_logica_a_fisica(registroDireccion, tamanio_de_registro_datos);
 
     t_buffer *solicitud_de_escritur = crear_buffer();
 
@@ -312,7 +312,7 @@ void MOV_OUT(void *registroDireccion, void *registroDatos, uint8_t tamanio_de_re
     }
 
     cargar_uint16_al_buffer(solicitud_de_escritur, direccion_fisica.numero_pagina);
-    cargar_uint16_al_buffer(solicitud_de_escritur, direccion_fisica.desplazamiento);
+    cargar_uint32_al_buffer(solicitud_de_escritur, direccion_fisica.desplazamiento);
 
     t_paquete *a_enviar = crear_paquete(ESCRITURA, solicitud_de_escritur);
 
@@ -356,7 +356,7 @@ void IO_STDIN_READ(void *interfaz, void *registroDireccion, void *registroTam, u
 
     uint8_t tamanio;
 
-    Direccion_t direccion_fisica = traducir_direccion_logica_a_fisica(registroDireccion);
+    Direccion_t direccion_fisica = traducir_direccion_logica_a_fisica(registroDireccion, tam_registroTam);
 
     if (tam_registroTam == sizeof(uint8_t))
     {
