@@ -295,33 +295,6 @@ void MOV_OUT(void *registroDireccion, void *registroDatos, uint8_t tamanio_de_re
 { // escribe en memoria
     PC_registro++;
 
-
-
-
-
-    Direcciones direcciones_fisicas = traducir_direccion_logica_a_fisicas(registroDireccion, tamanio_de_registro_datos);
-
-    t_buffer *solicitud_de_lectura = crear_buffer();
-
-    //  [Cantidad] [TAM_A_LEER] [MARCO] [DESPLAZAMIENTO] .. [TAM_A_LEER] [MARCO] [DESPLAZAMIENTO] .....
-    uint8_t cantidad = direcciones_fisicas.cantidad_direcciones;
-
-    for (int i = 0; i < cantidad; i++)
-    {
-        cargar_uint8_al_buffer(solicitud_de_lectura, direcciones_fisicas.direcciones[i].tamanio);
-        cargar_uint16_al_buffer(solicitud_de_lectura,  direcciones_fisicas.direcciones[i].numero_pagina);
-        cargar_uint32_al_buffer(solicitud_de_lectura,  direcciones_fisicas.direcciones[i].desplazamiento);
-    }
-
-
-
-
-
-
-
-
-
-
     Direcciones direcciones_fisicas = traducir_direccion_logica_a_fisicas(registroDireccion, tamanio_de_registro_datos);
 
     t_buffer *solicitud_de_escritura = crear_buffer();
@@ -336,19 +309,21 @@ void MOV_OUT(void *registroDireccion, void *registroDatos, uint8_t tamanio_de_re
 
         if (tamanio_de_registro_datos == sizeof(uint32_t))
         {
-            cargar_uint32_al_buffer(solicitud_de_escritura, *(uint32_t *)registroDatos);
+            void* datos_a_escribir = (uint32_t *)registroDatos + i * tam_pagina;
+            cargar_choclo_al_buffer(solicitud_de_escritura, datos_a_escribir, direcciones_fisicas.direcciones[i].tamanio);
             
         }
         else if (tamanio_de_registro_datos == sizeof(uint8_t))
         {
-            cargar_uint8_al_buffer(solicitud_de_escritura, *(uint8_t *)registroDatos);
+            void* datos_a_escribir = (uint8_t *)registroDatos + i * tam_pagina;
+            cargar_choclo_al_buffer(solicitud_de_escritura, datos_a_escribir, direcciones_fisicas.direcciones[i].tamanio);
             
         }
 
         cargar_uint16_al_buffer(solicitud_de_escritura, direcciones_fisicas.direcciones[i].numero_pagina);
         cargar_uint32_al_buffer(solicitud_de_escritura, direcciones_fisicas.direcciones[i].desplazamiento);
 
-    } //ARREGLAR FOR
+    } //CHEQUEAR FOR
 
 
 
