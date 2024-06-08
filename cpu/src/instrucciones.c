@@ -22,10 +22,12 @@ void SUM(void *registroDestino, void *registroOrigen, uint8_t tamDestino, uint8_
     {
         *(uint8_t *)registroDestino += *(uint8_t *)registroOrigen;
     }
-    else if(tamDestino == sizeof(uint8_t) && tamOrigen == sizeof(uint32_t){
+    else if(tamDestino == sizeof(uint8_t) && tamOrigen == sizeof(uint32_t))
+    {
         *(uint8_t *)registroDestino += *(uint32_t *)registroOrigen;
     }
-    else if(tamDestino == sizeof(uint32_t) && tamOrigen == sizeof(uint8_t){
+    else if(tamDestino == sizeof(uint32_t) && tamOrigen == sizeof(uint8_t))
+    {
         *(uint32_t *)registroDestino += *(uint8_t *)registroOrigen;
     }
     else{
@@ -42,10 +44,10 @@ void SUB(void *registroDestino, void *registroOrigen, uint8_t tamDestino, uint8_
     {
         *(uint8_t *)registroDestino -= *(uint8_t *)registroOrigen;
     }
-    else if(tamDestino == sizeof(uint8_t) && tamOrigen == sizeof(uint32_t){
+    else if(tamDestino == sizeof(uint8_t) && tamOrigen == sizeof(uint32_t)){
         *(uint8_t *)registroDestino -= *(uint32_t *)registroOrigen;
     }
-    else if(tamDestino == sizeof(uint32_t) && tamOrigen == sizeof(uint8_t){
+    else if(tamDestino == sizeof(uint32_t) && tamOrigen == sizeof(uint8_t)){
         *(uint32_t *)registroDestino -= *(uint8_t *)registroOrigen;
     }
     else{
@@ -273,15 +275,15 @@ void MOV_IN(void *registroDatos, void *registroDireccion, uint8_t tamanio_de_reg
         {
             uint32_t valor_recibido = extraer_uint32_al_buffer(recibido);
             *(uint32_t *)registroDatos = valor_recibido;
-            uint32_t direccion_para_loguear = tam_pagina * direccion_fisica.numero_pagina + direccion_fisica.desplazamiento;
-            log_info(cpu_logger, "PID: <%u> - Acción: <LEER> - Dirección Física: <%u> - Valor: <%u>", PID, direccion_para_loguear, valor_recibido);
+            //uint32_t direccion_para_loguear = tam_pagina * direccion_fisica.numero_pagina + direccion_fisica.desplazamiento;
+            //log_info(cpu_logger, "PID: <%u> - Acción: <LEER> - Dirección Física: <%u> - Valor: <%u>", PID, direccion_para_loguear, valor_recibido);
         }
         else if (tamanio_de_registro_datos == sizeof(uint8_t))
         {
             uint8_t valor_recibido = extraer_uint8_al_buffer(recibido);
             *(uint8_t *)registroDatos = valor_recibido;
-            uint32_t direccion_para_loguear = tam_pagina * direccion_fisica.numero_pagina + direccion_fisica.desplazamiento;
-            log_info(cpu_logger, "PID: <%u> - Acción: <LEER> - Dirección Física: <%u> - Valor: <%u>", PID, direccion_para_loguear, valor_recibido);
+            //uint32_t direccion_para_loguear = tam_pagina * direccion_fisica.numero_pagina + direccion_fisica.desplazamiento;
+            //log_info(cpu_logger, "PID: <%u> - Acción: <LEER> - Dirección Física: <%u> - Valor: <%u>", PID, direccion_para_loguear, valor_recibido);
         }
         destruir_buffer(recibido);
 
@@ -357,7 +359,7 @@ void MOV_OUT(void *registroDireccion, void *registroDatos, uint8_t tamanio_de_re
 IO_STDIN_READ (Interfaz, Registro Dirección, Registro Tamaño): Esta instrucción solicita al Kernel que mediante
 la interfaz ingresada se lea desde el STDIN (Teclado) un valor cuyo tamaño
 está delimitado por el valor del Registro Tamaño y el mismo se guarde a partir de la Dirección Lógica almacenada en el Registro Dirección.
-*/
+
 
 void IO_STDIN_READ(void *interfaz, void *registroDireccion, void *registroTam, uint8_t tam_registroTam)
 {
@@ -409,12 +411,12 @@ void IO_STDIN_READ(void *interfaz, void *registroDireccion, void *registroTam, u
     destruir_paquete(a_enviar);
 }
 
-/*
+
 IO_STDOUT_WRITE (Interfaz, Registro Dirección, Registro Tamaño): Esta instrucción solicita al Kernel que mediante la interfaz seleccionada,
 se lea desde la posición de memoria
 indicada por la Dirección Lógica almacenada en el Registro Dirección, un tamaño indicado por el Registro Tamaño
 y se imprima por pantalla.
-*/
+
 void IO_STDOUT_WRITE(void *interfaz, void *registroDireccion, void *registroTam, uint8_t tam_registroTam)
 {
     PC_registro++;
@@ -464,3 +466,4 @@ void IO_STDOUT_WRITE(void *interfaz, void *registroDireccion, void *registroTam,
 
     destruir_paquete(a_enviar);
 }
+*/

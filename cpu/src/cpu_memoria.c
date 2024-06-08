@@ -16,9 +16,7 @@ void atender_cpu_memoria (){ //escucha en el socket fd_memoria a la memoria
                 destruir_buffer(recibido);
 
                 break;
-            case PAQUETE:
-                //
-                break;
+            
             case -1:
                 log_error(cpu_logger, "Desconexion de memoria");
                 control_key = 0;

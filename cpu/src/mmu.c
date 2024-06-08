@@ -40,7 +40,7 @@ Direcciones _componer_direcciones(void *registroDireccion, uint8_t espacio)
 
     Direccion_t direccion_fisica;
     direccion_fisica.numero_pagina = floor(valor_registro_direccion / tam_pagina);
-    direccion_fisica.desplazamiento = valor_registro_direccion - (direccion_logica.numero_pagina * tam_pagina);
+    direccion_fisica.desplazamiento = valor_registro_direccion - (direccion_fisica.numero_pagina * tam_pagina);
 
     if (tam_pagina - direccion_fisica.desplazamiento < espacio)
     {
