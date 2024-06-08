@@ -131,31 +131,31 @@ Direcciones traducir_direccion_logica_a_fisicas(void *registroDireccion, uint8_t
 
     Direcciones direcciones = _componer_direcciones(registroDireccion, espacio);
 
+    
     for (int i = 0; direcciones.cantidad_direcciones; i++)
     {
-        uint16_t marco = consultar_tlb(PID, direcciones.direcciones->numero_pagina);
+        uint16_t marco = consultar_tlb(PID, direcciones.direcciones[i].numero_pagina);
 
         if (marco != ERROR_VALUE)
         {
-            uint16_t pagina = floor(*(uint32_t *)registroDireccion / tam_pagina);
-
-            log_info(cpu_logger, "PID: <%u> - OBTENER MARCO - Página: <%u> - Marco: <%u>", PID, pagina, marco);
-            direccion_fisica.numero_pagina = marco;
-            direccion_fisica.desplazamiento = direccion_logica.desplazamiento;
+            
+            log_info(cpu_logger, "PID: <%u> - OBTENER MARCO - Página: <%u> - Marco: <%u>", PID, direcciones.direcciones[i].numero_pagina, marco);
+            direcciones.direcciones[i].numero_pagina = marco;
+            direcciones.direcciones[i].desplazamiento = direccion_logica.desplazamiento;
         }
         else
         {
 
-            marco = solicitar_marco_a_memoria(PID, direccion_logica.numero_pagina);
+            marco = solicitar_marco_a_memoria(PID, direcciones.direcciones[i].numero_pagina);
 
             uint16_t pagina = floor(*(uint32_t *)registroDireccion / tam_pagina);
 
-            log_info(cpu_logger, "PID: <%u> - OBTENER MARCO - Página: <%u> - Marco: <%u>", PID, pagina, marco);
+            log_info(cpu_logger, "PID: <%u> - OBTENER MARCO - Página: <%u> - Marco: <%u>", PID, direcciones.direcciones[i].numero_pagina, marco);
 
-            actualizar_tlb(PID, direccion_logica.numero_pagina, marco);
+            actualizar_tlb(PID, direcciones.direcciones[i].numero_pagina, marco);
 
-            direccion_fisica.numero_pagina = marco;
-            direccion_fisica.desplazamiento = direccion_logica.desplazamiento;
+            direcciones.direcciones[i].numero_pagina = marco;
+            direcciones.direcciones[i].desplazamiento = direccion_logica.desplazamiento;
         }
     }
 

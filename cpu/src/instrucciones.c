@@ -242,16 +242,20 @@ void MOV_IN(void *registroDatos, void *registroDireccion, uint8_t tamanio_de_reg
 { // lee de memoria y lo guarda en un registro
 //aca debemos agregar la cantidad de marcos, etc respetando la manera de leer que esta en memoria
     PC_registro++;
-    Direcciones direccion_fisica = traducir_direccion_logica_a_fisicas(registroDireccion, tamanio_de_registro_datos);
+    Direcciones direcciones_fisicas = traducir_direccion_logica_a_fisicas(registroDireccion, tamanio_de_registro_datos);
 
     t_buffer *solicitud_de_lectura = crear_buffer();
 
-    //  [TAM_A_LEER] [MARCO] [DESPLAZAMIENTO]
+    //  [Cantidad] [TAM_A_LEER] [MARCO] [DESPLAZAMIENTO] .. [TAM_A_LEER] [MARCO] [DESPLAZAMIENTO] .....
+    uint8_t cantidad = direcciones_fisicas.cantidad_direcciones;
 
-    cargar_uint8_al_buffer(solicitud_de_lectura, tamanio_de_registro_datos);
-    cargar_uint16_al_buffer(solicitud_de_lectura, direccion_fisica.numero_pagina);
-    cargar_uint32_al_buffer(solicitud_de_lectura, direccion_fisica.desplazamiento);
-
+    for (int i = 0; i < cantidad; i++)
+    {
+        cargar_uint8_al_buffer(solicitud_de_lectura, direcciones_fisicas.direcciones[i].tamanio);
+        cargar_uint16_al_buffer(solicitud_de_lectura,  direcciones_fisicas.direcciones[i].numero_pagina);
+        cargar_uint32_al_buffer(solicitud_de_lectura,  direcciones_fisicas.direcciones[i].desplazamiento);
+    }
+    
     t_paquete *a_enviar = crear_paquete(LECTURA, solicitud_de_lectura);
 
     enviar_paquete(a_enviar, fd_memoria);
@@ -290,31 +294,65 @@ void MOV_IN(void *registroDatos, void *registroDireccion, uint8_t tamanio_de_reg
 void MOV_OUT(void *registroDireccion, void *registroDatos, uint8_t tamanio_de_registro_datos)
 { // escribe en memoria
     PC_registro++;
-    Direccion_t direccion_fisica = traducir_direccion_logica_a_fisica(registroDireccion, tamanio_de_registro_datos);
 
-    t_buffer *solicitud_de_escritur = crear_buffer();
 
-    //  [TAM_DATO_A_ESCRIBIR] [DATOS_A_ESCRIBIR] [MARCO] [DESPLAZAMIENTO]
 
-    cargar_uint8_al_buffer(solicitud_de_escritur, tamanio_de_registro_datos);
 
-    if (tamanio_de_registro_datos == sizeof(uint32_t))
+
+    Direcciones direcciones_fisicas = traducir_direccion_logica_a_fisicas(registroDireccion, tamanio_de_registro_datos);
+
+    t_buffer *solicitud_de_lectura = crear_buffer();
+
+    //  [Cantidad] [TAM_A_LEER] [MARCO] [DESPLAZAMIENTO] .. [TAM_A_LEER] [MARCO] [DESPLAZAMIENTO] .....
+    uint8_t cantidad = direcciones_fisicas.cantidad_direcciones;
+
+    for (int i = 0; i < cantidad; i++)
     {
-        cargar_uint32_al_buffer(solicitud_de_escritur, *(uint32_t *)registroDatos);
-        uint32_t direccion_para_loguear = tam_pagina * direccion_fisica.numero_pagina + direccion_fisica.desplazamiento;
-        log_info(cpu_logger, "PID: <%u> - Acción: <ESCRIBIR> - Dirección Física: <%u> - Valor: <%u>", PID, direccion_para_loguear, *(uint32_t *)registroDatos);
-    }
-    else if (tamanio_de_registro_datos == sizeof(uint8_t))
-    {
-        cargar_uint8_al_buffer(solicitud_de_escritur, *(uint8_t *)registroDatos);
-        uint32_t direccion_para_loguear = tam_pagina * direccion_fisica.numero_pagina + direccion_fisica.desplazamiento;
-        log_info(cpu_logger, "PID: <%u> - Acción: <ESCRIBIR> - Dirección Física: <%u> - Valor: <%u>", PID, direccion_para_loguear, *(uint8_t *)registroDatos);
+        cargar_uint8_al_buffer(solicitud_de_lectura, direcciones_fisicas.direcciones[i].tamanio);
+        cargar_uint16_al_buffer(solicitud_de_lectura,  direcciones_fisicas.direcciones[i].numero_pagina);
+        cargar_uint32_al_buffer(solicitud_de_lectura,  direcciones_fisicas.direcciones[i].desplazamiento);
     }
 
-    cargar_uint16_al_buffer(solicitud_de_escritur, direccion_fisica.numero_pagina);
-    cargar_uint32_al_buffer(solicitud_de_escritur, direccion_fisica.desplazamiento);
 
-    t_paquete *a_enviar = crear_paquete(ESCRITURA, solicitud_de_escritur);
+
+
+
+
+
+
+
+
+    Direcciones direcciones_fisicas = traducir_direccion_logica_a_fisicas(registroDireccion, tamanio_de_registro_datos);
+
+    t_buffer *solicitud_de_escritura = crear_buffer();
+
+    //  [Cantidad] [TAM_DATO_A_ESCRIBIR] [DATOS_A_ESCRIBIR] [MARCO] [DESPLAZAMIENTO] .. [TAM_DATO_A_ESCRIBIR] [DATOS_A_ESCRIBIR] [MARCO] [DESPLAZAMIENTO] ....
+
+    uint8_t cantidad = direcciones_fisicas.cantidad_direcciones;
+
+    for (int i = 0; i < cantidad; i++)
+    {
+        cargar_uint8_al_buffer(solicitud_de_escritura, direcciones_fisicas.direcciones[i].tamanio);
+
+        if (tamanio_de_registro_datos == sizeof(uint32_t))
+        {
+            cargar_uint32_al_buffer(solicitud_de_escritura, *(uint32_t *)registroDatos);
+            
+        }
+        else if (tamanio_de_registro_datos == sizeof(uint8_t))
+        {
+            cargar_uint8_al_buffer(solicitud_de_escritura, *(uint8_t *)registroDatos);
+            
+        }
+
+        cargar_uint16_al_buffer(solicitud_de_escritura, direcciones_fisicas.direcciones[i].numero_pagina);
+        cargar_uint32_al_buffer(solicitud_de_escritura, direcciones_fisicas.direcciones[i].desplazamiento);
+
+    } //ARREGLAR FOR
+
+
+
+    t_paquete *a_enviar = crear_paquete(ESCRITURA, solicitud_de_escritura);
 
     enviar_paquete(a_enviar, fd_memoria);
 
