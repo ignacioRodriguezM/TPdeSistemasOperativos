@@ -248,8 +248,11 @@ void MOV_IN(void *registroDatos, void *registroDireccion, uint8_t tamanio_de_reg
 
     t_buffer *solicitud_de_lectura = crear_buffer();
 
+    cargar_uint8_al_buffer(solicitud_de_lectura, tamanio_de_registro_datos);
     //  [Cantidad] [TAM_A_LEER] [MARCO] [DESPLAZAMIENTO] .. [TAM_A_LEER] [MARCO] [DESPLAZAMIENTO] .....
     uint8_t cantidad = direcciones_fisicas.cantidad_direcciones;
+
+    cargar_uint8_al_buffer(solicitud_de_lectura, cantidad);
 
     for (int i = 0; i < cantidad; i++)
     {
@@ -271,25 +274,14 @@ void MOV_IN(void *registroDatos, void *registroDireccion, uint8_t tamanio_de_reg
 
         t_buffer *recibido = recibir_buffer_sin_cod_op(fd_memoria);
 
-        if (tamanio_de_registro_datos == sizeof(uint32_t))
-        {
-            uint32_t valor_recibido = extraer_uint32_al_buffer(recibido);
-            *(uint32_t *)registroDatos = valor_recibido;
-            //uint32_t direccion_para_loguear = tam_pagina * direccion_fisica.numero_pagina + direccion_fisica.desplazamiento;
-            //log_info(cpu_logger, "PID: <%u> - Acción: <LEER> - Dirección Física: <%u> - Valor: <%u>", PID, direccion_para_loguear, valor_recibido);
-        }
-        else if (tamanio_de_registro_datos == sizeof(uint8_t))
-        {
-            uint8_t valor_recibido = extraer_uint8_al_buffer(recibido);
-            *(uint8_t *)registroDatos = valor_recibido;
-            //uint32_t direccion_para_loguear = tam_pagina * direccion_fisica.numero_pagina + direccion_fisica.desplazamiento;
-            //log_info(cpu_logger, "PID: <%u> - Acción: <LEER> - Dirección Física: <%u> - Valor: <%u>", PID, direccion_para_loguear, valor_recibido);
+            void* valor_recibido = extraer_choclo_al_buffer(recibido);
+            uint32_t direccion_para_loguear = tam_pagina * direccion_fisica.numero_pagina + direccion_fisica.desplazamiento;
+            log_info(cpu_logger, "PID: <%u> - Acción: <LEER> - Dirección Física: <%u> - Valor: <%u>", PID, direccion_para_loguear, valor_recibido);
         }
         destruir_buffer(recibido);
 
         break;
     }
-}
 
 // MOV_OUT (Registro Dirección, Registro Datos):
 // Lee el valor del Registro Datos y lo escribe en la dirección física de memoria obtenida a partir de la Dirección Lógica almacenada en el Registro Dirección.

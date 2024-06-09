@@ -122,40 +122,69 @@ void _solicitud_de_proxima_instruccion(){
             }
             current = NULL;
 }
+
+// bool escribir_memoria(void* espacio_usuario, uint32_t numero_marco, uint32_t desplazamiento, uint32_t tamaño, void* datos) {
+//     uint32_t direccion_fisica = numero_marco * TAM_PAGINA + desplazamiento;
+//     if (direccion_fisica + tamaño > TAM_MEMORIA) {
+//         return false; // Error
+//     }
+
+//     // Escribir
+//     memcpy(espacio_usuario + direccion_fisica, datos, tamaño);
+//     return true;
+// }
+
+// bool leer_memoria(void* espacio_usuario, uint32_t numero_marco, uint32_t desplazamiento, uint32_t tamaño, void* datos) {
+//     uint32_t direccion_fisica = numero_marco * TAM_PAGINA + desplazamiento;
+//     if (direccion_fisica + tamaño > TAM_MEMORIA) {
+//         return false; // Error
+//     }
+
+//     // Leer
+//     memcpy(datos, espacio_usuario + direccion_fisica, tamaño);
+//     return true;
+// }
+`
 void _leer_una_determinada_direccion (){
+    void* registroDatos;
 
     t_buffer *buffer_recibido = recibir_buffer_sin_cod_op(fd_cpu);
     
-    //  [CANTIDAD MARCOS] [TAM_A_LEER] [MARCO] [DESPLAZAMIENTO] / [TAM_A_LEER] [MARCO] [DESPLAZAMIENTO] / [TAM_A_LEER] [MARCO] [DESPLAZAMIENTO] ....
-
-    //for (i = 0; i < cantidad_de_marcos ; i++){
+    //recibo el tamanio del registro datos
     uint8_t tamanio_de_registro_datos = extraer_uint8_al_buffer(buffer_recibido);
+    
+    // inicializar el registroDatos con el tamaño adecuado
+    registroDatos = malloc(tamanio_de_registro_datos);
+    
+    //  [CANTIDAD MARCOS] [TAM_A_LEER] [MARCO] [DESPLAZAMIENTO] / [TAM_A_LEER] [MARCO] [DESPLAZAMIENTO] / [TAM_A_LEER] [MARCO] [DESPLAZAMIENTO] ....
+    
+    uint8_t cantidad_de_direcciones = extraer_uint8_al_buffer(buffer_recibido);
+    
+    for (i = 0; i < cantidad_de_direcciones ; i++){
+    
+    uint8_t tamanio_de_direccion = extraer_uint8_al_buffer(buffer_recibido);
     uint16_t marco = extraer_uint16_al_buffer(buffer_recibido);
     uint32_t desplazamiento = extraer_uint32_al_buffer(buffer_recibido);
-    //}
-    if(tamanio_de_registro_datos == sizeof(uint8_t)){
+    
+    // Calcular la dirección física
+        void *direccion_fisica = memoria_usuario + (marco * config_valores.tam_pagina) + desplazamiento;
 
-        void* memoria_continua;
-        
-    }
-
-    else if(tamanio_de_registro_datos == sizeof(uint32_t)){
-        
+        memcpy(registroDatos + (i * tamanio_de_direccion), direccion_fisica, tamanio_de_direccion);
     }
     
-    destruir_buffer(buffer_recibido);
-    
+    destruir_buffer(buffer_recibido);  
     
     esperarMilisegundos(retardo_respuesta);
 
-    
-
     t_buffer *buffer_a_enviar = crear_buffer();
-    cargar_???_al_buffer(buffer_a_enviar, valor_registro_datos);
+
+    cargar_choclo_al_buffer(buffer_a_enviar, registroDatos);
 
     t_paquete *a_enviar = crear_paquete(LECTURA, buffer_a_enviar);
     enviar_paquete(a_enviar, fd_cpu);
     destruir_paquete(a_enviar);
+    // free(registroDatos); esto no se si va, seria para eliminar ese registro
+
 }
 
 void _escribir_en_direccion_de_memoria(){
