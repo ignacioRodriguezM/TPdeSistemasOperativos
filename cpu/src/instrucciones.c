@@ -285,48 +285,37 @@ void MOV_IN(void *registroDatos, void *registroDireccion, uint8_t tamanio_de_reg
 
 // MOV_OUT (Registro Dirección, Registro Datos):
 // Lee el valor del Registro Datos y lo escribe en la dirección física de memoria obtenida a partir de la Dirección Lógica almacenada en el Registro Dirección.
-void MOV_OUT(void *registroDireccion, void *registroDatos, uint8_t tamanio_de_registro_datos)
-{ // escribe en memoria
+void MOV_OUT(void *registroDatos, void *registroDireccion, uint8_t tamanio_de_registro_datos) {
     PC_registro++;
-
     Direcciones direcciones_fisicas = traducir_direccion_logica_a_fisicas(registroDireccion, tamanio_de_registro_datos);
 
     t_buffer *solicitud_de_escritura = crear_buffer();
 
-    //  [Cantidad] [TAM_DATO_A_ESCRIBIR] [DATOS_A_ESCRIBIR] [MARCO] [DESPLAZAMIENTO] .. [TAM_DATO_A_ESCRIBIR] [DATOS_A_ESCRIBIR] [MARCO] [DESPLAZAMIENTO] ....
+    cargar_uint8_al_buffer(solicitud_de_escritura, tamanio_de_registro_datos);
 
+    // Cargar la cantidad de direcciones
     uint8_t cantidad = direcciones_fisicas.cantidad_direcciones;
+    cargar_uint8_al_buffer(solicitud_de_escritura, cantidad);
 
-    for (int i = 0; i < cantidad; i++)
-    {
+    uint8_t* datos = (uint8_t*)registroDatos;
+    for (int i = 0; i < cantidad; i++) {
         cargar_uint8_al_buffer(solicitud_de_escritura, direcciones_fisicas.direcciones[i].tamanio);
-
-        if (tamanio_de_registro_datos == sizeof(uint32_t))
-        {
-            void* datos_a_escribir = (uint32_t *)registroDatos + i * tam_pagina;
-            cargar_choclo_al_buffer(solicitud_de_escritura, datos_a_escribir, direcciones_fisicas.direcciones[i].tamanio);
-            
-        }
-        else if (tamanio_de_registro_datos == sizeof(uint8_t))
-        {
-            void* datos_a_escribir = (uint8_t *)registroDatos + i * tam_pagina;
-            cargar_choclo_al_buffer(solicitud_de_escritura, datos_a_escribir, direcciones_fisicas.direcciones[i].tamanio);
-            
-        }
-
         cargar_uint16_al_buffer(solicitud_de_escritura, direcciones_fisicas.direcciones[i].numero_pagina);
         cargar_uint32_al_buffer(solicitud_de_escritura, direcciones_fisicas.direcciones[i].desplazamiento);
-
-    } //CHEQUEAR FOR
-
-
+        
+        // Agregar los datos que se escribirán en la memoria
+        for (int j = 0; j < direcciones_fisicas.direcciones[i].tamanio; j++) {
+            cargar_uint8_al_buffer(solicitud_de_escritura, datos[j]);
+        }
+        datos += direcciones_fisicas.direcciones[i].tamanio;
+    }
 
     t_paquete *a_enviar = crear_paquete(ESCRITURA, solicitud_de_escritura);
-
     enviar_paquete(a_enviar, fd_memoria);
-
     destruir_paquete(a_enviar);
 
+    
+    
     int cod_op = recibir_operacion(fd_memoria);
     switch (cod_op)
     {
@@ -346,7 +335,16 @@ void MOV_OUT(void *registroDireccion, void *registroDatos, uint8_t tamanio_de_re
 
         break;
     }
+    
 }
+
+
+
+
+
+
+
+
 /*
 IO_STDIN_READ (Interfaz, Registro Dirección, Registro Tamaño): Esta instrucción solicita al Kernel que mediante
 la interfaz ingresada se lea desde el STDIN (Teclado) un valor cuyo tamaño

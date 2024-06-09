@@ -39,7 +39,7 @@ void atender_memoria_cpu()
             break;
         case ESCRITURA:
 
-            _escribir_en_direccion_de_memoria();
+            _escribir_una_determinada_direccion();
 
             break;
 
@@ -187,23 +187,46 @@ void _leer_una_determinada_direccion (){
 
 }
 
-void _escribir_en_direccion_de_memoria(){
+void _escribir_una_determinada_direccion() {
     t_buffer *buffer_recibido = recibir_buffer_sin_cod_op(fd_cpu);
-    
-    //  [TAM_DATO_A_ESCRIBIR] [DATOS_A_ESCRIBIR] [MARCO] [DESPLAZAMIENTO]
 
+    // Recibo el tamaño del registro de datos
     uint8_t tamanio_de_registro_datos = extraer_uint8_al_buffer(buffer_recibido);
 
-    if (tamanio_de_registro_datos == sizeof(uint32_t))
-    {
-        uint32_t *(uint32_t *)registroDatos = extraer_uint32_al_buffer(buffer_recibido);
+    // Recibo la cantidad de direcciones
+    uint8_t cantidad_de_direcciones = extraer_uint8_al_buffer(buffer_recibido);
+
+    uint8_t* datos = malloc(tamanio_de_registro_datos);
     
-    }
-    else if (tamanio_de_registro_datos == sizeof(uint8_t))
-    {
-        uint8_t *(uint8_t *)registroDatos = extraer_uint8_al_buffer(buffer_recibido);
+    // Leer las direcciones y los datos del buffer y escribirlos en la memoria
+    uint8_t* ptr = datos;
+    for (int i = 0; i < cantidad_de_direcciones; i++) {
+        uint8_t tamanio_de_direccion = extraer_uint8_al_buffer(buffer_recibido);
+        uint16_t marco = extraer_uint16_al_buffer(buffer_recibido);
+        uint32_t desplazamiento = extraer_uint32_al_buffer(buffer_recibido);
+
+        // Extraer los datos a escribir
+        for (int j = 0; j < tamanio_de_direccion; j++) {
+            ptr[j] = extraer_uint8_al_buffer(buffer_recibido);
+        }
+
+        // Calcular la dirección física
+        void *direccion_fisica = memoria_usuario + (marco * config_valores.tam_pagina) + desplazamiento;
+
+        // Escribir los datos en la memoria física
+        memcpy(direccion_fisica, ptr, tamanio_de_direccion);
+        ptr += tamanio_de_direccion;
     }
 
-    uint16_t direccion_fisica = extraer_uint16_al_buffer(buffer_recibido);
-    uint32_t desplazamiento = extraer_uint32_al_buffer(buffer_recibido);
+    destruir_buffer(buffer_recibido);
+    free(datos);
+
+    // Enviar confirmación al CPU
+    t_buffer *buffer_confirmacion = crear_buffer();
+    char* respuesta = "OK"; //no se bien como seria el tema de saber si lo pudo hacer o no
+    cargar_string_al_buffer(buffer_confirmacion, respuesta);
+    t_paquete *paquete_confirmacion = crear_paquete(ESCRITURA, buffer_confirmacion);
+    enviar_paquete(paquete_confirmacion, fd_cpu);
+    destruir_paquete(paquete_confirmacion);
 }
+
