@@ -1,11 +1,5 @@
 #include "../include/memoria_cpu.h"
 
-void enviar_tam_paginas_a_cpu(){
-    t_buffer* buffer = crear_buffer();
-    cargar_uint16_al_buffer(buffer, tam_pagina);
-    t_paquete* paquete = crear_paquete(TAM_PAG, buffer);
-    enviar_paquete(paquete, fd_cpu);
-}
 void atender_memoria_cpu()
 {
     bool control_key = 1;
@@ -14,6 +8,19 @@ void atender_memoria_cpu()
         int cod_op = recibir_operacion(fd_cpu);
         switch (cod_op)
         {
+        case TAM_PAG:
+            
+            t_buffer *buffer_recibido = recibir_buffer_sin_cod_op(fd_cpu);
+
+            destruir_buffer(buffer_recibido);
+            
+            t_buffer *buff = crear_buffer();
+            cargar_uint16_al_buffer(buff, tam_pagina);
+            t_paquete *paq = crear_paquete(TAM_PAG, buff);
+            enviar_paquete(paq, fd_cpu);
+            destruir_paquete(paq);
+
+            break;
         case SOLICITUD_DE_PROXIMA_INSTRUCCION:
 
             _solicitud_de_proxima_instruccion();
@@ -123,31 +130,11 @@ void _solicitud_de_proxima_instruccion(){
             current = NULL;
 }
 
-// bool escribir_memoria(void* espacio_usuario, uint32_t numero_marco, uint32_t desplazamiento, uint32_t tamaño, void* datos) {
-//     uint32_t direccion_fisica = numero_marco * TAM_PAGINA + desplazamiento;
-//     if (direccion_fisica + tamaño > TAM_MEMORIA) {
-//         return false; // Error
-//     }
 
-//     // Escribir
-//     memcpy(espacio_usuario + direccion_fisica, datos, tamaño);
-//     return true;
-// }
-
-// bool leer_memoria(void* espacio_usuario, uint32_t numero_marco, uint32_t desplazamiento, uint32_t tamaño, void* datos) {
-//     uint32_t direccion_fisica = numero_marco * TAM_PAGINA + desplazamiento;
-//     if (direccion_fisica + tamaño > TAM_MEMORIA) {
-//         return false; // Error
-//     }
-
-//     // Leer
-//     memcpy(datos, espacio_usuario + direccion_fisica, tamaño);
-//     return true;
-// }
-`
 void _leer_una_determinada_direccion (){
     void* registroDatos;
 
+    //  [tamanio registro datos] [Cantidad] [TAM_A_LEER] [MARCO] [DESPLAZAMIENTO] .. [TAM_A_LEER] [MARCO] [DESPLAZAMIENTO] .....
     t_buffer *buffer_recibido = recibir_buffer_sin_cod_op(fd_cpu);
     
     //recibo el tamanio del registro datos
@@ -160,14 +147,14 @@ void _leer_una_determinada_direccion (){
     
     uint8_t cantidad_de_direcciones = extraer_uint8_al_buffer(buffer_recibido);
     
-    for (i = 0; i < cantidad_de_direcciones ; i++){
+    for (int i = 0; i < cantidad_de_direcciones ; i++){
     
     uint8_t tamanio_de_direccion = extraer_uint8_al_buffer(buffer_recibido);
     uint16_t marco = extraer_uint16_al_buffer(buffer_recibido);
     uint32_t desplazamiento = extraer_uint32_al_buffer(buffer_recibido);
     
     // Calcular la dirección física
-        void *direccion_fisica = memoria_usuario + (marco * config_valores.tam_pagina) + desplazamiento;
+        void *direccion_fisica = memoria_usuario + (marco * tam_pagina) + desplazamiento;
 
         memcpy(registroDatos + (i * tamanio_de_direccion), direccion_fisica, tamanio_de_direccion);
     }
@@ -178,17 +165,21 @@ void _leer_una_determinada_direccion (){
 
     t_buffer *buffer_a_enviar = crear_buffer();
 
-    cargar_choclo_al_buffer(buffer_a_enviar, registroDatos);
+    cargar_choclo_al_buffer(buffer_a_enviar, registroDatos, tamanio_de_registro_datos);
 
     t_paquete *a_enviar = crear_paquete(LECTURA, buffer_a_enviar);
     enviar_paquete(a_enviar, fd_cpu);
     destruir_paquete(a_enviar);
-    // free(registroDatos); esto no se si va, seria para eliminar ese registro
+
+    free(registroDatos);
 
 }
 
 void _escribir_una_determinada_direccion() {
     t_buffer *buffer_recibido = recibir_buffer_sin_cod_op(fd_cpu);
+
+    //  [tamanio registro datos] [Cantidad] [TAM_A_escribir] [MARCO] [DESPLAZAMIENTO] [DATO] .. [TAM_A_escribir] [MARCO] [DESPLAZAMIENTO] [DATO] .....
+
 
     // Recibo el tamaño del registro de datos
     uint8_t tamanio_de_registro_datos = extraer_uint8_al_buffer(buffer_recibido);
@@ -196,26 +187,29 @@ void _escribir_una_determinada_direccion() {
     // Recibo la cantidad de direcciones
     uint8_t cantidad_de_direcciones = extraer_uint8_al_buffer(buffer_recibido);
 
-    uint8_t* datos = malloc(tamanio_de_registro_datos);
+    void* datos = malloc(tamanio_de_registro_datos);
     
     // Leer las direcciones y los datos del buffer y escribirlos en la memoria
-    uint8_t* ptr = datos;
+    void* ptr = datos;
     for (int i = 0; i < cantidad_de_direcciones; i++) {
         uint8_t tamanio_de_direccion = extraer_uint8_al_buffer(buffer_recibido);
         uint16_t marco = extraer_uint16_al_buffer(buffer_recibido);
         uint32_t desplazamiento = extraer_uint32_al_buffer(buffer_recibido);
 
-        // Extraer los datos a escribir
-        for (int j = 0; j < tamanio_de_direccion; j++) {
-            ptr[j] = extraer_uint8_al_buffer(buffer_recibido);
+        if (tamanio_de_registro_datos == sizeof(uint8_t))
+        {
+            *(uint8_t*)ptr = extraer_uint8_al_buffer(buffer_recibido);
+        }
+        else
+        {
+            *(uint32_t*)ptr = extraer_uint32_al_buffer(buffer_recibido);
         }
 
         // Calcular la dirección física
-        void *direccion_fisica = memoria_usuario + (marco * config_valores.tam_pagina) + desplazamiento;
+        void *direccion_fisica = memoria_usuario + (marco * tam_pagina) + desplazamiento;
 
         // Escribir los datos en la memoria física
         memcpy(direccion_fisica, ptr, tamanio_de_direccion);
-        ptr += tamanio_de_direccion;
     }
 
     destruir_buffer(buffer_recibido);

@@ -3,6 +3,6 @@
 
 #include "./c_gestor.h"
 
-void atender_cpu_memoria ();
+void pedir_tam_pagina_a_memoria();
 
 #endif

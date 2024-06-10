@@ -4,18 +4,14 @@
 void atender_memoria_kernel()
 {
     bool control_key = 1;
+
     while (control_key)
     {
         int cod_op = recibir_operacion(fd_kernel);
+
         switch (cod_op)
         {
-        case MENSAJE:
-            //
-            break;
-        case PAQUETE:
-            //
-            break;
-
+        
         case INICIAR_PROCESO:
 
             crear_proceso();

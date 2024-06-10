@@ -29,7 +29,6 @@ int main() {
     //Esperar conexion CPU
     log_info(memoria_logger, "Esperando a CPU...");
     fd_cpu = esperar_cliente (fd_memoria, memoria_logger, "CPU");
-    enviar_tam_paginas_a_cpu();
     
     //Atender los mensajes de CPU
     pthread_t hilo_cpu;
@@ -40,7 +39,7 @@ int main() {
     pthread_t hilo_entrada_salida;
     pthread_create(&hilo_entrada_salida, NULL, (void*) atender_memoria_entrada_salida, NULL);
     pthread_detach(hilo_entrada_salida);
-    
+        
     //Atender los mensajes de KERNEL
     pthread_t hilo_kernel;
     pthread_create(&hilo_kernel, NULL, (void*) atender_memoria_kernel, NULL);

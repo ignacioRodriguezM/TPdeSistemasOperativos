@@ -80,12 +80,9 @@ Direcciones _componer_direcciones(void *registroDireccion, uint8_t espacio)
     {
         direccion_fisica.tamanio = tam_pagina - direccion_fisica.desplazamiento;
         
-        uint8_t cantidad_de_paginas_a_ocupar = division_entera_redondear_arriba((espacio - direccion_fisica.tamanio), tam_pagina);
-
         direccion_fisica.tamanio = espacio;
-
-        direcciones.direcciones = malloc(cantidad_de_paginas_a_ocupar * sizeof(Direccion_t));
-        direcciones.cantidad_direcciones = cantidad_de_paginas_a_ocupar;
+        
+        direcciones.direcciones = malloc( sizeof(Direccion_t));
         direcciones.direcciones[0] = direccion_fisica;
     }
 

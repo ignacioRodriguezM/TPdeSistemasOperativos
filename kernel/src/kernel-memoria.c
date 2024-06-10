@@ -6,12 +6,7 @@ void atender_kernel_memoria(){
         int cod_op = recibir_operacion(fd_memoria);
         switch (cod_op)
         {
-        case MENSAJE:
-            /* code */
-            break;
-        case PAQUETE:
-        //codigo
-            break;
+        
         case -1:
         log_error(kernel_logger, "Desconexion de KERNEL-MEMORIA");
         control_key = 0;
