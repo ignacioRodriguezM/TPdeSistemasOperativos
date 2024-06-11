@@ -16,7 +16,7 @@ void inicializar_diccionarios() {
     dictionary_put(operation_switcher, "SUB", (void*)(uintptr_t)4);
     dictionary_put(operation_switcher, "JNZ", (void*)(uintptr_t)5);
     dictionary_put(operation_switcher, "RESIZE", (void*)(uintptr_t)6);
-    //dictionary_put(operation_switcher, "COPY_STRING", (void*)(uintptr_t)7);
+    dictionary_put(operation_switcher, "COPY_STRING", (void*)(uintptr_t)7);
     dictionary_put(operation_switcher, "WAIT", (void*)(uintptr_t)8);
     dictionary_put(operation_switcher, "SIGNAL", (void*)(uintptr_t)9);
     dictionary_put(operation_switcher, "IO_GEN_SLEEP", (void*)(uintptr_t)10);
@@ -164,13 +164,16 @@ void decode(char* funcion, int num_params, char** params) {
         }
         case 6: {
             // RESIZE
-            log_info(cpu_logger, "PID: <%u> - Ejecutando: <%s> - <%s>", PID, funcion, params[1]);
+            log_info(cpu_logger, "PID: <%u> - Ejecutando: <%s> - <%s>", PID, funcion, params[0]);
             int valor6 = atoi(params[0]);
             RESIZE(&valor6);
             break;
         }
         case 7:
             // COPY_STRING
+            log_info(cpu_logger, "PID: <%u> - Ejecutando: <%s> - <%s>", PID, funcion, params[0]);
+            int valor7 = atoi(params[0]);
+            COPY_STRING(valor7);
             break;
         case 8: {
             // WAIT

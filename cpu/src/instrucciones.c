@@ -244,7 +244,7 @@ void RESIZE(void *parametro)
 
 // Lee el valor de memoria correspondiente a la Dirección Lógica que se encuentra en el Registro Dirección y lo almacena en el Registro Datos.
 void MOV_IN(void *registroDatos, void *registroDireccion, uint8_t tamanio_de_registro_datos)
-{   // lee de memoria y lo guarda en un registro
+{ // lee de memoria y lo guarda en un registro
     // aca debemos agregar la cantidad de marcos, etc respetando la manera de leer que esta en memoria
     PC_registro++;
     Direcciones direcciones_fisicas = traducir_direccion_logica_a_fisicas(registroDireccion, tamanio_de_registro_datos);
@@ -278,21 +278,20 @@ void MOV_IN(void *registroDatos, void *registroDireccion, uint8_t tamanio_de_reg
         t_buffer *recibido = recibir_buffer_sin_cod_op(fd_memoria);
         if (tamanio_de_registro_datos == sizeof(uint8_t))
         {
-            *(uint8_t*)registroDatos = extraer_uint8_al_buffer(recibido);
+            *(uint8_t *)registroDatos = extraer_uint8_al_buffer(recibido);
             uint32_t direccion_para_loguear = tam_pagina * direcciones_fisicas.direcciones[0].numero_pagina + direcciones_fisicas.direcciones[0].desplazamiento;
-            log_info(cpu_logger, "PID: <%u> - Acción: <LEER> - Dirección Física: <%u> - Valor: <%u>", PID, direccion_para_loguear, *(uint8_t*)registroDatos);
+            log_info(cpu_logger, "PID: <%u> - Acción: <LEER> - Dirección Física: <%u> - Valor: <%u>", PID, direccion_para_loguear, *(uint8_t *)registroDatos);
         }
         else
         {
-            *(uint32_t*)registroDatos = extraer_uint32_al_buffer(recibido);
+            *(uint32_t *)registroDatos = extraer_uint32_al_buffer(recibido);
             uint32_t direccion_para_loguear = tam_pagina * direcciones_fisicas.direcciones[0].numero_pagina + direcciones_fisicas.direcciones[0].desplazamiento;
-            log_info(cpu_logger, "PID: <%u> - Acción: <LEER> - Dirección Física: <%u> - Valor: <%u>", PID, direccion_para_loguear,  *(uint32_t*)registroDatos);
+            log_info(cpu_logger, "PID: <%u> - Acción: <LEER> - Dirección Física: <%u> - Valor: <%u>", PID, direccion_para_loguear, *(uint32_t *)registroDatos);
         }
 
         destruir_buffer(recibido);
         break;
     }
-
 }
 
 // MOV_OUT (Registro Dirección, Registro Datos):
@@ -312,22 +311,20 @@ void MOV_OUT(void *registroDireccion, void *registroDatos, uint8_t tamanio_de_re
     uint8_t cantidad = direcciones_fisicas.cantidad_direcciones;
     cargar_uint8_al_buffer(solicitud_de_escritura, cantidad);
 
-    void* datos;
+    void *datos;
     if (tamanio_de_registro_datos == sizeof(uint8_t))
     {
         datos = (uint8_t *)registroDatos;
         uint32_t direccion_para_loguear = tam_pagina * direcciones_fisicas.direcciones[0].numero_pagina + direcciones_fisicas.direcciones[0].desplazamiento;
-        
-        log_info(cpu_logger, "PID: <%u> - Acción: <ESCRIBIR> - Dirección Física: <%u> - Valor: <%u>", PID, direccion_para_loguear,  *(uint8_t*)datos);
 
+        log_info(cpu_logger, "PID: <%u> - Acción: <ESCRIBIR> - Dirección Física: <%u> - Valor: <%u>", PID, direccion_para_loguear, *(uint8_t *)datos);
     }
     else
     {
         datos = (uint32_t *)registroDatos;
         uint32_t direccion_para_loguear = tam_pagina * direcciones_fisicas.direcciones[0].numero_pagina + direcciones_fisicas.direcciones[0].desplazamiento;
 
-        log_info(cpu_logger, "PID: <%u> - Acción: <ESCRIBIR> - Dirección Física: <%u> - Valor: <%u>", PID, direccion_para_loguear,  *(uint32_t*)datos);
-
+        log_info(cpu_logger, "PID: <%u> - Acción: <ESCRIBIR> - Dirección Física: <%u> - Valor: <%u>", PID, direccion_para_loguear, *(uint32_t *)datos);
     }
 
     // [TAM_A_escribir] [MARCO] [DESPLAZAMIENTO] [DATO] .. [TAM_A_escribir] [MARCO] [DESPLAZAMIENTO] [DATO] .....
@@ -340,11 +337,11 @@ void MOV_OUT(void *registroDireccion, void *registroDatos, uint8_t tamanio_de_re
 
         if (tamanio_de_registro_datos == sizeof(uint8_t))
         {
-            cargar_uint8_al_buffer(solicitud_de_escritura, *(uint8_t*)datos);
+            cargar_uint8_al_buffer(solicitud_de_escritura, *(uint8_t *)datos);
         }
         else
         {
-            cargar_uint32_al_buffer(solicitud_de_escritura, *(uint32_t*)datos);
+            cargar_uint32_al_buffer(solicitud_de_escritura, *(uint32_t *)datos);
         }
 
         datos += direcciones_fisicas.direcciones[i].tamanio;
@@ -353,8 +350,6 @@ void MOV_OUT(void *registroDireccion, void *registroDatos, uint8_t tamanio_de_re
     t_paquete *a_enviar = crear_paquete(ESCRITURA, solicitud_de_escritura);
     enviar_paquete(a_enviar, fd_memoria);
     destruir_paquete(a_enviar);
-
-
 
     int cod_op = recibir_operacion(fd_memoria);
     switch (cod_op)
@@ -375,6 +370,119 @@ void MOV_OUT(void *registroDireccion, void *registroDatos, uint8_t tamanio_de_re
 
         break;
     }
+}
+
+void *obtener_string_de_memoria(Direcciones direcciones_fisicas, uint8_t tamanio_a_copiar)
+{
+    t_buffer *solicitud_de_lectura = crear_buffer();
+
+    cargar_uint8_al_buffer(solicitud_de_lectura, tamanio_a_copiar);
+    //  [Cantidad] [TAM_A_LEER] [MARCO] [DESPLAZAMIENTO] .. [TAM_A_LEER] [MARCO] [DESPLAZAMIENTO] .....
+    uint8_t cantidad = direcciones_fisicas.cantidad_direcciones;
+
+    cargar_uint8_al_buffer(solicitud_de_lectura, cantidad);
+
+    for (int i = 0; i < cantidad; i++)
+    {
+        cargar_uint8_al_buffer(solicitud_de_lectura, direcciones_fisicas.direcciones[i].tamanio);
+        cargar_uint16_al_buffer(solicitud_de_lectura, direcciones_fisicas.direcciones[i].numero_pagina);
+        cargar_uint32_al_buffer(solicitud_de_lectura, direcciones_fisicas.direcciones[i].desplazamiento);
+    }
+
+    t_paquete *a_enviar = crear_paquete(LECTURA, solicitud_de_lectura);
+
+    enviar_paquete(a_enviar, fd_memoria);
+
+    destruir_paquete(a_enviar);
+
+    int cod_op = recibir_operacion(fd_memoria);
+    switch (cod_op)
+    {
+    case LECTURA:
+
+        t_buffer *recibido = recibir_buffer_sin_cod_op(fd_memoria);
+        void *string_copiado = extraer_choclo_al_buffer(recibido);
+        uint32_t direccion_para_loguear = tam_pagina * direcciones_fisicas.direcciones[0].numero_pagina + direcciones_fisicas.direcciones[0].desplazamiento;
+        log_info(cpu_logger, "PID: <%u> - Acción: <LEER> - Dirección Física: <%u> - Valor: <%s>", PID, direccion_para_loguear, (char *)string_copiado);
+
+        destruir_buffer(recibido);
+
+        return string_copiado;
+        break;
+    }
+    return NULL;
+}
+void escribir_string_en_memoria(Direcciones direcciones_fisicas, void *string_a_escribir, uint8_t tamanio)
+{
+    t_buffer *solicitud_de_escritura = crear_buffer();
+
+    //  [tamanio registro datos] [Cantidad] [TAM_A_escribir] [MARCO] [DESPLAZAMIENTO] [DATO] .. [TAM_A_escribir] [MARCO] [DESPLAZAMIENTO] [DATO] .....
+
+    cargar_uint8_al_buffer(solicitud_de_escritura, tamanio);
+
+    // Cargar la cantidad de direcciones
+    uint8_t cantidad = direcciones_fisicas.cantidad_direcciones;
+    cargar_uint8_al_buffer(solicitud_de_escritura, cantidad);
+
+    void *datos = string_a_escribir;
+
+    uint32_t direccion_para_loguear = tam_pagina * direcciones_fisicas.direcciones[0].numero_pagina + direcciones_fisicas.direcciones[0].desplazamiento;
+
+    log_info(cpu_logger, "PID: <%u> - Acción: <ESCRIBIR> - Dirección Física: <%u> - Valor: <%s>", PID, direccion_para_loguear, (char*) string_a_escribir);
+
+    // [TAM_A_escribir] [MARCO] [DESPLAZAMIENTO] [DATO] .. [TAM_A_escribir] [MARCO] [DESPLAZAMIENTO] [DATO] .....
+
+    for (int i = 0; i < cantidad; i++)
+    {
+        cargar_uint8_al_buffer(solicitud_de_escritura, direcciones_fisicas.direcciones[i].tamanio);
+        cargar_uint16_al_buffer(solicitud_de_escritura, direcciones_fisicas.direcciones[i].numero_pagina);
+        cargar_uint32_al_buffer(solicitud_de_escritura, direcciones_fisicas.direcciones[i].desplazamiento);
+
+        
+        cargar_choclo_al_buffer(solicitud_de_escritura, datos, direcciones_fisicas.direcciones[i].tamanio);
+        
+
+        datos += direcciones_fisicas.direcciones[i].tamanio;
+    }
+
+    t_paquete *a_enviar = crear_paquete(ESCRITURA, solicitud_de_escritura);
+    enviar_paquete(a_enviar, fd_memoria);
+    destruir_paquete(a_enviar);
+
+    int cod_op = recibir_operacion(fd_memoria);
+    switch (cod_op)
+    {
+    case ESCRITURA:
+
+        t_buffer *recibido = recibir_buffer_sin_cod_op(fd_memoria);
+
+        char *respuesta = extraer_string_al_buffer(recibido);
+
+        if (strcmp(respuesta, "OK") != 0)
+        {
+            log_error(cpu_log_debug, "MEMORIA NO PUDO REALIZAR EL COPY STRING");
+        }
+
+        free(respuesta);
+        destruir_buffer(recibido);
+
+        break;
+    }
+}
+
+void COPY_STRING(uint8_t tamanio_a_copiar)
+{
+    // uint32_t registroOrigen = SI_registro;
+    // uint32_t registroDestino = DI_registro;
+
+    PC_registro++;
+    Direcciones direcciones_fisicas_origen = traducir_direccion_logica_a_fisicas(&SI_registro, tamanio_a_copiar);
+
+    void *string_a_escribir = obtener_string_de_memoria(direcciones_fisicas_origen, tamanio_a_copiar);
+
+    Direcciones direcciones_fisicas_destino = traducir_direccion_logica_a_fisicas(&DI_registro, tamanio_a_copiar);
+
+    escribir_string_en_memoria(direcciones_fisicas_destino, string_a_escribir, tamanio_a_copiar);
 }
 
 /*

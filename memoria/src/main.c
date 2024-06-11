@@ -20,6 +20,9 @@ int main() {
     fd_memoria = iniciar_servidor (config_valores.puerto_escucha, memoria_logger, "MEMORIA INCIADA !!!");
 
     
+    char* miNombre = "Hola me llamo Nico";
+    void* nombre = miNombre;
+    memcpy(memoria_usuario, nombre, string_length(miNombre) * sizeof(char));
     
 
     //Esperar conexion KERNEL

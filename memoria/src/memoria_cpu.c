@@ -187,33 +187,26 @@ void _escribir_una_determinada_direccion() {
     // Recibo la cantidad de direcciones
     uint8_t cantidad_de_direcciones = extraer_uint8_al_buffer(buffer_recibido);
 
-    void* datos = malloc(tamanio_de_registro_datos);
     
     // Leer las direcciones y los datos del buffer y escribirlos en la memoria
-    void* ptr = datos;
+    void* datos_a_escribir;
     for (int i = 0; i < cantidad_de_direcciones; i++) {
         uint8_t tamanio_de_direccion = extraer_uint8_al_buffer(buffer_recibido);
         uint16_t marco = extraer_uint16_al_buffer(buffer_recibido);
         uint32_t desplazamiento = extraer_uint32_al_buffer(buffer_recibido);
 
-        if (tamanio_de_registro_datos == sizeof(uint8_t))
-        {
-            *(uint8_t*)ptr = extraer_uint8_al_buffer(buffer_recibido);
-        }
-        else
-        {
-            *(uint32_t*)ptr = extraer_uint32_al_buffer(buffer_recibido);
-        }
+        
+        datos_a_escribir = extraer_choclo_al_buffer(buffer_recibido);
 
         // Calcular la dirección física
         void *direccion_fisica = memoria_usuario + (marco * tam_pagina) + desplazamiento;
 
         // Escribir los datos en la memoria física
-        memcpy(direccion_fisica, ptr, tamanio_de_direccion);
+        memcpy(direccion_fisica, datos_a_escribir, tamanio_de_direccion);
     }
 
     destruir_buffer(buffer_recibido);
-    free(datos);
+    
 
     // Enviar confirmación al CPU
     t_buffer *buffer_confirmacion = crear_buffer();
