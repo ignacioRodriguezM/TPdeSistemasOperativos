@@ -27,6 +27,13 @@ void atender_multiples_entrada_salida(int *socket_ptr)
 
         case PRESENTACION:
             break;
+
+        case IO_STIN_READ:
+            manejar_stdin_read();
+            break;
         }
     }
+}
+void* manejar_stdin_read(){
+    
 }

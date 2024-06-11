@@ -103,6 +103,40 @@ void IO_GEN_SLEEP(void *parametro, void *parametro2)
 
     destruir_paquete(a_enviar);
 }
+void IO_STDIN_READ(void *nombre_de_la_interfaz, void *registro_direccion, void* tamanio_del_registro)
+{
+    char *nombre_interfaz = (char *)parametro;
+    uint8_t tamanio = tamanio_del_registro;
+
+    PC_registro++;
+    bloq_flag = false;
+    interrupt_flag = false;
+    t_buffer *buffer = crear_buffer();
+    //[pid] [pc] [registros] [nombre_interfaz] [operacion]
+
+    cargar_uint16_al_buffer(buffer, PID);
+    cargar_uint32_al_buffer(buffer, PC_registro);
+    cargar_uint8_al_buffer(buffer, AX_registro);
+    cargar_uint8_al_buffer(buffer, BX_registro);
+    cargar_uint8_al_buffer(buffer, CX_registro);
+    cargar_uint8_al_buffer(buffer, DX_registro);
+    cargar_uint32_al_buffer(buffer, EAX_registro);
+    cargar_uint32_al_buffer(buffer, EBX_registro);
+    cargar_uint32_al_buffer(buffer, ECX_registro);
+    cargar_uint32_al_buffer(buffer, EDX_registro);
+    cargar_uint32_al_buffer(buffer, SI_registro);
+    cargar_uint32_al_buffer(buffer, DI_registro);
+    cargar_string_al_buffer(buffer, nombre_interfaz);
+    cargar_string_al_buffer(buffer, "IO_STDIN_READ");
+    cargar_uint8_al_buffer(buffer, tamanio);
+    cargar_choclo_al_buffer(buffer, registro_direccion);
+    
+    t_paquete *a_enviar = crear_paquete(LLAMADA_A_IO, buffer);
+
+    enviar_paquete(a_enviar, fd_kernel_dispatch);
+
+    destruir_paquete(a_enviar);
+
 void EXIT()
 {
     bloq_flag = false;

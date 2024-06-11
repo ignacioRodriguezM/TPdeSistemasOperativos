@@ -18,13 +18,7 @@ int main() {
 
     //iniciar servidor de memoria
     fd_memoria = iniciar_servidor (config_valores.puerto_escucha, memoria_logger, "MEMORIA INCIADA !!!");
-
-    
-    char* miNombre = "Hola me llamo Nico";
-    void* nombre = miNombre;
-    memcpy(memoria_usuario, nombre, string_length(miNombre) * sizeof(char));
-    
-
+ 
     //Esperar conexion KERNEL
     log_info(memoria_logger, "Esperando a KERNEL...");
     fd_kernel = esperar_cliente (fd_memoria, memoria_logger, "KERNEL");
