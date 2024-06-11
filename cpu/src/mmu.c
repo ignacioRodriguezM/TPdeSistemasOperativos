@@ -81,7 +81,7 @@ Direcciones _componer_direcciones(void *registroDireccion, uint8_t espacio)
         direccion_fisica.tamanio = tam_pagina - direccion_fisica.desplazamiento;
         
         direccion_fisica.tamanio = espacio;
-        
+
         direcciones.direcciones = malloc( sizeof(Direccion_t));
         direcciones.direcciones[0] = direccion_fisica;
     }
@@ -131,14 +131,14 @@ Direcciones traducir_direccion_logica_a_fisicas(void *registroDireccion, uint8_t
     Direcciones direcciones = _componer_direcciones(registroDireccion, espacio);
 
     
-    for (int i = 0; direcciones.cantidad_direcciones; i++)
+    for (int i = 0; i < direcciones.cantidad_direcciones; i++)
     {
         uint16_t marco = consultar_tlb(PID, direcciones.direcciones[i].numero_pagina);
 
         if (marco != ERROR_VALUE)
         {
             
-            log_info(cpu_logger, "PID: <%u> - OBTENER MARCO - Página: <%u> - Marco: <%u>", PID, direcciones.direcciones[i].numero_pagina, marco);
+            log_info(cpu_logger, "PID: <%u> - MARCO OBTENIDO POR TLB - Página: <%u> - Marco: <%u>", PID, direcciones.direcciones[i].numero_pagina, marco);
             direcciones.direcciones[i].numero_pagina = marco;
             direcciones.direcciones[i].desplazamiento = direcciones.direcciones[i].desplazamiento;
         }

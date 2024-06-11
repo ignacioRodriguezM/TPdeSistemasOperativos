@@ -1,11 +1,5 @@
 #include "../include/tabla_de_paginas.h"
 
-// esto iria en el case cuando me pide un marco la cpu en base a un numero de pagina
-//          t_buffer *buffer_recibido = recibir_buffer_sin_cod_op(fd_cpu);
-//          uint16_t pid_recibido = extraer_uint16_al_buffer(buffer_recibido);
-//          int pagina_a_consultar= extraer_int_al_buffer(buffer_recibido);
-//          destruir_buffer(buffer_recibido);
-
 uint16_t marco_correspondiente_a_pagina_consultada(uint16_t pid_recibido, uint16_t pagina_a_consultar)
 {
 
@@ -34,14 +28,7 @@ uint16_t marco_correspondiente_a_pagina_consultada(uint16_t pid_recibido, uint16
     }
     return -1;
 }
-/*
-void devolver_valor_de_memoria(void registroDeDatos , int pagina){ //mov_in
-    //hay que escribir el valor de la pagina en el registroDeDatos y devolver este registro
-}
-void escribir_valor_en_memoria(int pagina , void registroDatos{ //mov_out
-    //hay que escribir el valor de registroDeDatos en la direccion de pagina q me mandan
-}
-*/
+
 void crear_memoria_y_dividir_en_marcos()
 {
     memoria_usuario = malloc(tam_memoria);
@@ -152,8 +139,8 @@ void ocupar_marcos(Proceso *proceso, int paginas_a_ocupar)
         {
             if (marcos_memoria[j]->esta_libre)
             {
-                proceso->tabla_de_paginas[i]->pagina = i + 1;
-                proceso->tabla_de_paginas[i]->marco = j + 1;
+                proceso->tabla_de_paginas[i]->pagina = i;
+                proceso->tabla_de_paginas[i]->marco = j;
                 marcos_memoria[j]->esta_libre = false;
                 break;
             }
