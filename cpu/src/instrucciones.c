@@ -103,10 +103,13 @@ void IO_GEN_SLEEP(void *parametro, void *parametro2)
 
     destruir_paquete(a_enviar);
 }
-void IO_STDIN_READ(void *nombre_de_la_interfaz, void *registro_direccion, void* tamanio_del_registro)
+void IO_STDIN_READ(void *nombre_de_la_interfaz, void *registro_direccion, uint8_t tamanio_del_registro)
 {
+
     char *nombre_interfaz = (char *)parametro;
-    uint8_t tamanio = tamanio_del_registro;
+    
+
+    Direcciones direcciones_fisicas = traducir_direccion_logica_a_fisicas(registro_direccion, tamanio_del_registro);
 
     PC_registro++;
     bloq_flag = false;
@@ -128,15 +131,90 @@ void IO_STDIN_READ(void *nombre_de_la_interfaz, void *registro_direccion, void* 
     cargar_uint32_al_buffer(buffer, DI_registro);
     cargar_string_al_buffer(buffer, nombre_interfaz);
     cargar_string_al_buffer(buffer, "IO_STDIN_READ");
-    cargar_uint8_al_buffer(buffer, tamanio);
-    cargar_choclo_al_buffer(buffer, registro_direccion);
+
+
+    //[tamanio registro datos] [Cantidad] [TAM_A_escribir] [MARCO] [DESPLAZAMIENTO] [FALTA DATO] .. [TAM_A_escribir] [MARCO] [DESPLAZAMIENTO] [FALTA DATO] .....
+
+    cargar_uint8_al_buffer(buffer, tamanio_del_registro);
+
     
+
+    // Cargar la cantidad de direcciones
+    uint8_t cantidad = direcciones_fisicas.cantidad_direcciones;
+    cargar_uint8_al_buffer(buffer, cantidad);
+
+    
+    // [TAM_A_escribir] [MARCO] [DESPLAZAMIENTO] [FALTA DATO] .. [TAM_A_escribir] [MARCO] [DESPLAZAMIENTO] [FALTA DATO] .....
+
+    for (int i = 0; i < cantidad; i++)
+    {
+        cargar_uint8_al_buffer(buffer, direcciones_fisicas.direcciones[i].tamanio);
+        cargar_uint16_al_buffer(buffer, direcciones_fisicas.direcciones[i].numero_pagina);
+        cargar_uint32_al_buffer(buffer, direcciones_fisicas.direcciones[i].desplazamiento);
+
+    }
+
     t_paquete *a_enviar = crear_paquete(LLAMADA_A_IO, buffer);
 
     enviar_paquete(a_enviar, fd_kernel_dispatch);
 
     destruir_paquete(a_enviar);
+}
+void IO_STDOUT_WRITE(void *nombre_de_la_interfaz, void *registro_direccion, uint8_t tamanio_del_registro){
+    char *nombre_interfaz = (char *)parametro;
+    
 
+    Direcciones direcciones_fisicas = traducir_direccion_logica_a_fisicas(registro_direccion, tamanio_del_registro);
+
+    PC_registro++;
+    bloq_flag = false;
+    interrupt_flag = false;
+    t_buffer *buffer = crear_buffer();
+    //[pid] [pc] [registros] [nombre_interfaz] [operacion]
+
+    cargar_uint16_al_buffer(buffer, PID);
+    cargar_uint32_al_buffer(buffer, PC_registro);
+    cargar_uint8_al_buffer(buffer, AX_registro);
+    cargar_uint8_al_buffer(buffer, BX_registro);
+    cargar_uint8_al_buffer(buffer, CX_registro);
+    cargar_uint8_al_buffer(buffer, DX_registro);
+    cargar_uint32_al_buffer(buffer, EAX_registro);
+    cargar_uint32_al_buffer(buffer, EBX_registro);
+    cargar_uint32_al_buffer(buffer, ECX_registro);
+    cargar_uint32_al_buffer(buffer, EDX_registro);
+    cargar_uint32_al_buffer(buffer, SI_registro);
+    cargar_uint32_al_buffer(buffer, DI_registro);
+    cargar_string_al_buffer(buffer, nombre_interfaz);
+    cargar_string_al_buffer(buffer, "IO_STDOUT_WRITE");
+
+
+    //[tamanio registro datos] [Cantidad] [TAM_A_leer] [MARCO] [DESPLAZAMIENTO] [FALTA DATO] .. [TAM_A_escribir] [MARCO] [DESPLAZAMIENTO] [FALTA DATO] .....
+
+    cargar_uint8_al_buffer(buffer, tamanio_del_registro);
+
+    
+
+    // Cargar la cantidad de direcciones
+    uint8_t cantidad = direcciones_fisicas.cantidad_direcciones;
+    cargar_uint8_al_buffer(buffer, cantidad);
+
+    
+    // [TAM_A_escribir] [MARCO] [DESPLAZAMIENTO] [FALTA DATO] .. [TAM_A_escribir] [MARCO] [DESPLAZAMIENTO] [FALTA DATO] .....
+
+    for (int i = 0; i < cantidad; i++)
+    {
+        cargar_uint8_al_buffer(buffer, direcciones_fisicas.direcciones[i].tamanio);
+        cargar_uint16_al_buffer(buffer, direcciones_fisicas.direcciones[i].numero_pagina);
+        cargar_uint32_al_buffer(buffer, direcciones_fisicas.direcciones[i].desplazamiento);
+
+    }
+
+    t_paquete *a_enviar = crear_paquete(LLAMADA_A_IO, buffer);
+
+    enviar_paquete(a_enviar, fd_kernel_dispatch);
+
+    destruir_paquete(a_enviar);
+}
 void EXIT()
 {
     bloq_flag = false;
@@ -462,7 +540,7 @@ void escribir_string_en_memoria(Direcciones direcciones_fisicas, void *string_a_
 
     uint32_t direccion_para_loguear = tam_pagina * direcciones_fisicas.direcciones[0].numero_pagina + direcciones_fisicas.direcciones[0].desplazamiento;
 
-    log_info(cpu_logger, "PID: <%u> - Acción: <ESCRIBIR> - Dirección Física: <%u> - Valor: <%s>", PID, direccion_para_loguear, (char*) string_a_escribir);
+    log_info(cpu_logger, "PID: <%u> - Acción: <ESCRIBIR> - Dirección Física: <%u> - Valor: <%s>", PID, direccion_para_loguear, (char *)string_a_escribir);
 
     // [TAM_A_escribir] [MARCO] [DESPLAZAMIENTO] [DATO] .. [TAM_A_escribir] [MARCO] [DESPLAZAMIENTO] [DATO] .....
 
@@ -472,9 +550,7 @@ void escribir_string_en_memoria(Direcciones direcciones_fisicas, void *string_a_
         cargar_uint16_al_buffer(solicitud_de_escritura, direcciones_fisicas.direcciones[i].numero_pagina);
         cargar_uint32_al_buffer(solicitud_de_escritura, direcciones_fisicas.direcciones[i].desplazamiento);
 
-        
         cargar_choclo_al_buffer(solicitud_de_escritura, datos, direcciones_fisicas.direcciones[i].tamanio);
-        
 
         datos += direcciones_fisicas.direcciones[i].tamanio;
     }
@@ -518,116 +594,3 @@ void COPY_STRING(uint8_t tamanio_a_copiar)
 
     escribir_string_en_memoria(direcciones_fisicas_destino, string_a_escribir, tamanio_a_copiar);
 }
-
-/*
-IO_STDIN_READ (Interfaz, Registro Dirección, Registro Tamaño): Esta instrucción solicita al Kernel que mediante
-la interfaz ingresada se lea desde el STDIN (Teclado) un valor cuyo tamaño
-está delimitado por el valor del Registro Tamaño y el mismo se guarde a partir de la Dirección Lógica almacenada en el Registro Dirección.
-
-
-void IO_STDIN_READ(void *interfaz, void *registroDireccion, void *registroTam, uint8_t tam_registroTam)
-{
-    PC_registro++;
-    bloq_flag = false;
-    interrupt_flag = false;
-
-    char *nombre_interfaz = (char *)interfaz;
-
-    uint8_t tamanio;
-
-    Direccion_t direccion_fisica = traducir_direccion_logica_a_fisica(registroDireccion, tam_registroTam);
-
-    if (tam_registroTam == sizeof(uint8_t))
-    {
-        tamanio = *(uint8_t *)registroTam;
-    }
-    else
-    {
-        tamanio = *(uint32_t *)registroTam; // chequear
-    }
-
-    //[pid] [pc] [registros] [nombre_interfaz] [operacion] [TAMANIO] [MARCO] [PAGINA]
-
-    t_buffer *buffer = crear_buffer();
-
-    cargar_uint16_al_buffer(buffer, PID);
-    cargar_uint32_al_buffer(buffer, PC_registro);
-    cargar_uint8_al_buffer(buffer, AX_registro);
-    cargar_uint8_al_buffer(buffer, BX_registro);
-    cargar_uint8_al_buffer(buffer, CX_registro);
-    cargar_uint8_al_buffer(buffer, DX_registro);
-    cargar_uint32_al_buffer(buffer, EAX_registro);
-    cargar_uint32_al_buffer(buffer, EBX_registro);
-    cargar_uint32_al_buffer(buffer, ECX_registro);
-    cargar_uint32_al_buffer(buffer, EDX_registro);
-    cargar_uint32_al_buffer(buffer, SI_registro);
-    cargar_uint32_al_buffer(buffer, DI_registro);
-    cargar_string_al_buffer(buffer, nombre_interfaz);
-    cargar_string_al_buffer(buffer, "IO_STDIN_READ");
-    cargar_uint8_al_buffer(buffer, tamanio);
-    cargar_uint16_al_buffer(buffer, direccion_fisica.numero_pagina);
-    cargar_uint32_al_buffer(buffer, direccion_fisica.desplazamiento);
-
-    t_paquete *a_enviar = crear_paquete(LLAMADA_A_IO, buffer);
-
-    enviar_paquete(a_enviar, fd_kernel_dispatch);
-
-    destruir_paquete(a_enviar);
-}
-
-
-IO_STDOUT_WRITE (Interfaz, Registro Dirección, Registro Tamaño): Esta instrucción solicita al Kernel que mediante la interfaz seleccionada,
-se lea desde la posición de memoria
-indicada por la Dirección Lógica almacenada en el Registro Dirección, un tamaño indicado por el Registro Tamaño
-y se imprima por pantalla.
-
-void IO_STDOUT_WRITE(void *interfaz, void *registroDireccion, void *registroTam, uint8_t tam_registroTam)
-{
-    PC_registro++;
-    bloq_flag = false;
-    interrupt_flag = false;
-
-    char *nombre_interfaz = (char *)interfaz;
-
-    uint8_t tamanio;
-
-    Direccion_t direccion_fisica = traducir_direccion_logica_a_fisica(registroDireccion);
-
-    if (tam_registroTam == sizeof(uint8_t))
-    {
-        tamanio = *(uint8_t *)registroTam;
-    }
-    else
-    {
-        tamanio = *(uint32_t *)registroTam; // chequear
-    }
-
-    //[pid] [pc] [registros] [nombre_interfaz] [operacion] [TAMANIO] [MARCO] [PAGINA]
-
-    t_buffer *buffer = crear_buffer();
-
-    cargar_uint16_al_buffer(buffer, PID);
-    cargar_uint32_al_buffer(buffer, PC_registro);
-    cargar_uint8_al_buffer(buffer, AX_registro);
-    cargar_uint8_al_buffer(buffer, BX_registro);
-    cargar_uint8_al_buffer(buffer, CX_registro);
-    cargar_uint8_al_buffer(buffer, DX_registro);
-    cargar_uint32_al_buffer(buffer, EAX_registro);
-    cargar_uint32_al_buffer(buffer, EBX_registro);
-    cargar_uint32_al_buffer(buffer, ECX_registro);
-    cargar_uint32_al_buffer(buffer, EDX_registro);
-    cargar_uint32_al_buffer(buffer, SI_registro);
-    cargar_uint32_al_buffer(buffer, DI_registro);
-    cargar_string_al_buffer(buffer, nombre_interfaz);
-    cargar_string_al_buffer(buffer, "IO_STDOUT_WRITE");
-    cargar_uint8_al_buffer(buffer, tamanio);
-    cargar_uint16_al_buffer(buffer, direccion_fisica.numero_pagina);
-    cargar_uint32_al_buffer(buffer, direccion_fisica.desplazamiento);
-
-    t_paquete *a_enviar = crear_paquete(LLAMADA_A_IO, buffer);
-
-    enviar_paquete(a_enviar, fd_kernel_dispatch);
-
-    destruir_paquete(a_enviar);
-}
-*/

@@ -212,7 +212,8 @@ void _manejar_exit()
     destruir_buffer(buffer_recibido);
 }
 
-void _manejar_interrupcion_de_usuario(){
+void _manejar_interrupcion_de_usuario()
+{
     if (strcmp(algoritmo_planificacion, "FIFO") != 0)
     {
         pthread_cancel(hilo_quantum);
@@ -394,70 +395,81 @@ void _manejar_bloqueo()
             cargar_uint16_al_buffer(pcb_a_editar->operacion_de_io_por_la_que_fue_bloqueado, pcb_a_editar->pid);
             cargar_uint8_al_buffer(pcb_a_editar->operacion_de_io_por_la_que_fue_bloqueado, unidades_de_trabajo);
             // [nombre io][operacion][pid][unidades de trabajo]
-            for (int i = 0; i < contador_de_colas_bloqueados; i++)
-            {
 
-                if ((strcmp(colas_bloqueados[i]->nombre, nombre_interfaz) == 0) && (colas_bloqueados[i]->cola->elements->elements_count == 0))
-                {
-                    sem_wait(&planificacion_activa_semaforo);
-                    sem_post(&planificacion_activa_semaforo);
-                    // [nombre io][operacion][pid][unidades de trabajo]
-                    t_paquete *a_enviar_a_io = crear_paquete(TAREA, pcb_a_editar->operacion_de_io_por_la_que_fue_bloqueado);
+            mandar_a_io_o_cola_bloqueados(nombre_interfaz);
 
-                    enviar_paquete(a_enviar_a_io, colas_bloqueados[i]->fd);
-
-                    free(a_enviar_a_io);
-
-                    break;
-                }
-            }
-
-            mover_de_excec_a_cola_bloqueado(nombre_interfaz);
-            log_info(kernel_logger, "PID: %u - Bloqueado por: INTERFAZ : %s", pcb_a_editar->pid, nombre_interfaz);
         }
 
         else if (strcmp(operacion_a_realizar, "IO_STDIN_READ") == 0)
         {
-            //[unidades_de_trabajo]
-            uint8_t tamanio = extraer_uint8_al_buffer(buffer_recibido);
-            void* registro_direccion = extraer_choclo_al_buffer(buffer_recibido);
 
-            destruir_buffer(buffer_recibido);
+            uint8_t tamanio_total_a_escribir = extraer_uint8_al_buffer(buffer_recibido);
+            uint8_t cantidad_de_direccions = extraer_uint8_al_buffer(buffer_recibido);
 
             PCB *pcb_a_editar = (PCB *)queue_peek(procesos_excec);
-
             pcb_a_editar->operacion_de_io_por_la_que_fue_bloqueado = crear_buffer();
+
             cargar_string_al_buffer(pcb_a_editar->operacion_de_io_por_la_que_fue_bloqueado, nombre_interfaz);
             cargar_string_al_buffer(pcb_a_editar->operacion_de_io_por_la_que_fue_bloqueado, operacion_a_realizar);
             cargar_uint16_al_buffer(pcb_a_editar->operacion_de_io_por_la_que_fue_bloqueado, pcb_a_editar->pid);
-            cargar_uint8_al_buffer(pcb_a_editar->operacion_de_io_por_la_que_fue_bloqueado, tamanio);
-            cargar_choclo_al_buffer(pcb_a_editar->operacion_de_io_por_la_que_fue_bloqueado, registro_direccion);
 
-            // cargar_uint8_al_buffer(pcb_a_editar->operacion_de_io_por_la_que_fue_bloqueado, unidades_de_trabajo);
-            // [nombre io][operacion][pid]
-            for (int i = 0; i < contador_de_colas_bloqueados; i++)
+
+            //[tamanio registro datos] [Cantidad] [TAM_A_escribir] [MARCO] [DESPLAZAMIENTO] [FALTA DATO] .. [TAM_A_escribir] [MARCO] [DESPLAZAMIENTO] [FALTA DATO] .....
+            cargar_uint8_al_buffer(pcb_a_editar->operacion_de_io_por_la_que_fue_bloqueado, tamanio_total_a_escribir);
+            cargar_uint8_al_buffer(pcb_a_editar->operacion_de_io_por_la_que_fue_bloqueado, cantidad_de_direccions);
+            
+            for (int i = 0; i < cantidad_de_direccions; i++)
             {
+                uint8_t tam_a_escribir_por_pagina = extraer_uint8_al_buffer(buffer_recibido);
+                uint16_t numero_de_pagina = extraer_uint16_al_buffer(buffer_recibido);
+                uint32_t desplazamiento = extraer_uint32_al_buffer(buffer_recibido);
+                
+                cargar_uint8_al_buffer(pcb_a_editar->operacion_de_io_por_la_que_fue_bloqueado, tam_a_escribir_por_pagina);
+                cargar_uint16_al_buffer(pcb_a_editar->operacion_de_io_por_la_que_fue_bloqueado, numero_de_pagina);
+                cargar_uint32_al_buffer(pcb_a_editar->operacion_de_io_por_la_que_fue_bloqueado, desplazamiento);
 
-                if ((strcmp(colas_bloqueados[i]->nombre, nombre_interfaz) == 0) && (colas_bloqueados[i]->cola->elements->elements_count == 0))
-                {
-                    sem_wait(&planificacion_activa_semaforo);
-                    sem_post(&planificacion_activa_semaforo);
-                    // [nombre io][operacion][pid][unidades de trabajo]
-                    t_paquete *a_enviar_a_io = crear_paquete(TAREA, pcb_a_editar->operacion_de_io_por_la_que_fue_bloqueado);
-
-                    enviar_paquete(a_enviar_a_io, colas_bloqueados[i]->fd);
-
-                    free(a_enviar_a_io);
-
-                    break;
-                }
             }
 
-            mover_de_excec_a_cola_bloqueado(nombre_interfaz);
-            log_info(kernel_logger, "PID: %u - Bloqueado por: INTERFAZ : %s", pcb_a_editar->pid, nombre_interfaz);
+            destruir_buffer(buffer_recibido);
+
+            
+            mandar_a_io_o_cola_bloqueados(nombre_interfaz);
+
         }
         else if (strcmp(operacion_a_realizar, "IO_STDOUT_WRITE") == 0)
         {
+
+            uint8_t tamanio_total_a_leer = extraer_uint8_al_buffer(buffer_recibido);
+            uint8_t cantidad_de_direccions = extraer_uint8_al_buffer(buffer_recibido);
+
+            PCB *pcb_a_editar = (PCB *)queue_peek(procesos_excec);
+            pcb_a_editar->operacion_de_io_por_la_que_fue_bloqueado = crear_buffer();
+
+            cargar_string_al_buffer(pcb_a_editar->operacion_de_io_por_la_que_fue_bloqueado, nombre_interfaz);
+            cargar_string_al_buffer(pcb_a_editar->operacion_de_io_por_la_que_fue_bloqueado, operacion_a_realizar);
+            cargar_uint16_al_buffer(pcb_a_editar->operacion_de_io_por_la_que_fue_bloqueado, pcb_a_editar->pid);
+
+
+            //[tamanio registro datos] [Cantidad] [TAM_A_escribir] [MARCO] [DESPLAZAMIENTO] [FALTA DATO] .. [TAM_A_escribir] [MARCO] [DESPLAZAMIENTO] [FALTA DATO] .....
+            cargar_uint8_al_buffer(pcb_a_editar->operacion_de_io_por_la_que_fue_bloqueado, tamanio_total_a_leer);
+            cargar_uint8_al_buffer(pcb_a_editar->operacion_de_io_por_la_que_fue_bloqueado, cantidad_de_direccions);
+            
+            for (int i = 0; i < cantidad_de_direccions; i++)
+            {
+                uint8_t tam_a_leer_por_pagina = extraer_uint8_al_buffer(buffer_recibido);
+                uint16_t numero_de_pagina = extraer_uint16_al_buffer(buffer_recibido);
+                uint32_t desplazamiento = extraer_uint32_al_buffer(buffer_recibido);
+                
+                cargar_uint8_al_buffer(pcb_a_editar->operacion_de_io_por_la_que_fue_bloqueado, tam_a_leer_por_pagina);
+                cargar_uint16_al_buffer(pcb_a_editar->operacion_de_io_por_la_que_fue_bloqueado, numero_de_pagina);
+                cargar_uint32_al_buffer(pcb_a_editar->operacion_de_io_por_la_que_fue_bloqueado, desplazamiento);
+
+            }
+
+            destruir_buffer(buffer_recibido);
+
+            
+            mandar_a_io_o_cola_bloqueados(nombre_interfaz);
         }
         else if (strcmp(operacion_a_realizar, "IO_FS_CREATE") == 0)
         {
@@ -497,4 +509,30 @@ void _manejar_out_of_memory()
     _mandar_de_excec_a_exit("OUT_OF_MEMORY");
 
     destruir_buffer(buffer_recibido);
+}
+void mandar_a_io_o_cola_bloqueados(char * nombre_interfaz)
+{
+
+    PCB *pcb_a_editar = (PCB *)queue_peek(procesos_excec);
+
+    for (int i = 0; i < contador_de_colas_bloqueados; i++)
+    {
+
+        if ((strcmp(colas_bloqueados[i]->nombre, nombre_interfaz) == 0) && (colas_bloqueados[i]->cola->elements->elements_count == 0))
+        {
+            sem_wait(&planificacion_activa_semaforo);
+            sem_post(&planificacion_activa_semaforo);
+            // [nombre io][operacion][pid]
+            t_paquete *a_enviar_a_io = crear_paquete(TAREA, pcb_a_editar->operacion_de_io_por_la_que_fue_bloqueado);
+
+            enviar_paquete(a_enviar_a_io, colas_bloqueados[i]->fd);
+
+            free(a_enviar_a_io);
+
+            break;
+        }
+    }
+
+    mover_de_excec_a_cola_bloqueado(nombre_interfaz);
+    log_info(kernel_logger, "PID: %u - Bloqueado por: INTERFAZ : %s", pcb_a_editar->pid, nombre_interfaz);
 }

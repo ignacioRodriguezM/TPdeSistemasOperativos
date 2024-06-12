@@ -22,4 +22,3 @@ void atender_entrada_salida_memoria(){
 	}
 }
 
-void* 
