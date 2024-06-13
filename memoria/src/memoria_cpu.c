@@ -183,6 +183,8 @@ void _escribir_una_determinada_direccion() {
 
     // Recibo el tamaño del registro de datos
     uint8_t tamanio_de_registro_datos = extraer_uint8_al_buffer(buffer_recibido);
+    tamanio_de_registro_datos = 0;
+    //NO SE USA
 
     // Recibo la cantidad de direcciones
     uint8_t cantidad_de_direcciones = extraer_uint8_al_buffer(buffer_recibido);

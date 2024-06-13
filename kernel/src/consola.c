@@ -133,7 +133,13 @@ bool _validacion_de_instruccion_de_consola(char *leido)
 
     return resultado_validacion;
 }
-
+// Función para eliminar nueva línea al final de una cadena
+void remove_newline(char *str) {
+    size_t len = strlen(str);
+    if (len > 0 && str[len - 1] == '\n') {
+        str[len - 1] = '\0';
+    }
+}
 void _atender_instruccion_validada(char *leido)
 {
     char **comando_consola = string_split(leido, " ");
@@ -154,7 +160,7 @@ void _atender_instruccion_validada(char *leido)
         // Leer y ejecutar los comandos uno por uno
         while (fgets(comando, 100 * sizeof(char), archivo) != NULL)
         {
-            printf("%s", comando); // borrar
+            remove_newline(comando);
             bool validacion_comando = _validacion_de_instruccion_de_consola(comando);
             if (!validacion_comando){
                 free(comando);
@@ -263,6 +269,7 @@ void _atender_instruccion_validada(char *leido)
         }
 
         // Imprimo los elementos de la cola de cada proceso
+        pthread_mutex_lock(&mutex_procesos);
         printf("PROCESOS NEW : \n");
         list_iterate(procesos_new->elements, imprimo_elemento);
         printf("PROCESOS READY : \n");
@@ -276,13 +283,12 @@ void _atender_instruccion_validada(char *leido)
             printf("PROCESOS BLOQUEADOS POR %s: \n", colas_bloqueados[i]->nombre);
             list_iterate(colas_bloqueados[i]->cola->elements, imprimo_elemento);
         }
-        int i = 0;
-        while (recursos[i] != NULL)
-        {   
+        
+        for(int i=0; i<cantidad_de_recursos; i++){  
             printf("PROCESOS BLOQUEADOS POR RECURSO: %s \n", recursos[i]->nombre);
             list_iterate(recursos[i]->cola_bloqueados_por_recursos->elements,imprimo_elemento);
-            i++;
         }
+        pthread_mutex_unlock(&mutex_procesos);
     }
     else
     {
