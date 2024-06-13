@@ -430,7 +430,7 @@ void _manejar_bloqueo()
 
             }
 
-            destruir_buffer(buffer_recibido);
+            
 
             
             mandar_a_io_o_cola_bloqueados(nombre_interfaz);
@@ -466,7 +466,7 @@ void _manejar_bloqueo()
 
             }
 
-            destruir_buffer(buffer_recibido);
+            
 
             
             mandar_a_io_o_cola_bloqueados(nombre_interfaz);
