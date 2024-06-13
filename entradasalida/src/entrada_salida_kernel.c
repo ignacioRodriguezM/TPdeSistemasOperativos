@@ -39,12 +39,12 @@ void atender_entrada_salida_kernel()
             }
             else if (strcmp(operacion_a_realizar, "IO_STDIN_READ") == 0)
             {
-                caso_io_stdin_read();
+                caso_io_stdin_read(buffer_recibido);
                 
             }
             else if (strcmp(operacion_a_realizar, "IO_STDOUT_WRITE") == 0)
             {
-                caso_io_stdout_write();
+                caso_io_stdout_write(buffer_recibido);
             }
             else if (strcmp(operacion_a_realizar, "IO_FS_CREATE") == 0)
             {
@@ -100,7 +100,7 @@ char* obtener_mensaje_de_stdin(uint8_t tamanio){
     return mensaje_final;
 }
 
-void caso_io_stdin_read()
+void caso_io_stdin_read(t_buffer *buffer_recibido)
 {   
     uint16_t pid = extraer_uint16_al_buffer(buffer_recibido);
     uint8_t tamanio = extraer_uint8_al_buffer(buffer_recibido);
@@ -119,9 +119,13 @@ void caso_io_stdin_read()
     cargar_uint8_al_buffer(buffer_a_enviar_a_memoria, tamanio);
     cargar_uint8_al_buffer(buffer_a_enviar_a_memoria, cantidad_de_direcciones);
     
-    void* dato = (char* mensaje);
-    for (int i = 0; i < cantidad_de_direccions; i++)
+    void* dato = (char*) mensaje;
+    for (int i = 0; i < cantidad_de_direcciones; i++)
     {
+        uint8_t tam_a_escribir_por_pagina = extraer_uint8_al_buffer(buffer_recibido);
+        uint16_t numero_de_pagina = extraer_uint16_al_buffer(buffer_recibido);
+        uint32_t desplazamiento = extraer_uint32_al_buffer(buffer_recibido);
+
         cargar_uint8_al_buffer(buffer_a_enviar_a_memoria, tam_a_escribir_por_pagina);
         cargar_uint16_al_buffer(buffer_a_enviar_a_memoria, numero_de_pagina);
         cargar_uint32_al_buffer(buffer_a_enviar_a_memoria, desplazamiento);
@@ -133,7 +137,7 @@ void caso_io_stdin_read()
     free(mensaje);
     destruir_buffer(buffer_recibido);
 
-    log_info(entrada_salida_logger, "PID: %u - Operacion: %s", pid, operacion_a_realizar);
+    log_info(entrada_salida_logger, "PID: %u - Operacion: IO_STDIN_READ", pid);
 
 
     
@@ -164,10 +168,12 @@ void caso_io_stdin_read()
         enviar_paquete(a_enviar, fd_kernel);
 
         destruir_paquete(a_enviar);
+
+        free(mensaje_de_respuesta);
     }
 }
 
-void caso_io_stdout_write()
+void caso_io_stdout_write(t_buffer *buffer_recibido)
 {   
     uint16_t pid = extraer_uint16_al_buffer(buffer_recibido);
     uint8_t tamanio = extraer_uint8_al_buffer(buffer_recibido);
@@ -177,22 +183,25 @@ void caso_io_stdout_write()
 
     t_buffer *buffer_a_enviar_a_memoria = crear_buffer();
 
-    //  [tamanio registro datos] [Cantidad] [TAM_A_leer] [MARCO] [DESPLAZAMIENTO] .. [TAM_A_escribir] [MARCO] [DESPLAZAMIENTO] [DATO] .....
+    // [TAM_A_leer] [MARCO] [DESPLAZAMIENTO] .. [TAM_A_leer] [MARCO] [DESPLAZAMIENTO] [DATO] .....
     
     cargar_uint8_al_buffer(buffer_a_enviar_a_memoria, tamanio);
     cargar_uint8_al_buffer(buffer_a_enviar_a_memoria, cantidad_de_direcciones);
     
-    for (int i = 0; i < cantidad_de_direccions; i++)
+    for (int i = 0; i < cantidad_de_direcciones; i++)
     {
+        uint8_t tam_a_leer_por_pagina = extraer_uint8_al_buffer(buffer_recibido);
+        uint16_t numero_de_pagina = extraer_uint16_al_buffer(buffer_recibido);
+        uint32_t desplazamiento = extraer_uint32_al_buffer(buffer_recibido);
+
         cargar_uint8_al_buffer(buffer_a_enviar_a_memoria, tam_a_leer_por_pagina);
         cargar_uint16_al_buffer(buffer_a_enviar_a_memoria, numero_de_pagina);
         cargar_uint32_al_buffer(buffer_a_enviar_a_memoria, desplazamiento);
     }
 
-    free(mensaje);
     destruir_buffer(buffer_recibido);
 
-    log_info(entrada_salida_logger, "PID: %u - Operacion: %s", pid, operacion_a_realizar);
+    log_info(entrada_salida_logger, "PID: %u - Operacion: IO_STDOUT_WRITE", pid);
 
 
     
@@ -211,7 +220,9 @@ void caso_io_stdout_write()
 
         char *mensaje_de_respuesta = extraer_string_al_buffer(recibido);
         log_info(entrada_salida_logger, "RESPUESTA MEMORIA : %s", mensaje_de_respuesta);
-        printf(mensaje_de_respuesta);
+        
+        printf("%s", mensaje_de_respuesta);
+
         destruir_buffer(recibido);
 
         // DEVOLVER CONFIRMACION AL KERNEL
@@ -223,5 +234,7 @@ void caso_io_stdout_write()
         enviar_paquete(a_enviar, fd_kernel);
 
         destruir_paquete(a_enviar);
+
+        free(mensaje_de_respuesta);
     }
 }

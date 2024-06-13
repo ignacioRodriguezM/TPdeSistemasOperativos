@@ -5,12 +5,6 @@ void atender_entrada_salida_memoria(){
     while (control_key) {
 		int cod_op = recibir_operacion(fd_memoria);
 		switch (cod_op) {
-            case MENSAJE:
-                //
-                break;
-            case PAQUETE:
-                //
-                break;
             case -1:
                 log_error(entrada_salida_logger, "Desconexion de MEMORIA");
                 control_key = 0;

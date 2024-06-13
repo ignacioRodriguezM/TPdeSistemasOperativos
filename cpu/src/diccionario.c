@@ -199,9 +199,31 @@ void decode(char* funcion, int num_params, char** params) {
         }
         case 11:
             // IO_STDIN_READ
+            log_info(cpu_logger, "PID: <%u> - Ejecutando: <%s> - <%s, %s, %s>", PID, funcion, params[0], params[1], params[2]);
+            if(es_un_registro_de_8 (params[0])){
+                char* nombre_interfaz_stdin = params[0];
+                uint8_t tam3 = sizeof(uint8_t);
+                IO_STDIN_READ(nombre_interfaz_stdin, void_params[1], void_params[2], tam3);
+            }
+            else{
+                char* nombre_interfaz_stdin = params[0];
+                uint8_t tam3 = sizeof(uint32_t);
+                IO_STDIN_READ(nombre_interfaz_stdin, void_params[1], void_params[2], tam3);
+            }
             break;
         case 12:
             // IO_STDOUT_WRITE
+            log_info(cpu_logger, "PID: <%u> - Ejecutando: <%s> - <%s, %s, %s>", PID, funcion, params[0], params[1], params[2]);
+            if(es_un_registro_de_8 (params[0])){
+                char* nombre_interfaz_stdin = params[0];
+                uint8_t tam4 = sizeof(uint8_t);
+                IO_STDOUT_WRITE(nombre_interfaz_stdin, void_params[1], void_params[2], tam4);
+            }
+            else{
+                char* nombre_interfaz_stdin = params[0];
+                uint8_t tam4 = sizeof(uint32_t);
+                IO_STDOUT_WRITE(nombre_interfaz_stdin, void_params[1], void_params[2], tam4);
+            }
             break;
         case 13:
             // IO_FS_CREATE

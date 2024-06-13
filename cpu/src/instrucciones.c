@@ -103,13 +103,21 @@ void IO_GEN_SLEEP(void *parametro, void *parametro2)
 
     destruir_paquete(a_enviar);
 }
-void IO_STDIN_READ(void *nombre_de_la_interfaz, void *registro_direccion, uint8_t tamanio_del_registro)
+void IO_STDIN_READ(void *nombre_de_la_interfaz, void *registro_direccion, void* registro_tamanio, uint8_t tamanio_del_registro)
 {
 
-    char *nombre_interfaz = (char *)parametro;
+    char *nombre_interfaz = (char *)nombre_de_la_interfaz;
     
+    uint8_t tamanio;
 
-    Direcciones direcciones_fisicas = traducir_direccion_logica_a_fisicas(registro_direccion, tamanio_del_registro);
+    if(sizeof(uint8_t) == tamanio_del_registro){
+        tamanio = *(uint8_t*) registro_tamanio;
+    }
+    else{
+        tamanio = *(uint8_t*) registro_tamanio;
+    }
+
+    Direcciones direcciones_fisicas = traducir_direccion_logica_a_fisicas(registro_direccion, tamanio);
 
     PC_registro++;
     bloq_flag = false;
@@ -135,7 +143,7 @@ void IO_STDIN_READ(void *nombre_de_la_interfaz, void *registro_direccion, uint8_
 
     //[tamanio registro datos] [Cantidad] [TAM_A_escribir] [MARCO] [DESPLAZAMIENTO] [FALTA DATO] .. [TAM_A_escribir] [MARCO] [DESPLAZAMIENTO] [FALTA DATO] .....
 
-    cargar_uint8_al_buffer(buffer, tamanio_del_registro);
+    cargar_uint8_al_buffer(buffer, tamanio);
 
     
 
@@ -159,12 +167,24 @@ void IO_STDIN_READ(void *nombre_de_la_interfaz, void *registro_direccion, uint8_
     enviar_paquete(a_enviar, fd_kernel_dispatch);
 
     destruir_paquete(a_enviar);
-}
-void IO_STDOUT_WRITE(void *nombre_de_la_interfaz, void *registro_direccion, uint8_t tamanio_del_registro){
-    char *nombre_interfaz = (char *)parametro;
-    
 
-    Direcciones direcciones_fisicas = traducir_direccion_logica_a_fisicas(registro_direccion, tamanio_del_registro);
+}
+
+void IO_STDOUT_WRITE(void *nombre_de_la_interfaz, void *registro_direccion, void *registro_tamanio, uint8_t tamanio_del_registro){
+    
+    char *nombre_interfaz = (char *)nombre_de_la_interfaz;
+
+    uint8_t tamanio;
+
+    if(sizeof(uint8_t) == tamanio_del_registro){
+        tamanio = *(uint8_t*) registro_tamanio;
+    }
+    else{
+        tamanio = *(uint8_t*) registro_tamanio;
+    }
+
+
+    Direcciones direcciones_fisicas = traducir_direccion_logica_a_fisicas(registro_direccion, tamanio);
 
     PC_registro++;
     bloq_flag = false;
@@ -188,9 +208,9 @@ void IO_STDOUT_WRITE(void *nombre_de_la_interfaz, void *registro_direccion, uint
     cargar_string_al_buffer(buffer, "IO_STDOUT_WRITE");
 
 
-    //[tamanio registro datos] [Cantidad] [TAM_A_leer] [MARCO] [DESPLAZAMIENTO] [FALTA DATO] .. [TAM_A_escribir] [MARCO] [DESPLAZAMIENTO] [FALTA DATO] .....
+    //[tamanio registro datos] [Cantidad] [TAM_A_leer] [MARCO] [DESPLAZAMIENTO] .. [TAM_A_escribir] [MARCO] [DESPLAZAMIENTO] .....
 
-    cargar_uint8_al_buffer(buffer, tamanio_del_registro);
+    cargar_uint8_al_buffer(buffer, tamanio);
 
     
 
@@ -199,7 +219,7 @@ void IO_STDOUT_WRITE(void *nombre_de_la_interfaz, void *registro_direccion, uint
     cargar_uint8_al_buffer(buffer, cantidad);
 
     
-    // [TAM_A_escribir] [MARCO] [DESPLAZAMIENTO] [FALTA DATO] .. [TAM_A_escribir] [MARCO] [DESPLAZAMIENTO] [FALTA DATO] .....
+    // [TAM_A_escribir] [MARCO] [DESPLAZAMIENTO] .. [TAM_A_escribir] [MARCO] [DESPLAZAMIENTO] .....
 
     for (int i = 0; i < cantidad; i++)
     {

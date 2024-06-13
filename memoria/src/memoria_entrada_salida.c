@@ -44,6 +44,8 @@ void manejar_stdin_read(int fd_io) { //aka _escribir_en_una_determinada_direccio
 
     // Recibo el tamaño del registro de datos
     uint8_t tamanio_de_registro_datos = extraer_uint8_al_buffer(buffer_recibido);
+    // no se usa .....
+    tamanio_de_registro_datos = 0;
 
     // Recibo la cantidad de direcciones
     uint8_t cantidad_de_direcciones = extraer_uint8_al_buffer(buffer_recibido);

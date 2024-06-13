@@ -6,7 +6,7 @@
 
 void atender_entrada_salida_kernel();
 void presentarse_con_kernel();
-void caso_io_stdin_read();
-void caso_io_stdout_write();
+void caso_io_stdin_read(t_buffer* buffer_recibido);
+void caso_io_stdout_write(t_buffer* buffer_recibido);
 
 #endif
