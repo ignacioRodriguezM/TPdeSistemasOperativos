@@ -231,6 +231,22 @@ void _manejar_interrupcion_de_usuario()
     destruir_buffer(buffer_recibido);
 }
 
+void agregar_recurso_en_pcb(PCB* pcb, const char* nombre_recurso) {
+    // Copia del nombre del recurso
+    char *nombre_copiado = malloc(strlen(nombre_recurso) + 1);
+    strcpy(nombre_copiado, nombre_recurso);
+
+    if (pcb->cantidad_recursos_asignados == 0) {
+        pcb->cantidad_recursos_asignados = 1;
+        pcb->recursos_asignados = malloc(sizeof(char*));
+        pcb->recursos_asignados[0] = nombre_copiado;
+    } else {
+        pcb->cantidad_recursos_asignados++;
+        pcb->recursos_asignados = realloc(pcb->recursos_asignados, pcb->cantidad_recursos_asignados * sizeof(char*));
+        pcb->recursos_asignados[pcb->cantidad_recursos_asignados - 1] = nombre_copiado;
+    }
+}
+
 void _manejar_wait()
 {
     t_buffer *buffer_recibido = recibir_buffer_sin_cod_op(fd_cpu_dispatch);
@@ -247,12 +263,13 @@ void _manejar_wait()
     {
         if (strcmp(recursos[i]->nombre, nombre_recurso_recibido) == 0)
         {
-
+            
             pthread_mutex_lock(&mutex_recursos);
             recursos[i]->instancias--;
             pthread_mutex_unlock(&mutex_recursos);
 
             log_info(kernel_log_debug, "SE RESTA UNA INSTANCIA AL RECURSO %s", nombre_recurso_recibido);
+
 
             chequeo_si_alguna_coincide_nombre = false;
             if (recursos[i]->instancias < 0)
@@ -293,6 +310,7 @@ void _manejar_wait()
     {
         pthread_mutex_lock(&mutex_procesos);
         PCB *pcb_a_devolver_a_cpu = (PCB *)queue_pop(procesos_excec);
+        agregar_recurso_en_pcb(pcb_a_devolver_a_cpu, nombre_recurso_recibido);
         queue_push(procesos_excec, pcb_a_devolver_a_cpu);
         pthread_mutex_unlock(&mutex_procesos);
     }

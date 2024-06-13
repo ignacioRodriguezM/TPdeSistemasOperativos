@@ -48,6 +48,7 @@ char* algoritmo_planificacion;
 Recursos** recursos;
 
 
+
 sem_t planificacion_activa_semaforo;
 sem_t grado_multiprogramacion_semaforo;
 sem_t proceso_creado_en_new_semaforo;
@@ -58,5 +59,6 @@ sem_t algun_ready;
 pthread_t hilo_quantum;
 t_temporal* timer_quantum;
 
+int cantidad_de_recursos;
 
 #endif

@@ -6,6 +6,8 @@ void iniciar_semaforos_de_recursos(char** nombre_recursos, int* instancias_recur
         cantidad++;
         
     }
+
+    cantidad_de_recursos = cantidad;
     
     recursos = malloc(sizeof(Recursos*) * cantidad);
 
