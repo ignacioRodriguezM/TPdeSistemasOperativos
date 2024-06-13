@@ -111,7 +111,7 @@ bool _chequear_la_io(char *nombre_interfaz, char *operacion)
         }
         return false;
     }
-    else if (strcmp(operacion, "IO_STDIN_READ ") == 0)
+    else if (strcmp(operacion, "IO_STDIN_READ") == 0)
     {
         for (int i = 0; i < contador_de_colas_bloqueados; i++)
         {
@@ -133,7 +133,7 @@ bool _chequear_la_io(char *nombre_interfaz, char *operacion)
         }
         return false;
     }
-    else if (strcmp(operacion, "IO_STDOUT_WRITE ") == 0)
+    else if (strcmp(operacion, "IO_STDOUT_WRITE") == 0)
     {
         for (int i = 0; i < contador_de_colas_bloqueados; i++)
         {
