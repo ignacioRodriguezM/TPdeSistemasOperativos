@@ -15,6 +15,7 @@ void bloquear_proceso_en_ejecucion_por_recurso (int index_cola);
 void desbloquear_proceso_bloqueado_por_recurso (int index_cola);
 void _enviar_interrupcion_quantum();
 void manejar_quantum(PCB* proceso);
+void liberar_recursos_asignados(PCB *pcb);
 
 
 

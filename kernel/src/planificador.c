@@ -2,22 +2,26 @@
 
 // PLANIFICADOR DE LARGO PLAZO
 
-void esperar (uint16_t* quantum){
+void esperar(uint16_t *quantum)
+{
     esperarMilisegundos(*quantum);
     log_trace(kernel_log_debug, "Fin quantum");
     _enviar_interrupcion_quantum();
 }
-void _enviar_interrupcion_quantum(){
-    t_buffer* buff = crear_buffer();
-    t_paquete* paq = crear_paquete(FIN_QUANTUM, buff);
+void _enviar_interrupcion_quantum()
+{
+    t_buffer *buff = crear_buffer();
+    t_paquete *paq = crear_paquete(FIN_QUANTUM, buff);
     enviar_paquete(paq, fd_cpu_interrupt);
     destruir_paquete(paq);
 }
-void manejar_quantum(PCB* proceso){
+void manejar_quantum(PCB *proceso)
+{
 
-    pthread_create(&hilo_quantum, NULL, (void *)esperar, (uint16_t*) &(proceso->quantum));
+    pthread_create(&hilo_quantum, NULL, (void *)esperar, (uint16_t *)&(proceso->quantum));
     pthread_detach(hilo_quantum);
-    if(strcmp(algoritmo_planificacion, "VRR") == 0){
+    if (strcmp(algoritmo_planificacion, "VRR") == 0)
+    {
         timer_quantum = temporal_create();
     }
 }
@@ -95,8 +99,7 @@ void iniciar_planificador_de_largo_plazo()
 // PLANIFICADOR DE CORTO PLAZO
 
 void mover_procesos_de_ready_a_excecute()
-{   
-    
+{
 
     if (strcmp(algoritmo_planificacion, "VRR") != 0)
     {
@@ -132,13 +135,13 @@ void mover_procesos_de_ready_a_excecute()
 
                 log_info(kernel_logger, "PID: %u - Estado Anterior: READY - Estado Actual: EXCEC", proceso_movido->pid);
                 enviar_paquete(a_enviar, fd_cpu_dispatch);
-                if(strcmp(algoritmo_planificacion, "RR") == 0){
-                manejar_quantum(proceso_movido);
+                if (strcmp(algoritmo_planificacion, "RR") == 0)
+                {
+                    manejar_quantum(proceso_movido);
                 }
                 // enviamos el proceso de ready a execute primero y luego lo enviamos a cpu
                 destruir_paquete(a_enviar);
             }
-            
         }
     }
     else if (strcmp(algoritmo_planificacion, "VRR") == 0)
@@ -209,7 +212,6 @@ void mover_procesos_de_ready_a_excecute()
                 // enviamos el proceso de ready a execute primero y luego lo enviamos a cpu
                 destruir_paquete(a_enviar);
             }
-            
         }
     }
 }
@@ -240,7 +242,6 @@ void mover_de_excec_a_cola_bloqueado(char *nombre_de_la_io)
     }
 
     sem_post(&cpu_vacia_semaforo);
-    
 }
 
 void mover_a_io_si_hay_algun_proceso_encolado(char *nombre_io) // verificar si hay algun proceso en su cola de bloqueados, si hay, lo manda a
@@ -266,7 +267,6 @@ void mover_a_io_si_hay_algun_proceso_encolado(char *nombre_io) // verificar si h
             break;
         }
     }
-    
 }
 
 void mover_de_excec_a_ready()
@@ -284,7 +284,6 @@ void mover_de_excec_a_ready()
 
     sem_post(&cpu_vacia_semaforo);
     sem_post(&algun_ready);
-    
 }
 
 void avisarle_a_memoria_que_libere_recursos_de_proceso(uint16_t pid)
@@ -307,6 +306,8 @@ void _mandar_de_excec_a_exit(char *motivo)
     queue_push(procesos_exit, proceso_movido);
     pthread_mutex_unlock(&mutex_procesos);
 
+    liberar_recursos_asignados(proceso_movido);
+    
     avisarle_a_memoria_que_libere_recursos_de_proceso(proceso_movido->pid);
     // LIBERAR RECURSOS
     log_info(kernel_logger, "Finaliza el proceso %u - Motivo: %s", proceso_movido->pid, motivo);
@@ -317,7 +318,8 @@ void _mandar_de_excec_a_exit(char *motivo)
     sem_post(&grado_multiprogramacion_semaforo);
 }
 
-void bloquear_proceso_en_ejecucion_por_recurso (int index_cola){
+void bloquear_proceso_en_ejecucion_por_recurso(int index_cola)
+{
     sem_wait(&planificacion_activa_semaforo);
     sem_post(&planificacion_activa_semaforo);
 
@@ -331,26 +333,54 @@ void bloquear_proceso_en_ejecucion_por_recurso (int index_cola){
     log_info(kernel_logger, "PID: %u - Estado Anterior: EXCEC - Estado Actual: BLOQ", proceso_movido->pid);
 }
 
-void desbloquear_proceso_bloqueado_por_recurso (int index_cola){
+void desbloquear_proceso_bloqueado_por_recurso(int index_cola)
+{
     sem_wait(&planificacion_activa_semaforo);
     sem_post(&planificacion_activa_semaforo);
 
     pthread_mutex_lock(&mutex_procesos);
     PCB *proceso_movido = queue_pop(recursos[index_cola]->cola_bloqueados_por_recursos);
-    if(proceso_movido->quantum == quantum){
+    if (proceso_movido->quantum == quantum)
+    {
         queue_push(procesos_ready, proceso_movido);
     }
-    if(proceso_movido->quantum < quantum && strcmp(algoritmo_planificacion, "VRR") == 0){
+    if (proceso_movido->quantum < quantum && strcmp(algoritmo_planificacion, "VRR") == 0)
+    {
         queue_push(procesos_ready_con_prioridad, proceso_movido);
     }
-    else{
+    else
+    {
         log_error(kernel_log_debug, "ERROR EL QUANTUM DEL PROCESO A DESBLOQUEAR POR SIGNAL NO ESTA BIEN");
     }
     pthread_mutex_unlock(&mutex_procesos);
-    
 
     log_info(kernel_logger, "PID: %u - Desbloqueado ", proceso_movido->pid);
     log_info(kernel_logger, "PID: %u - Estado Anterior: BLOQ - Estado Actual: READY", proceso_movido->pid);
     log_info(kernel_logger, "Cola Ready procesos_ready: [<LISTA DE PIDS>]");
+}
 
+void liberar_recursos_asignados(PCB *pcb)
+{
+    for (int i = 0; i < pcb->cantidad_recursos_asignados; i++)
+    {
+        for (int j = 0; j < cantidad_de_recursos; j++)
+        {
+            if (strcmp(recursos[j]->nombre, pcb->recursos_asignados[i]) == 0)
+            {
+
+                pthread_mutex_lock(&mutex_recursos);
+                recursos[j]->instancias++;
+                pthread_mutex_unlock(&mutex_recursos);
+
+                log_info(kernel_log_debug, "SE SUMA UNA INSTANCIA AL RECURSO %s", recursos[j]->nombre);
+
+                if (recursos[j]->instancias <= 0)
+                {
+                    desbloquear_proceso_bloqueado_por_recurso(i);
+                }
+                break;
+            }
+        }
+    }
+    log_trace(kernel_log_debug, "Se liberaron recursos asignados, si los tenia");
 }

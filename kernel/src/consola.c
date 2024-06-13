@@ -134,9 +134,11 @@ bool _validacion_de_instruccion_de_consola(char *leido)
     return resultado_validacion;
 }
 // Función para eliminar nueva línea al final de una cadena
-void remove_newline(char *str) {
+void remove_newline(char *str)
+{
     size_t len = strlen(str);
-    if (len > 0 && str[len - 1] == '\n') {
+    if (len > 0 && str[len - 1] == '\n')
+    {
         str[len - 1] = '\0';
     }
 }
@@ -162,12 +164,15 @@ void _atender_instruccion_validada(char *leido)
         {
             remove_newline(comando);
             bool validacion_comando = _validacion_de_instruccion_de_consola(comando);
-            if (!validacion_comando){
+            if (!validacion_comando)
+            {
                 free(comando);
                 printf("Instruccion del script no valida\n");
                 exit(EXIT_FAILURE);
-            }else{
-            _atender_instruccion_validada(comando);
+            }
+            else
+            {
+                _atender_instruccion_validada(comando);
             }
         }
         // Cerrar el archivo
@@ -187,17 +192,10 @@ void _atender_instruccion_validada(char *leido)
         {
             log_error(kernel_logger, "El PID no puede ser : %d", pid_a_finalizar);
         }
-        if(!buscar_en_colas_y_eliminar_el_proceso(pid_a_finalizar)){
+        if (!buscar_en_colas_y_eliminar_el_proceso(pid_a_finalizar))
+        {
             log_error(kernel_log_debug, "EL PID A FINALIZAR NO SE ENCUENTRA EN LAS COLAS");
         }
-        else {
-            t_buffer* buffer_a_enviar = crear_buffer();
-            cargar_uint16_al_buffer(buffer_a_enviar, pid_a_finalizar);
-            t_paquete* a_enviar = crear_paquete(FINALIZAR_PROCESO, buffer_a_enviar);
-            enviar_paquete(a_enviar, fd_memoria);
-            destruir_paquete(a_enviar);
-        }
-        
     }
     else if (strcmp(comando_consola[0], "DETENER_PLANIFICACION") == 0)
     {
@@ -209,7 +207,8 @@ void _atender_instruccion_validada(char *leido)
         else
         {
             planificacion_activa = false;
-            for(int i=0; i< 10; i++){
+            for (int i = 0; i < 10; i++)
+            {
                 sem_wait(&planificacion_activa_semaforo);
             }
             log_info(kernel_logger, "La planificacion fue detenida");
@@ -223,13 +222,13 @@ void _atender_instruccion_validada(char *leido)
             log_info(kernel_logger, "La planificacion ya estaba activa");
         }
         else
-        {   
+        {
             planificacion_activa = true;
             log_info(kernel_logger, "La planificacion fue activada");
-            for(int i=0; i< 10; i++){
+            for (int i = 0; i < 10; i++)
+            {
                 sem_post(&planificacion_activa_semaforo);
             }
-            
         }
     }
     else if (strcmp(comando_consola[0], "MULTIPROGRAMACION") == 0)
@@ -245,15 +244,19 @@ void _atender_instruccion_validada(char *leido)
         }
         else
         {
-            if(nuevo_grado_multiprogramacion > grado_multiprogramacion){
+            if (nuevo_grado_multiprogramacion > grado_multiprogramacion)
+            {
                 int diferencia = nuevo_grado_multiprogramacion - grado_multiprogramacion;
-                for(int i=0; i< diferencia; i++){
+                for (int i = 0; i < diferencia; i++)
+                {
                     sem_post(&grado_multiprogramacion_semaforo);
                 }
             }
-            else if(nuevo_grado_multiprogramacion < grado_multiprogramacion){
+            else if (nuevo_grado_multiprogramacion < grado_multiprogramacion)
+            {
                 int diferencia = grado_multiprogramacion - nuevo_grado_multiprogramacion;
-                for(int i=0; i< diferencia; i++){
+                for (int i = 0; i < diferencia; i++)
+                {
                     sem_wait(&grado_multiprogramacion_semaforo);
                 }
             }
@@ -264,7 +267,8 @@ void _atender_instruccion_validada(char *leido)
     else if (strcmp(comando_consola[0], "PROCESO_ESTADO") == 0)
     {
 
-        void imprimo_elemento(void *elemento){
+        void imprimo_elemento(void *elemento)
+        {
             printf("%d\n", ((PCB *)elemento)->pid);
         }
 
@@ -283,10 +287,11 @@ void _atender_instruccion_validada(char *leido)
             printf("PROCESOS BLOQUEADOS POR %s: \n", colas_bloqueados[i]->nombre);
             list_iterate(colas_bloqueados[i]->cola->elements, imprimo_elemento);
         }
-        
-        for(int i=0; i<cantidad_de_recursos; i++){  
+
+        for (int i = 0; i < cantidad_de_recursos; i++)
+        {
             printf("PROCESOS BLOQUEADOS POR RECURSO: %s \n", recursos[i]->nombre);
-            list_iterate(recursos[i]->cola_bloqueados_por_recursos->elements,imprimo_elemento);
+            list_iterate(recursos[i]->cola_bloqueados_por_recursos->elements, imprimo_elemento);
         }
         pthread_mutex_unlock(&mutex_procesos);
     }
@@ -298,89 +303,112 @@ void _atender_instruccion_validada(char *leido)
     string_array_destroy(comando_consola);
 }
 
-
-
-bool buscar_en_cola (int pid_a_finalizar, t_queue* cola, char* nombre_cola){
+bool buscar_en_cola(int pid_a_finalizar, t_queue *cola, char *nombre_cola)
+{
     t_link_element *actual = cola->elements->head;
-        int index = 0;
-        for (int i = 0; i < cola->elements->elements_count; i++)
-        {
-            PCB *proceso = (PCB *)actual->data;
-            if (proceso->pid == pid_a_finalizar)
-            { // MOVER PROCESO A EXIT (eliminarlo)
-                pthread_mutex_lock(&mutex_procesos);
-                list_remove(cola->elements, index);
-                queue_push(procesos_exit, proceso);
-                pthread_mutex_unlock(&mutex_procesos);
+    int index = 0;
+    for (int i = 0; i < cola->elements->elements_count; i++)
+    {
+        PCB *proceso = (PCB *)actual->data;
+        if (proceso->pid == pid_a_finalizar)
+        { // MOVER PROCESO A EXIT (eliminarlo)
 
+            pthread_mutex_lock(&mutex_procesos);
+            list_remove(cola->elements, index);
+            queue_push(procesos_exit, proceso);
+            pthread_mutex_unlock(&mutex_procesos);
 
-                avisarle_a_memoria_que_libere_recursos_de_proceso(proceso->pid);
+            liberar_recursos_asignados(proceso);
+            avisarle_a_memoria_que_libere_recursos_de_proceso(proceso->pid);
 
-                log_info(kernel_logger, "Finaliza el proceso %u - Motivo: INTERRUPTED_BY_USER", proceso->pid);
+            log_info(kernel_logger, "Finaliza el proceso %u - Motivo: INTERRUPTED_BY_USER", proceso->pid);
 
-                log_info(kernel_logger, "PID: %u - Estado Anterior: %s - Estado Actual: EXIT", proceso->pid, nombre_cola);
+            log_info(kernel_logger, "PID: %u - Estado Anterior: %s - Estado Actual: EXIT", proceso->pid, nombre_cola);
 
-                return true;
-                break;
-            }
-            else
-            {
-                actual = actual->next;
-                index++;
-            }
+            return true;
+            break;
         }
-        return false;
-        actual = NULL;
+        else
+        {
+            actual = actual->next;
+            index++;
+        }
+    }
+    return false;
+    actual = NULL;
 }
 
-void enviar_interrupcion_a_cpu(){
-    t_buffer* buff = crear_buffer();
-    t_paquete* paq = crear_paquete(INTERRUPTED_BY_USER, buff);
+void enviar_interrupcion_a_cpu()
+{
+    t_buffer *buff = crear_buffer();
+    t_paquete *paq = crear_paquete(INTERRUPTED_BY_USER, buff);
     enviar_paquete(paq, fd_cpu_interrupt);
     destruir_paquete(paq);
 }
 
-bool esta_en_excec(int pid_buscado){
+bool esta_en_excec(int pid_buscado)
+{
     pthread_mutex_lock(&mutex_procesos);
-    PCB *proceso = queue_peek (procesos_excec);
+    PCB *proceso = queue_peek(procesos_excec);
     pthread_mutex_unlock(&mutex_procesos);
 
     return (pid_buscado == proceso->pid);
 }
 
-
 bool buscar_en_colas_y_eliminar_el_proceso(int pid_a_finalizar)
 {
     ///////////////// BUSCAR EN NEW///////////////////////
-    if(buscar_en_cola (pid_a_finalizar, procesos_new, "NEW")){
+    if (buscar_en_cola(pid_a_finalizar, procesos_new, "NEW"))
+    {
         sem_post(&grado_multiprogramacion_semaforo);
         return true;
     }
-    
+
     ////////////////// BUSCAR EN EXCECUTE /////////////////
-    if(esta_en_excec(pid_a_finalizar)){
+    if (esta_en_excec(pid_a_finalizar))
+    {
         enviar_interrupcion_a_cpu();
     }
     /////////////////// BUSCAR EN READY///////////////
-    else if(buscar_en_cola (pid_a_finalizar, procesos_ready, "READY")){
+    else if (buscar_en_cola(pid_a_finalizar, procesos_ready, "READY"))
+    {
         sem_post(&grado_multiprogramacion_semaforo);
         return true;
     }
-    
 
     ////////////////// BUSCAR EN BLOQ////////////////
-    for (int i=0; i<contador_de_colas_bloqueados; i++){
-        if(colas_bloqueados[i]->conectado){
-            if(buscar_en_cola (pid_a_finalizar, colas_bloqueados[i]->cola, "BLOQUEADO")){
+    for (int i = 0; i < contador_de_colas_bloqueados; i++)
+    {
+        if (colas_bloqueados[i]->conectado)
+        {
+            if (buscar_en_cola(pid_a_finalizar, colas_bloqueados[i]->cola, "BLOQUEADO"))
+            {
                 sem_post(&grado_multiprogramacion_semaforo);
                 return true;
             }
         }
     }
 
+    /////////////////// BUSCAR EN BLOQUEADOS POR RECURSO ///////
+    for (int i = 0; i < cantidad_de_recursos; i++)
+    {
+
+        if (buscar_en_cola(pid_a_finalizar, recursos[i]->cola_bloqueados_por_recursos, "BLOQUEADOS POR RECURSO"))
+        {
+            pthread_mutex_lock(&mutex_recursos);
+            recursos[i]->instancias++;
+            pthread_mutex_unlock(&mutex_recursos);
+
+            sem_post(&grado_multiprogramacion_semaforo);
+            return true;
+        }
+    }
+
     /////////////////// BUSCAR EN READY AUX///////////////
-    if(strcmp(algoritmo_planificacion, "VRR") == 0){
-        if(buscar_en_cola (pid_a_finalizar, procesos_ready_con_prioridad, "READY-PRIORIDAD")){
+    if (strcmp(algoritmo_planificacion, "VRR") == 0)
+    {
+        if (buscar_en_cola(pid_a_finalizar, procesos_ready_con_prioridad, "READY-PRIORIDAD"))
+        {
             sem_post(&grado_multiprogramacion_semaforo);
             return true;
         }
