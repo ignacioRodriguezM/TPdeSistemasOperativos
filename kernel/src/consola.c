@@ -148,14 +148,20 @@ void _atender_instruccion_validada(char *leido)
         // Verificar si se pudo abrir el archivo
         if (archivo == NULL)
         {
-            printf("No se pudo abrir el archivo.\n");
             exit(EXIT_FAILURE);
         }
         // Leer y ejecutar los comandos uno por uno
         while (fgets(comando, 100 * sizeof(char), archivo) != NULL)
         {
             printf("%s", comando); // borrar
+            bool validacion_comando = _validacion_de_instruccion_de_consola(comando);
+            if (!validacion_comando){
+                free(comando);
+                printf("Instruccion del script no valida\n");
+                exit(EXIT_FAILURE);
+            }else{
             _atender_instruccion_validada(comando);
+            }
         }
         // Cerrar el archivo
         fclose(archivo);
