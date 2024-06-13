@@ -148,6 +148,7 @@ void _atender_instruccion_validada(char *leido)
         // Verificar si se pudo abrir el archivo
         if (archivo == NULL)
         {
+            printf("No se pudo abrir el archivo.\n");
             exit(EXIT_FAILURE);
         }
         // Leer y ejecutar los comandos uno por uno
