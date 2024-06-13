@@ -132,12 +132,12 @@ void _mover_de_cola_bloqueados_a_ready_o_aux(char* nombre_de_io, uint16_t pid){
             if(pcb_que_cumplio_tarea_io->pid != pid){
                 log_error(kernel_log_debug, "ERROR, el pid del proceso que finalizo en IO no coincide con el de su proceso");
             }
-            if(pcb_que_cumplio_tarea_io ->quantum == quantum){
+            else if(pcb_que_cumplio_tarea_io ->quantum == quantum){
                 queue_push(procesos_ready, pcb_que_cumplio_tarea_io);
                 log_info(kernel_logger, "PID: %u - Estado Anterior: BLOQUEADO - Estado Actual: READY", pid);
                 log_info(kernel_logger, "Cola Ready procesos_ready: [<LISTA DE PIDS>]");
             }
-            if(pcb_que_cumplio_tarea_io ->quantum < quantum)
+            else if(pcb_que_cumplio_tarea_io ->quantum < quantum)
             {
                 queue_push(procesos_ready_con_prioridad, pcb_que_cumplio_tarea_io);
                 log_info(kernel_logger, "PID: %u - Estado Anterior: BLOQUEADO - Estado Actual: READY_PRIO", pid);

@@ -49,12 +49,12 @@ int main()
         // Atender los mensajes de KERNEL
         pthread_t hilo_kernel_stdin;
         pthread_create(&hilo_kernel_stdin, NULL, (void *)atender_entrada_salida_kernel, NULL);
-        pthread_detach(hilo_kernel_stdin);
+        pthread_join(hilo_kernel_stdin, NULL);
 
         // Atender los mensajes de MEMORIA
-        pthread_t hilo_memoria_stdin;
-        pthread_create(&hilo_memoria_stdin, NULL, (void *)atender_entrada_salida_memoria, NULL);
-        pthread_join(hilo_memoria_stdin, NULL);
+        //pthread_t hilo_memoria_stdin;
+        //pthread_create(&hilo_memoria_stdin, NULL, (void *)atender_entrada_salida_memoria, NULL);
+        //pthread_join(hilo_memoria_stdin, NULL);
 
         break;
         
@@ -78,12 +78,12 @@ int main()
         // Atender los mensajes de KERNEL
         pthread_t hilo_kernel_stdout;
         pthread_create(&hilo_kernel_stdout, NULL, (void *)atender_entrada_salida_kernel, NULL);
-        pthread_detach(hilo_kernel_stdout);
+        pthread_join(hilo_kernel_stdout, NULL);
 
         // Atender los mensajes de MEMORIA
-        pthread_t hilo_memoria_stdout;
-        pthread_create(&hilo_memoria_stdout, NULL, (void *)atender_entrada_salida_memoria, NULL);
-        pthread_join(hilo_memoria_stdout, NULL);
+        //pthread_t hilo_memoria_stdout;
+        //pthread_create(&hilo_memoria_stdout, NULL, (void *)atender_entrada_salida_memoria, NULL);
+        //pthread_join(hilo_memoria_stdout, NULL);
 
         break;
 
