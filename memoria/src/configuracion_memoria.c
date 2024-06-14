@@ -18,6 +18,8 @@ APP_config cargar_configuracion_memoria (void)
     config_valores.tam_pagina                       =       config_get_int_value (config, "TAM_PAGINA");
     config_valores.retardo_respuesta                =       config_get_int_value (config, "RETARDO_RESPUESTA");
     config_valores.path_instrucciones               =       config_get_string_value (config,"PATH_INSTRUCCIONES");
+
+    config_valores.config = config;
     
     //config_destroy(config);
     return config_valores;

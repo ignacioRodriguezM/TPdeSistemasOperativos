@@ -384,3 +384,10 @@ void liberar_recursos_asignados(PCB *pcb)
     }
     log_trace(kernel_log_debug, "Se liberaron recursos asignados, si los tenia");
 }
+
+void borrar_pcbs_en_exit(){
+    while(procesos_exit->elements->elements_count != 0){
+        PCB* a_borrar = (PCB*)queue_pop(procesos_excec);
+        free(a_borrar);
+    }
+}

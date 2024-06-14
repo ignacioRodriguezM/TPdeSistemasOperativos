@@ -62,6 +62,9 @@ void atender_entrada_salida_kernel()
             {
             }
 
+            free(nombre_io_llegado_del_kernel);
+            free(operacion_a_realizar);
+
             break;
         case -1:
             log_error(entrada_salida_logger, "Desconexion de KERNEL");

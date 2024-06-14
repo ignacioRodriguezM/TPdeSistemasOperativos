@@ -526,7 +526,8 @@ void _manejar_bloqueo()
     }
     else
     {
-
+        free(nombre_interfaz);
+        free(operacion_a_realizar);
         _mandar_de_excec_a_exit("INVALID_INTERFACE");
     }
 
@@ -576,4 +577,5 @@ void mandar_a_io_o_cola_bloqueados(char *nombre_interfaz)
 
     mover_de_excec_a_cola_bloqueado(nombre_interfaz);
     log_info(kernel_logger, "PID: %u - Bloqueado por: INTERFAZ : %s", pcb_a_editar->pid, nombre_interfaz);
+
 }

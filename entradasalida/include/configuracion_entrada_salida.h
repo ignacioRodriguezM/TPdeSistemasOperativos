@@ -14,6 +14,8 @@
     uint16_t block_size;                   //Tamaño de los bloques del FS
     uint16_t block_count;                  //Cantidad de bloques del FS
 
+    t_config* config;
+
 }APP_config;
 
 APP_config cargar_configuracion_entrada_salida(void);

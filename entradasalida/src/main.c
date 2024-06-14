@@ -97,5 +97,7 @@ int main()
 
         break;
     }
+
+    config_destroy(config_valores.config);
     return 0;
 }

@@ -11,6 +11,7 @@ APP_config cargar_configuracion_cpu (void)
     if (config == NULL){
         perror("Archivo de configuracion de APP no encontrado");
     }
+    config_valores.config = config;
 
     //config_valores.ruta_logger                    =       config_get_x (config, "texto anterior")
     config_valores.puerto_memoria                   =       config_get_string_value (config,"PUERTO_MEMORIA");

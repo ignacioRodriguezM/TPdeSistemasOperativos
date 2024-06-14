@@ -168,6 +168,8 @@ void IO_STDIN_READ(void *nombre_de_la_interfaz, void *registro_direccion, void* 
 
     destruir_paquete(a_enviar);
 
+    free(direcciones_fisicas.direcciones);
+
 }
 
 void IO_STDOUT_WRITE(void *nombre_de_la_interfaz, void *registro_direccion, void *registro_tamanio, uint8_t tamanio_del_registro){
@@ -234,6 +236,8 @@ void IO_STDOUT_WRITE(void *nombre_de_la_interfaz, void *registro_direccion, void
     enviar_paquete(a_enviar, fd_kernel_dispatch);
 
     destruir_paquete(a_enviar);
+
+    free(direcciones_fisicas.direcciones);
 }
 void EXIT()
 {
@@ -369,6 +373,8 @@ void RESIZE(void *parametro)
 
             destruir_paquete(a_enviar);
         }
+        
+        free(mensaje_de_respuesta);
 
         break;
     }
@@ -424,6 +430,7 @@ void MOV_IN(void *registroDatos, void *registroDireccion, uint8_t tamanio_de_reg
         destruir_buffer(recibido);
         break;
     }
+    free(direcciones_fisicas.direcciones);
 }
 
 // MOV_OUT (Registro Dirección, Registro Datos):
@@ -502,6 +509,7 @@ void MOV_OUT(void *registroDireccion, void *registroDatos, uint8_t tamanio_de_re
 
         break;
     }
+    free(direcciones_fisicas.direcciones);
 }
 
 void *obtener_string_de_memoria(Direcciones direcciones_fisicas, uint8_t tamanio_a_copiar)
@@ -613,4 +621,8 @@ void COPY_STRING(uint8_t tamanio_a_copiar)
     Direcciones direcciones_fisicas_destino = traducir_direccion_logica_a_fisicas(&DI_registro, tamanio_a_copiar);
 
     escribir_string_en_memoria(direcciones_fisicas_destino, string_a_escribir, tamanio_a_copiar);
+
+    free(string_a_escribir);
+    free(direcciones_fisicas_origen.direcciones);
+    free(direcciones_fisicas_destino.direcciones);
 }

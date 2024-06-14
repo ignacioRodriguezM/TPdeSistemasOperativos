@@ -68,7 +68,9 @@ int main()
     iniciar_consola_interactiva(); // si queremos probar los comandos sin antes correr todos los modulos, lo ponemos arriba
 
     log_debug(kernel_log_debug, "Advertencia de salida de Kernel");
+    borrar_pcbs_en_exit();
     finalizar_colas_sin_bloqueados();
+    string_array_destroy(config_valores.recursos);
     config_destroy(config_valores.config);
 
     return 0;

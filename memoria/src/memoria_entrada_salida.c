@@ -63,6 +63,8 @@ void manejar_stdin_read(int fd_io)
 
         // Escribir los datos en la memoria física
         memcpy(direccion_fisica, datos_a_escribir, tamanio_de_direccion);
+
+        free(datos_a_escribir);
     }
 
     destruir_buffer(buffer_recibido);

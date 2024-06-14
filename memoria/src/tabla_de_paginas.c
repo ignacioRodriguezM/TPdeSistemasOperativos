@@ -155,6 +155,7 @@ void desocupar_marcos(Proceso *proceso, int paginas_a_desocupar)
     for (int i = 1; i <= paginas_a_desocupar; i++)
     {
         marcos_memoria[proceso->tabla_de_paginas[proceso->cantidad_paginas - i]->marco]->esta_libre = true;
+        free(proceso->tabla_de_paginas[proceso->cantidad_paginas - i]);
     }
 
     proceso->cantidad_paginas -= paginas_a_desocupar;

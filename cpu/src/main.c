@@ -54,6 +54,7 @@ int main (){
 
 
     finalizar_tlb();
+    config_destroy(config_valores.config);
 
     return 0;
 }

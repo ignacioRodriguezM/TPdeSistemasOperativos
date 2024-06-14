@@ -10,6 +10,7 @@ APP_config cargar_configuracion_entrada_salida (void)
     if (config == NULL){
         perror("Archivo de configuracion de APP no encontrado");
     }
+    config_valores.config = config;
 
     printf ("Decime tu nombre identificador \n");
     scanf("%ms", &config_valores.nombre_identificador); // La bandera '%ms' indica a scanf() que asigne memoria dinámica para almacenar la cadena

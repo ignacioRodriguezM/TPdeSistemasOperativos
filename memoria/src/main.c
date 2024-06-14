@@ -42,5 +42,7 @@ int main() {
     pthread_create(&hilo_kernel, NULL, (void*) atender_memoria_kernel, NULL);
     pthread_join (hilo_kernel, NULL);
 
+    config_destroy(config_valores.config);
+
     return 0;
 }

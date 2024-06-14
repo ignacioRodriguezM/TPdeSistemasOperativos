@@ -10,6 +10,8 @@
     uint16_t cantidad_entradas_TLB;     //Cantidad de entradas que tendrá la TLB
     char* algoritmo_TLB;                //algoritmo de reemplazo de la TLB (FIFO / LRU)
 
+    t_config* config;
+
 }APP_config;
 
 APP_config cargar_configuracion_cpu (void);

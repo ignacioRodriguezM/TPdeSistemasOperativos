@@ -9,6 +9,8 @@
     uint8_t retardo_respuesta;         //Tiempo en milisegundos que se deberá esperar antes de responder a las solicitudes de CPU.
     char* path_instrucciones;           //Carpeta donde se encuentran los archivos de pseudocódigo.
 
+    t_config* config;
+
 }APP_config;
 
 APP_config cargar_configuracion_memoria (void);
