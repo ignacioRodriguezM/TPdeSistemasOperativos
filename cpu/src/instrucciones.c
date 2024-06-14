@@ -69,176 +69,7 @@ void JNZ(void *registro, void *parametro)
     }
 }
 
-void IO_GEN_SLEEP(void *parametro, void *parametro2)
-{
-    char *nombre_interfaz = (char *)parametro;
 
-    uint8_t unidades_de_trabajo = *(uint8_t *)parametro2;
-
-    PC_registro++;
-    bloq_flag = false;
-    interrupt_flag = false;
-    t_buffer *buffer = crear_buffer();
-    //[pid] [pc] [registros] [nombre_interfaz] [operacion] [unidades_de_trabajo]
-
-    cargar_uint16_al_buffer(buffer, PID);
-    cargar_uint32_al_buffer(buffer, PC_registro);
-    cargar_uint8_al_buffer(buffer, AX_registro);
-    cargar_uint8_al_buffer(buffer, BX_registro);
-    cargar_uint8_al_buffer(buffer, CX_registro);
-    cargar_uint8_al_buffer(buffer, DX_registro);
-    cargar_uint32_al_buffer(buffer, EAX_registro);
-    cargar_uint32_al_buffer(buffer, EBX_registro);
-    cargar_uint32_al_buffer(buffer, ECX_registro);
-    cargar_uint32_al_buffer(buffer, EDX_registro);
-    cargar_uint32_al_buffer(buffer, SI_registro);
-    cargar_uint32_al_buffer(buffer, DI_registro);
-    cargar_string_al_buffer(buffer, nombre_interfaz);
-    cargar_string_al_buffer(buffer, "IO_GEN_SLEEP");
-    cargar_uint8_al_buffer(buffer, unidades_de_trabajo);
-
-    t_paquete *a_enviar = crear_paquete(LLAMADA_A_IO, buffer);
-
-    enviar_paquete(a_enviar, fd_kernel_dispatch);
-
-    destruir_paquete(a_enviar);
-}
-void IO_STDIN_READ(void *nombre_de_la_interfaz, void *registro_direccion, void* registro_tamanio, uint8_t tamanio_del_registro)
-{
-
-    char *nombre_interfaz = (char *)nombre_de_la_interfaz;
-    
-    uint8_t tamanio;
-
-    if(sizeof(uint8_t) == tamanio_del_registro){
-        tamanio = *(uint8_t*) registro_tamanio;
-    }
-    else{
-        tamanio = *(uint8_t*) registro_tamanio;
-    }
-
-    Direcciones direcciones_fisicas = traducir_direccion_logica_a_fisicas(registro_direccion, tamanio);
-
-    PC_registro++;
-    bloq_flag = false;
-    interrupt_flag = false;
-    t_buffer *buffer = crear_buffer();
-    //[pid] [pc] [registros] [nombre_interfaz] [operacion]
-
-    cargar_uint16_al_buffer(buffer, PID);
-    cargar_uint32_al_buffer(buffer, PC_registro);
-    cargar_uint8_al_buffer(buffer, AX_registro);
-    cargar_uint8_al_buffer(buffer, BX_registro);
-    cargar_uint8_al_buffer(buffer, CX_registro);
-    cargar_uint8_al_buffer(buffer, DX_registro);
-    cargar_uint32_al_buffer(buffer, EAX_registro);
-    cargar_uint32_al_buffer(buffer, EBX_registro);
-    cargar_uint32_al_buffer(buffer, ECX_registro);
-    cargar_uint32_al_buffer(buffer, EDX_registro);
-    cargar_uint32_al_buffer(buffer, SI_registro);
-    cargar_uint32_al_buffer(buffer, DI_registro);
-    cargar_string_al_buffer(buffer, nombre_interfaz);
-    cargar_string_al_buffer(buffer, "IO_STDIN_READ");
-
-
-    //[tamanio registro datos] [Cantidad] [TAM_A_escribir] [MARCO] [DESPLAZAMIENTO] [FALTA DATO] .. [TAM_A_escribir] [MARCO] [DESPLAZAMIENTO] [FALTA DATO] .....
-
-    cargar_uint8_al_buffer(buffer, tamanio);
-
-    
-
-    // Cargar la cantidad de direcciones
-    uint8_t cantidad = direcciones_fisicas.cantidad_direcciones;
-    cargar_uint8_al_buffer(buffer, cantidad);
-
-    
-    // [TAM_A_escribir] [MARCO] [DESPLAZAMIENTO] [FALTA DATO] .. [TAM_A_escribir] [MARCO] [DESPLAZAMIENTO] [FALTA DATO] .....
-
-    for (int i = 0; i < cantidad; i++)
-    {
-        cargar_uint8_al_buffer(buffer, direcciones_fisicas.direcciones[i].tamanio);
-        cargar_uint16_al_buffer(buffer, direcciones_fisicas.direcciones[i].numero_pagina);
-        cargar_uint32_al_buffer(buffer, direcciones_fisicas.direcciones[i].desplazamiento);
-
-    }
-
-    t_paquete *a_enviar = crear_paquete(LLAMADA_A_IO, buffer);
-
-    enviar_paquete(a_enviar, fd_kernel_dispatch);
-
-    destruir_paquete(a_enviar);
-
-    free(direcciones_fisicas.direcciones);
-
-}
-
-void IO_STDOUT_WRITE(void *nombre_de_la_interfaz, void *registro_direccion, void *registro_tamanio, uint8_t tamanio_del_registro){
-    
-    char *nombre_interfaz = (char *)nombre_de_la_interfaz;
-
-    uint8_t tamanio;
-
-    if(sizeof(uint8_t) == tamanio_del_registro){
-        tamanio = *(uint8_t*) registro_tamanio;
-    }
-    else{
-        tamanio = *(uint8_t*) registro_tamanio;
-    }
-
-
-    Direcciones direcciones_fisicas = traducir_direccion_logica_a_fisicas(registro_direccion, tamanio);
-
-    PC_registro++;
-    bloq_flag = false;
-    interrupt_flag = false;
-    t_buffer *buffer = crear_buffer();
-    //[pid] [pc] [registros] [nombre_interfaz] [operacion]
-
-    cargar_uint16_al_buffer(buffer, PID);
-    cargar_uint32_al_buffer(buffer, PC_registro);
-    cargar_uint8_al_buffer(buffer, AX_registro);
-    cargar_uint8_al_buffer(buffer, BX_registro);
-    cargar_uint8_al_buffer(buffer, CX_registro);
-    cargar_uint8_al_buffer(buffer, DX_registro);
-    cargar_uint32_al_buffer(buffer, EAX_registro);
-    cargar_uint32_al_buffer(buffer, EBX_registro);
-    cargar_uint32_al_buffer(buffer, ECX_registro);
-    cargar_uint32_al_buffer(buffer, EDX_registro);
-    cargar_uint32_al_buffer(buffer, SI_registro);
-    cargar_uint32_al_buffer(buffer, DI_registro);
-    cargar_string_al_buffer(buffer, nombre_interfaz);
-    cargar_string_al_buffer(buffer, "IO_STDOUT_WRITE");
-
-
-    //[tamanio registro datos] [Cantidad] [TAM_A_leer] [MARCO] [DESPLAZAMIENTO] .. [TAM_A_escribir] [MARCO] [DESPLAZAMIENTO] .....
-
-    cargar_uint8_al_buffer(buffer, tamanio);
-
-    
-
-    // Cargar la cantidad de direcciones
-    uint8_t cantidad = direcciones_fisicas.cantidad_direcciones;
-    cargar_uint8_al_buffer(buffer, cantidad);
-
-    
-    // [TAM_A_escribir] [MARCO] [DESPLAZAMIENTO] .. [TAM_A_escribir] [MARCO] [DESPLAZAMIENTO] .....
-
-    for (int i = 0; i < cantidad; i++)
-    {
-        cargar_uint8_al_buffer(buffer, direcciones_fisicas.direcciones[i].tamanio);
-        cargar_uint16_al_buffer(buffer, direcciones_fisicas.direcciones[i].numero_pagina);
-        cargar_uint32_al_buffer(buffer, direcciones_fisicas.direcciones[i].desplazamiento);
-
-    }
-
-    t_paquete *a_enviar = crear_paquete(LLAMADA_A_IO, buffer);
-
-    enviar_paquete(a_enviar, fd_kernel_dispatch);
-
-    destruir_paquete(a_enviar);
-
-    free(direcciones_fisicas.direcciones);
-}
 void EXIT()
 {
     bloq_flag = false;
@@ -625,4 +456,313 @@ void COPY_STRING(uint8_t tamanio_a_copiar)
     free(string_a_escribir);
     free(direcciones_fisicas_origen.direcciones);
     free(direcciones_fisicas_destino.direcciones);
+}
+
+// ---------------------------ENTRADA SALIDA----------------------------------------------
+void IO_GEN_SLEEP(void *parametro, void *parametro2)
+{
+    char *nombre_interfaz = (char *)parametro;
+
+    uint8_t unidades_de_trabajo = *(uint8_t *)parametro2;
+
+    PC_registro++;
+    bloq_flag = false;
+    interrupt_flag = false;
+    t_buffer *buffer = crear_buffer();
+    //[pid] [pc] [registros] [nombre_interfaz] [operacion] [unidades_de_trabajo]
+
+    cargar_uint16_al_buffer(buffer, PID);
+    cargar_uint32_al_buffer(buffer, PC_registro);
+    cargar_uint8_al_buffer(buffer, AX_registro);
+    cargar_uint8_al_buffer(buffer, BX_registro);
+    cargar_uint8_al_buffer(buffer, CX_registro);
+    cargar_uint8_al_buffer(buffer, DX_registro);
+    cargar_uint32_al_buffer(buffer, EAX_registro);
+    cargar_uint32_al_buffer(buffer, EBX_registro);
+    cargar_uint32_al_buffer(buffer, ECX_registro);
+    cargar_uint32_al_buffer(buffer, EDX_registro);
+    cargar_uint32_al_buffer(buffer, SI_registro);
+    cargar_uint32_al_buffer(buffer, DI_registro);
+    cargar_string_al_buffer(buffer, nombre_interfaz);
+    cargar_string_al_buffer(buffer, "IO_GEN_SLEEP");
+    cargar_uint8_al_buffer(buffer, unidades_de_trabajo);
+
+    t_paquete *a_enviar = crear_paquete(LLAMADA_A_IO, buffer);
+
+    enviar_paquete(a_enviar, fd_kernel_dispatch);
+
+    destruir_paquete(a_enviar);
+}
+
+void IO_FS_CREATE(void *nombre_de_la_interfaz, void *nombre_del_archivo){
+    char *nombre_interfaz = (char *)nombre_de_la_interfaz;
+    char *nombre_del_archivo = (char *)nombre_del_archivo;
+
+    PC_registro++;
+    bloq_flag = false;
+    interrupt_flag = false;
+    t_buffer *buffer = crear_buffer();
+    //[pid] [pc] [registros] [nombre_interfaz] [operacion]
+
+    cargar_uint16_al_buffer(buffer, PID);
+    cargar_uint32_al_buffer(buffer, PC_registro);
+    cargar_uint8_al_buffer(buffer, AX_registro);
+    cargar_uint8_al_buffer(buffer, BX_registro);
+    cargar_uint8_al_buffer(buffer, CX_registro);
+    cargar_uint8_al_buffer(buffer, DX_registro);
+    cargar_uint32_al_buffer(buffer, EAX_registro);
+    cargar_uint32_al_buffer(buffer, EBX_registro);
+    cargar_uint32_al_buffer(buffer, ECX_registro);
+    cargar_uint32_al_buffer(buffer, EDX_registro);
+    cargar_uint32_al_buffer(buffer, SI_registro);
+    cargar_uint32_al_buffer(buffer, DI_registro);
+    cargar_string_al_buffer(buffer, nombre_interfaz);
+    cargar_string_al_buffer(buffer, "IO_FS_CREATE");
+    cargar_string_al_buffer(buffer, nombre_del_archivo);
+
+    t_paquete *a_enviar = crear_paquete(LLAMADA_A_IO, buffer);
+
+        enviar_paquete(a_enviar, fd_kernel_dispatch);
+
+        destruir_paquete(a_enviar);
+}
+void IO_FS_DELETE(void *nombre_de_la_interfaz, void *nombre_del_archivo){
+    char *nombre_interfaz = (char *)nombre_de_la_interfaz;
+    char *nombre_del_archivo = (char *)nombre_del_archivo;
+
+    PC_registro++;
+    bloq_flag = false;
+    interrupt_flag = false;
+    t_buffer *buffer = crear_buffer();
+    //[pid] [pc] [registros] [nombre_interfaz] [operacion]
+
+    cargar_uint16_al_buffer(buffer, PID);
+    cargar_uint32_al_buffer(buffer, PC_registro);
+    cargar_uint8_al_buffer(buffer, AX_registro);
+    cargar_uint8_al_buffer(buffer, BX_registro);
+    cargar_uint8_al_buffer(buffer, CX_registro);
+    cargar_uint8_al_buffer(buffer, DX_registro);
+    cargar_uint32_al_buffer(buffer, EAX_registro);
+    cargar_uint32_al_buffer(buffer, EBX_registro);
+    cargar_uint32_al_buffer(buffer, ECX_registro);
+    cargar_uint32_al_buffer(buffer, EDX_registro);
+    cargar_uint32_al_buffer(buffer, SI_registro);
+    cargar_uint32_al_buffer(buffer, DI_registro);
+    cargar_string_al_buffer(buffer, nombre_interfaz);
+    cargar_string_al_buffer(buffer, "IO_FS_DELETE");
+    cargar_string_al_buffer(buffer, nombre_del_archivo);
+
+    t_paquete *a_enviar = crear_paquete(LLAMADA_A_IO, buffer);
+
+        enviar_paquete(a_enviar, fd_kernel_dispatch);
+
+        destruir_paquete(a_enviar);
+}
+void IO_FS_TRUNCATE(void *nombre_de_la_interfaz, void *nombre_del_archivo, void* registro_tamanio, uint8_t tamanio_del_registro){
+    char *nombre_interfaz = (char *)nombre_de_la_interfaz;
+    char *nombre_del_archivo = (char *)nombre_del_archivo;
+
+    uint8_t tamanio = *(uint8_t*) registro_tamanio; 
+
+    PC_registro++;
+    bloq_flag = false;
+    interrupt_flag = false;
+    t_buffer *buffer = crear_buffer();
+    //[pid] [pc] [registros] [nombre_interfaz] [operacion]
+
+    cargar_uint16_al_buffer(buffer, PID);
+    cargar_uint32_al_buffer(buffer, PC_registro);
+    cargar_uint8_al_buffer(buffer, AX_registro);
+    cargar_uint8_al_buffer(buffer, BX_registro);
+    cargar_uint8_al_buffer(buffer, CX_registro);
+    cargar_uint8_al_buffer(buffer, DX_registro);
+    cargar_uint32_al_buffer(buffer, EAX_registro);
+    cargar_uint32_al_buffer(buffer, EBX_registro);
+    cargar_uint32_al_buffer(buffer, ECX_registro);
+    cargar_uint32_al_buffer(buffer, EDX_registro);
+    cargar_uint32_al_buffer(buffer, SI_registro);
+    cargar_uint32_al_buffer(buffer, DI_registro);
+    cargar_string_al_buffer(buffer, nombre_interfaz);
+    cargar_string_al_buffer(buffer, "IO_FS_TRUNCATE");
+    cargar_string_al_buffer(buffer, nombre_del_archivo);
+    cargar_uint8_al_buffer(buffer, tamanio);
+
+    t_paquete *a_enviar = crear_paquete(LLAMADA_A_IO, buffer);
+
+        enviar_paquete(a_enviar, fd_kernel_dispatch);
+
+        destruir_paquete(a_enviar);
+}
+void IO_FS_WRITE(void *nombre_de_la_interfaz, void *nombre_del_archivo, void *registro_direccion, void *registro_tamanio, uint8_t tamanio_del_registro, void *registro_puntero_de_archivo){
+    char *nombre_interfaz = (char *)nombre_de_la_interfaz;
+    char *nombre_del_archivo = (char *)nombre_del_archivo;
+
+    
+    uint8_t tamanio = *(uint8_t*) registro_tamanio; 
+
+    PC_registro++;
+    bloq_flag = false;
+    interrupt_flag = false;
+    t_buffer *buffer = crear_buffer();
+    //[pid] [pc] [registros] [nombre_interfaz] [operacion]
+
+    cargar_uint16_al_buffer(buffer, PID);
+    cargar_uint32_al_buffer(buffer, PC_registro);
+    cargar_uint8_al_buffer(buffer, AX_registro);
+    cargar_uint8_al_buffer(buffer, BX_registro);
+    cargar_uint8_al_buffer(buffer, CX_registro);
+    cargar_uint8_al_buffer(buffer, DX_registro);
+    cargar_uint32_al_buffer(buffer, EAX_registro);
+    cargar_uint32_al_buffer(buffer, EBX_registro);
+    cargar_uint32_al_buffer(buffer, ECX_registro);
+    cargar_uint32_al_buffer(buffer, EDX_registro);
+    cargar_uint32_al_buffer(buffer, SI_registro);
+    cargar_uint32_al_buffer(buffer, DI_registro);
+    cargar_string_al_buffer(buffer, nombre_interfaz);
+    cargar_string_al_buffer(buffer, "IO_FS_TRUNCATE");
+    cargar_string_al_buffer(buffer, nombre_del_archivo);
+    cargar_uint8_al_buffer(buffer, tamanio);
+
+    t_paquete *a_enviar = crear_paquete(LLAMADA_A_IO, buffer);
+
+        enviar_paquete(a_enviar, fd_kernel_dispatch);
+
+        destruir_paquete(a_enviar);
+}
+
+void IO_STDIN_READ(void *nombre_de_la_interfaz, void *registro_direccion, void *registro_tamanio, uint8_t tamanio_del_registro)
+{
+
+    char *nombre_interfaz = (char *)nombre_de_la_interfaz;
+    
+    uint8_t tamanio;
+
+    if(sizeof(uint8_t) == tamanio_del_registro){
+        tamanio = *(uint8_t*) registro_tamanio;
+    }
+    else{
+        tamanio = *(uint8_t*) registro_tamanio;
+    }
+
+    Direcciones direcciones_fisicas = traducir_direccion_logica_a_fisicas(registro_direccion, tamanio);
+
+    PC_registro++;
+    bloq_flag = false;
+    interrupt_flag = false;
+    t_buffer *buffer = crear_buffer();
+    //[pid] [pc] [registros] [nombre_interfaz] [operacion]
+
+    cargar_uint16_al_buffer(buffer, PID);
+    cargar_uint32_al_buffer(buffer, PC_registro);
+    cargar_uint8_al_buffer(buffer, AX_registro);
+    cargar_uint8_al_buffer(buffer, BX_registro);
+    cargar_uint8_al_buffer(buffer, CX_registro);
+    cargar_uint8_al_buffer(buffer, DX_registro);
+    cargar_uint32_al_buffer(buffer, EAX_registro);
+    cargar_uint32_al_buffer(buffer, EBX_registro);
+    cargar_uint32_al_buffer(buffer, ECX_registro);
+    cargar_uint32_al_buffer(buffer, EDX_registro);
+    cargar_uint32_al_buffer(buffer, SI_registro);
+    cargar_uint32_al_buffer(buffer, DI_registro);
+    cargar_string_al_buffer(buffer, nombre_interfaz);
+    cargar_string_al_buffer(buffer, "IO_STDIN_READ");
+
+
+    //[tamanio registro datos] [Cantidad] [TAM_A_escribir] [MARCO] [DESPLAZAMIENTO] [FALTA DATO] .. [TAM_A_escribir] [MARCO] [DESPLAZAMIENTO] [FALTA DATO] .....
+
+    cargar_uint8_al_buffer(buffer, tamanio);
+
+    
+
+    // Cargar la cantidad de direcciones
+    uint8_t cantidad = direcciones_fisicas.cantidad_direcciones;
+    cargar_uint8_al_buffer(buffer, cantidad);
+
+    
+    // [TAM_A_escribir] [MARCO] [DESPLAZAMIENTO] [FALTA DATO] .. [TAM_A_escribir] [MARCO] [DESPLAZAMIENTO] [FALTA DATO] .....
+
+    for (int i = 0; i < cantidad; i++)
+    {
+        cargar_uint8_al_buffer(buffer, direcciones_fisicas.direcciones[i].tamanio);
+        cargar_uint16_al_buffer(buffer, direcciones_fisicas.direcciones[i].numero_pagina);
+        cargar_uint32_al_buffer(buffer, direcciones_fisicas.direcciones[i].desplazamiento);
+
+    }
+
+    t_paquete *a_enviar = crear_paquete(LLAMADA_A_IO, buffer);
+
+    enviar_paquete(a_enviar, fd_kernel_dispatch);
+
+    destruir_paquete(a_enviar);
+
+    free(direcciones_fisicas.direcciones);
+
+}
+
+void IO_STDOUT_WRITE(void *nombre_de_la_interfaz, void *registro_direccion, void *registro_tamanio, uint8_t tamanio_del_registro){
+    
+    char *nombre_interfaz = (char *)nombre_de_la_interfaz;
+
+    uint8_t tamanio;
+
+    if(sizeof(uint8_t) == tamanio_del_registro){
+        tamanio = *(uint8_t*) registro_tamanio;
+    }
+    else{
+        tamanio = *(uint8_t*) registro_tamanio;
+    }
+
+
+    Direcciones direcciones_fisicas = traducir_direccion_logica_a_fisicas(registro_direccion, tamanio);
+
+    PC_registro++;
+    bloq_flag = false;
+    interrupt_flag = false;
+    t_buffer *buffer = crear_buffer();
+    //[pid] [pc] [registros] [nombre_interfaz] [operacion]
+
+    cargar_uint16_al_buffer(buffer, PID);
+    cargar_uint32_al_buffer(buffer, PC_registro);
+    cargar_uint8_al_buffer(buffer, AX_registro);
+    cargar_uint8_al_buffer(buffer, BX_registro);
+    cargar_uint8_al_buffer(buffer, CX_registro);
+    cargar_uint8_al_buffer(buffer, DX_registro);
+    cargar_uint32_al_buffer(buffer, EAX_registro);
+    cargar_uint32_al_buffer(buffer, EBX_registro);
+    cargar_uint32_al_buffer(buffer, ECX_registro);
+    cargar_uint32_al_buffer(buffer, EDX_registro);
+    cargar_uint32_al_buffer(buffer, SI_registro);
+    cargar_uint32_al_buffer(buffer, DI_registro);
+    cargar_string_al_buffer(buffer, nombre_interfaz);
+    cargar_string_al_buffer(buffer, "IO_STDOUT_WRITE");
+
+
+    //[tamanio registro datos] [Cantidad] [TAM_A_leer] [MARCO] [DESPLAZAMIENTO] .. [TAM_A_escribir] [MARCO] [DESPLAZAMIENTO] .....
+
+    cargar_uint8_al_buffer(buffer, tamanio);
+
+    
+
+    // Cargar la cantidad de direcciones
+    uint8_t cantidad = direcciones_fisicas.cantidad_direcciones;
+    cargar_uint8_al_buffer(buffer, cantidad);
+
+    
+    // [TAM_A_escribir] [MARCO] [DESPLAZAMIENTO] .. [TAM_A_escribir] [MARCO] [DESPLAZAMIENTO] .....
+
+    for (int i = 0; i < cantidad; i++)
+    {
+        cargar_uint8_al_buffer(buffer, direcciones_fisicas.direcciones[i].tamanio);
+        cargar_uint16_al_buffer(buffer, direcciones_fisicas.direcciones[i].numero_pagina);
+        cargar_uint32_al_buffer(buffer, direcciones_fisicas.direcciones[i].desplazamiento);
+
+    }
+
+    t_paquete *a_enviar = crear_paquete(LLAMADA_A_IO, buffer);
+
+    enviar_paquete(a_enviar, fd_kernel_dispatch);
+
+    destruir_paquete(a_enviar);
+
+    free(direcciones_fisicas.direcciones);
 }
