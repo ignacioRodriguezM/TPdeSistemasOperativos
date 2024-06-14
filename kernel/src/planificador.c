@@ -32,6 +32,7 @@ PCB *_crear_pcb(uint16_t pid)
     pcb_creado->pc = 0;
     pcb_creado->pid = pid;
     pcb_creado->quantum = quantum;
+    pcb_creado->cantidad_recursos_asignados = 0;
     return pcb_creado;
 }
 

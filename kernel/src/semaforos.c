@@ -17,8 +17,8 @@ void iniciar_semaforos_de_recursos(char** nombre_recursos, int* instancias_recur
         recursos[i]->instancias = instancias_recursos[i];
         recursos[i]->cola_bloqueados_por_recursos = queue_create();
 
-        free(instancias_recursos[i]);
     }
 
+    free(instancias_recursos);
 }
 
