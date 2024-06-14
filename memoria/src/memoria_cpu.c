@@ -208,6 +208,8 @@ void _escribir_una_determinada_direccion() {
     }
 
     destruir_buffer(buffer_recibido);
+
+    esperarMilisegundos(retardo_respuesta);
     
 
     // Enviar confirmación al CPU

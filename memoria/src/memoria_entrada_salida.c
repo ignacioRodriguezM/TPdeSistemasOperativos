@@ -30,17 +30,15 @@ void atender_multiples_entrada_salida(int *socket_ptr)
         case LECTURA:
             manejar_stdout_write(client_socket);
             break;
-        
         }
     }
 }
 
-
-void manejar_stdin_read(int fd_io) { //aka _escribir_en_una_determinada_direccion
+void manejar_stdin_read(int fd_io)
+{ // aka _escribir_en_una_determinada_direccion
     t_buffer *buffer_recibido = recibir_buffer_sin_cod_op(fd_io);
 
     //  [tamanio registro datos] [Cantidad] [TAM_A_escribir] [MARCO] [DESPLAZAMIENTO] [DATO] .. [TAM_A_escribir] [MARCO] [DESPLAZAMIENTO] [DATO] .....
-
 
     // Recibo el tamaño del registro de datos
     uint8_t tamanio_de_registro_datos = extraer_uint8_al_buffer(buffer_recibido);
@@ -50,15 +48,14 @@ void manejar_stdin_read(int fd_io) { //aka _escribir_en_una_determinada_direccio
     // Recibo la cantidad de direcciones
     uint8_t cantidad_de_direcciones = extraer_uint8_al_buffer(buffer_recibido);
 
-    
     // Leer las direcciones y los datos del buffer y escribirlos en la memoria
-    void* datos_a_escribir;
-    for (int i = 0; i < cantidad_de_direcciones; i++) {
+    void *datos_a_escribir;
+    for (int i = 0; i < cantidad_de_direcciones; i++)
+    {
         uint8_t tamanio_de_direccion = extraer_uint8_al_buffer(buffer_recibido);
         uint16_t marco = extraer_uint16_al_buffer(buffer_recibido);
         uint32_t desplazamiento = extraer_uint32_al_buffer(buffer_recibido);
 
-        
         datos_a_escribir = extraer_choclo_al_buffer(buffer_recibido);
 
         // Calcular la dirección física
@@ -69,46 +66,49 @@ void manejar_stdin_read(int fd_io) { //aka _escribir_en_una_determinada_direccio
     }
 
     destruir_buffer(buffer_recibido);
-    
+
+    esperarMilisegundos(retardo_respuesta);
 
     // Enviar confirmación a IO
     t_buffer *buffer_confirmacion = crear_buffer();
-    char* respuesta = "OK"; //no se bien como seria el tema de saber si lo pudo hacer o no
+    char *respuesta = "OK"; // no se bien como seria el tema de saber si lo pudo hacer o no
     cargar_string_al_buffer(buffer_confirmacion, respuesta);
     t_paquete *paquete_confirmacion = crear_paquete(ESCRITURA, buffer_confirmacion);
     enviar_paquete(paquete_confirmacion, fd_io);
     destruir_paquete(paquete_confirmacion);
 }
-void manejar_stdout_write(int fd_io){
-void* registroDatos;
+void manejar_stdout_write(int fd_io)
+{
+    void *registroDatos;
 
     //  [tamanio registro datos] [Cantidad] [TAM_A_LEER] [MARCO] [DESPLAZAMIENTO] .. [TAM_A_LEER] [MARCO] [DESPLAZAMIENTO] .....
     t_buffer *buffer_recibido = recibir_buffer_sin_cod_op(fd_io);
-    
-    //recibo el tamanio del registro datos
+
+    // recibo el tamanio del registro datos
     uint8_t tamanio_de_registro_datos = extraer_uint8_al_buffer(buffer_recibido);
-    
+
     // inicializar el registroDatos con el tamaño adecuado
     registroDatos = malloc(tamanio_de_registro_datos);
-    
+
     //  [CANTIDAD MARCOS] [TAM_A_LEER] [MARCO] [DESPLAZAMIENTO] / [TAM_A_LEER] [MARCO] [DESPLAZAMIENTO] / [TAM_A_LEER] [MARCO] [DESPLAZAMIENTO] ....
-    
+
     uint8_t cantidad_de_direcciones = extraer_uint8_al_buffer(buffer_recibido);
-    
-    for (int i = 0; i < cantidad_de_direcciones ; i++){
-    
-    uint8_t tamanio_de_direccion = extraer_uint8_al_buffer(buffer_recibido);
-    uint16_t marco = extraer_uint16_al_buffer(buffer_recibido);
-    uint32_t desplazamiento = extraer_uint32_al_buffer(buffer_recibido);
-    
-    // Calcular la dirección física
+
+    for (int i = 0; i < cantidad_de_direcciones; i++)
+    {
+
+        uint8_t tamanio_de_direccion = extraer_uint8_al_buffer(buffer_recibido);
+        uint16_t marco = extraer_uint16_al_buffer(buffer_recibido);
+        uint32_t desplazamiento = extraer_uint32_al_buffer(buffer_recibido);
+
+        // Calcular la dirección física
         void *direccion_fisica = memoria_usuario + (marco * tam_pagina) + desplazamiento;
 
         memcpy(registroDatos + (i * tamanio_de_direccion), direccion_fisica, tamanio_de_direccion);
     }
-    
-    destruir_buffer(buffer_recibido);  
-    
+
+    destruir_buffer(buffer_recibido);
+
     esperarMilisegundos(retardo_respuesta);
 
     t_buffer *buffer_a_enviar = crear_buffer();
@@ -120,5 +120,4 @@ void* registroDatos;
     destruir_paquete(a_enviar);
 
     free(registroDatos);
-
 }

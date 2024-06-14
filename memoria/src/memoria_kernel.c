@@ -116,6 +116,7 @@ void finalizar_proceso()
         Proceso *proceso = (Proceso *)current->data;
         if (proceso->PID == pid_a_finalizar)
         {
+            liberar_paginas_de_proceso(proceso); //LIBERO FRAMES DEL PROCESO (MARCO COMO LIBRES)
             
             proceso->PID = 0;
             for(int i=0; i<proceso->cantidad_instrucciones; i++){
@@ -137,11 +138,4 @@ void finalizar_proceso()
         }
     }
     current = NULL;
-
-
-    ////////////////LIBERAR ESPACIOS DE MEMORIA USUARIO
-    
-
-    /// A DESARROLLAR
-
 }

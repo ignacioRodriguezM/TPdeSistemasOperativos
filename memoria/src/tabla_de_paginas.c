@@ -160,3 +160,7 @@ void desocupar_marcos(Proceso *proceso, int paginas_a_desocupar)
     proceso->cantidad_paginas -= paginas_a_desocupar;
     proceso->tabla_de_paginas = realloc(proceso->tabla_de_paginas, sizeof(Tabla_paginas *) * proceso->cantidad_paginas);
 }
+
+void liberar_paginas_de_proceso (Proceso* proceso){
+    desocupar_marcos(proceso, proceso->cantidad_paginas);
+}

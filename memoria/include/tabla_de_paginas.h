@@ -10,6 +10,7 @@ char *ajustar_tam_proceso(uint16_t PID, uint16_t nuevo_tam_en_bytes);
 bool chequear_si_hay_marcos_libres(int paginas_a_ocupar);
 void ocupar_marcos(Proceso *proceso, int paginas_a_ocupar);
 void desocupar_marcos(Proceso *proceso, int paginas_a_desocupar);
+void liberar_paginas_de_proceso (Proceso* proceso);
 
 
 #endif
