@@ -368,6 +368,7 @@ bool buscar_en_colas_y_eliminar_el_proceso(int pid_a_finalizar)
     if (esta_en_excec(pid_a_finalizar))
     {
         enviar_interrupcion_a_cpu();
+        return true;
     }
     /////////////////// BUSCAR EN READY///////////////
     else if (buscar_en_cola(pid_a_finalizar, procesos_ready, "READY"))
