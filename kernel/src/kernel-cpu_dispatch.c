@@ -514,6 +514,7 @@ void _manejar_bloqueo()
         }
         else if (strcmp(operacion_a_realizar, "IO_FS_CREATE") == 0)
         {
+            
         }
         else if (strcmp(operacion_a_realizar, "IO_FS_DELETE") == 0)
         {
