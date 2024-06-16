@@ -1,11 +1,11 @@
 #include "../include/filesystem.h"
 void _crear_archivo_que_seria_el_disco(){ //primer tipo de archivo
-    int tamanio_de_bloque = config_valores.block_size;
-    int cantidad_de_bloques = config_valores.block_count;
+    //int tamanio_de_bloque = config_valores.block_size;
+    //int cantidad_de_bloques = config_valores.block_count;
 
-    int tamanio_del_archivo = tamanio_de_bloque * cantidad_de_bloques;
+    //int tamanio_del_archivo = tamanio_de_bloque * cantidad_de_bloques;
 
-    crear_archivo("disco simulado", tamanio_del_archivo);
+    //crear_archivo("disco simulado", tamanio_del_archivo);
 }
 
 void crear_archivo (char *nombre, int tamanio_del_archivo) {
@@ -27,10 +27,10 @@ void crear_archivo (char *nombre, int tamanio_del_archivo) {
     memset(buffer, 0, tamanio_del_archivo);
 
     // Escribe el buffer en el archivo
-    size_t escrito = fwrite(buffer, 1, tamanio_del_archivo, archivo);
-    if (escrito != tamanio) {
-        perror("Error al escribir en el archivo");
-    }
+    //size_t escrito = fwrite(buffer, 1, tamanio_del_archivo, archivo);
+    //if (escrito != tamanio) {
+    //    perror("Error al escribir en el archivo");
+    //}
 
     // Libera la memoria reservada
     free(buffer);
@@ -38,5 +38,5 @@ void crear_archivo (char *nombre, int tamanio_del_archivo) {
     // Cierra el archivo
     fclose(archivo);
 
-    printf("Archivo '%s' creado con tamaño %zu bytes.\n", nombre, tamanio_del_archivo);
+    //printf("Archivo '%s' creado con tamaño %zu bytes.\n", nombre, tamanio_del_archivo);
 }
