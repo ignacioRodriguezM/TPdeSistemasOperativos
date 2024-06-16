@@ -44,6 +44,7 @@ typedef enum
 	WAIT_op,
 	SIGNAL_op,
 	OUT_OF_MEMORY,
+	RESPUESTA_RECURSO,
 
 	//-------------------KERNEL-CPU INT
 	FIN_QUANTUM,

@@ -102,7 +102,6 @@ void WAIT(void *parametro)
     char *nombre_recurso = (char *)parametro;
 
     PC_registro++;
-    bloq_flag = false;
     t_buffer *buffer = crear_buffer();
     //[pid] [pc] [registros] [nombre_recurso]
 
@@ -125,13 +124,26 @@ void WAIT(void *parametro)
     enviar_paquete(a_enviar, fd_kernel_dispatch);
 
     destruir_paquete(a_enviar);
+    int cod_op = recibir_operacion(fd_kernel_dispatch);
+    switch (cod_op)
+    {
+    case RESPUESTA_RECURSO:
+        t_buffer* buff = recibir_buffer_sin_cod_op(fd_kernel_dispatch);
+        char* respuesta = extraer_string_al_buffer(buff);
+        if(strcmp(respuesta, "BLOQUEADO") == 0){
+            bloq_flag = false;
+            interrupt_flag = false;
+        }
+        free(respuesta);
+        break;
+    }
+
 }
 void SIGNAL(void *parametro)
 {
     char *nombre_recurso = (char *)parametro;
 
     PC_registro++;
-    bloq_flag = false;
     t_buffer *buffer = crear_buffer();
     //[pid] [pc]  [registros] [nombre_recurso]
 
@@ -154,6 +166,22 @@ void SIGNAL(void *parametro)
     enviar_paquete(a_enviar, fd_kernel_dispatch);
 
     destruir_paquete(a_enviar);
+
+    int cod_op = recibir_operacion(fd_kernel_dispatch);
+    switch (cod_op)
+    {
+    case RESPUESTA_RECURSO:
+        t_buffer* buff = recibir_buffer_sin_cod_op(fd_kernel_dispatch);
+        char* respuesta = extraer_string_al_buffer(buff);
+        if(strcmp(respuesta, "BLOQUEADO") == 0){
+            bloq_flag = false;
+            interrupt_flag = false;
+        }
+        free(respuesta);
+        break;
+    }
+
+
 }
 void RESIZE(void *parametro)
 {
@@ -182,6 +210,8 @@ void RESIZE(void *parametro)
 
         if (strcmp(mensaje_de_respuesta, "Out Of Memory") == 0)
         {
+            bloq_flag = false;
+            interrupt_flag = false;
             t_buffer *buffer = crear_buffer();
             //[pid] [pc] [registros]
 
@@ -496,7 +526,7 @@ void IO_GEN_SLEEP(void *parametro, void *parametro2)
 
 void IO_FS_CREATE(void *nombre_de_la_interfaz, void *nombre_del_archivo){
     char *nombre_interfaz = (char *)nombre_de_la_interfaz;
-    char *nombre_del_archivo = (char *)nombre_del_archivo;
+    char *nombre_archivo = (char *)nombre_del_archivo;
 
     PC_registro++;
     bloq_flag = false;
@@ -518,7 +548,7 @@ void IO_FS_CREATE(void *nombre_de_la_interfaz, void *nombre_del_archivo){
     cargar_uint32_al_buffer(buffer, DI_registro);
     cargar_string_al_buffer(buffer, nombre_interfaz);
     cargar_string_al_buffer(buffer, "IO_FS_CREATE");
-    cargar_string_al_buffer(buffer, nombre_del_archivo);
+    cargar_string_al_buffer(buffer, nombre_archivo);
 
     t_paquete *a_enviar = crear_paquete(LLAMADA_A_IO, buffer);
 
@@ -528,7 +558,7 @@ void IO_FS_CREATE(void *nombre_de_la_interfaz, void *nombre_del_archivo){
 }
 void IO_FS_DELETE(void *nombre_de_la_interfaz, void *nombre_del_archivo){
     char *nombre_interfaz = (char *)nombre_de_la_interfaz;
-    char *nombre_del_archivo = (char *)nombre_del_archivo;
+    char *nombre_archivo = (char *)nombre_del_archivo;
 
     PC_registro++;
     bloq_flag = false;
@@ -550,7 +580,7 @@ void IO_FS_DELETE(void *nombre_de_la_interfaz, void *nombre_del_archivo){
     cargar_uint32_al_buffer(buffer, DI_registro);
     cargar_string_al_buffer(buffer, nombre_interfaz);
     cargar_string_al_buffer(buffer, "IO_FS_DELETE");
-    cargar_string_al_buffer(buffer, nombre_del_archivo);
+    cargar_string_al_buffer(buffer, nombre_archivo);
 
     t_paquete *a_enviar = crear_paquete(LLAMADA_A_IO, buffer);
 
@@ -560,7 +590,7 @@ void IO_FS_DELETE(void *nombre_de_la_interfaz, void *nombre_del_archivo){
 }
 void IO_FS_TRUNCATE(void *nombre_de_la_interfaz, void *nombre_del_archivo, void* registro_tamanio, uint8_t tamanio_del_registro){
     char *nombre_interfaz = (char *)nombre_de_la_interfaz;
-    char *nombre_del_archivo = (char *)nombre_del_archivo;
+    char *nombre_archivo = (char *)nombre_del_archivo;
 
     uint8_t tamanio = *(uint8_t*) registro_tamanio; 
 
@@ -584,7 +614,7 @@ void IO_FS_TRUNCATE(void *nombre_de_la_interfaz, void *nombre_del_archivo, void*
     cargar_uint32_al_buffer(buffer, DI_registro);
     cargar_string_al_buffer(buffer, nombre_interfaz);
     cargar_string_al_buffer(buffer, "IO_FS_TRUNCATE");
-    cargar_string_al_buffer(buffer, nombre_del_archivo);
+    cargar_string_al_buffer(buffer, nombre_archivo);
     cargar_uint8_al_buffer(buffer, tamanio);
 
     t_paquete *a_enviar = crear_paquete(LLAMADA_A_IO, buffer);
@@ -595,7 +625,7 @@ void IO_FS_TRUNCATE(void *nombre_de_la_interfaz, void *nombre_del_archivo, void*
 }
 void IO_FS_WRITE(void *nombre_de_la_interfaz, void *nombre_del_archivo, void *registro_direccion, void *registro_tamanio, uint8_t tamanio_del_registro, void *registro_puntero_de_archivo){
     char *nombre_interfaz = (char *)nombre_de_la_interfaz;
-    char *nombre_del_archivo = (char *)nombre_del_archivo;
+    char *nombre_archivo = (char *)nombre_del_archivo;
 
     
     uint8_t tamanio = *(uint8_t*) registro_tamanio; 
@@ -620,7 +650,7 @@ void IO_FS_WRITE(void *nombre_de_la_interfaz, void *nombre_del_archivo, void *re
     cargar_uint32_al_buffer(buffer, DI_registro);
     cargar_string_al_buffer(buffer, nombre_interfaz);
     cargar_string_al_buffer(buffer, "IO_FS_TRUNCATE");
-    cargar_string_al_buffer(buffer, nombre_del_archivo);
+    cargar_string_al_buffer(buffer, nombre_archivo);
     cargar_uint8_al_buffer(buffer, tamanio);
 
     t_paquete *a_enviar = crear_paquete(LLAMADA_A_IO, buffer);

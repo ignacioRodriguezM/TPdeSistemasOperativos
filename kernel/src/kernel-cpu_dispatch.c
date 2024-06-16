@@ -251,6 +251,18 @@ void agregar_recurso_en_pcb(PCB *pcb, const char *nombre_recurso)
     }
 }
 
+void bloquear_por_recurso (Recursos* un_recurso){
+    pthread_mutex_lock(&mutex_procesos);
+
+    PCB *pcb_de_cpu = (PCB *)queue_pop(procesos_excec);
+    queue_push(un_recurso->cola_bloqueados_por_recursos, pcb_de_cpu);
+
+    pthread_mutex_unlock(&mutex_procesos);
+    
+    log_info(kernel_logger, "PID: <%u> - Estado Anterior: <EXCECUTE> - Estado Actual: <BLOQUEADO>", pcb_de_cpu->pid);
+    log_info(kernel_logger, "PID: <%u> - Bloqueado por: <%s>", pcb_de_cpu->pid, un_recurso->nombre);
+
+}
 void _manejar_wait()
 {
     t_buffer *buffer_recibido = recibir_buffer_sin_cod_op(fd_cpu_dispatch);
@@ -263,6 +275,7 @@ void _manejar_wait()
 
     int i = 0;
     bool chequeo_si_alguna_coincide_nombre = true;
+    bool se_bloqueo = false;
     while (recursos[i]->nombre != NULL)
     {
         if (strcmp(recursos[i]->nombre, nombre_recurso_recibido) == 0)
@@ -274,9 +287,15 @@ void _manejar_wait()
 
             log_info(kernel_log_debug, "SE RESTA UNA INSTANCIA AL RECURSO %s", nombre_recurso_recibido);
 
+            pthread_mutex_lock(&mutex_procesos);
+            PCB *pcb_de_cpu = (PCB *)queue_peek(procesos_excec);
+            agregar_recurso_en_pcb(pcb_de_cpu, nombre_recurso_recibido);
+            pthread_mutex_unlock(&mutex_procesos);
+
             chequeo_si_alguna_coincide_nombre = false;
             if (recursos[i]->instancias < 0)
             {
+                se_bloqueo = true;
                 if (strcmp(algoritmo_planificacion, "FIFO") != 0)
                 {
                     pthread_cancel(hilo_quantum);
@@ -293,10 +312,7 @@ void _manejar_wait()
                     }
                 }
 
-                bloquear_proceso_en_ejecucion_por_recurso(i);
-                free(nombre_recurso_recibido);
-                destruir_buffer(buffer_recibido);
-                return;
+                bloquear_por_recurso(recursos[i]);              
             }
             break;
         }
@@ -306,16 +322,32 @@ void _manejar_wait()
     {
         // MANDAR A EXIT
         _mandar_de_excec_a_exit("INVALID_RESOURCE");
-        // _LIBERAR RECURSOS USADOS FALTA!!!!
-    }
 
-    else
-    {
-        pthread_mutex_lock(&mutex_procesos);
-        PCB *pcb_a_devolver_a_cpu = (PCB *)queue_pop(procesos_excec);
-        agregar_recurso_en_pcb(pcb_a_devolver_a_cpu, nombre_recurso_recibido);
-        queue_push(procesos_excec, pcb_a_devolver_a_cpu);
-        pthread_mutex_unlock(&mutex_procesos);
+    }
+       
+    if(se_bloqueo || chequeo_si_alguna_coincide_nombre){
+        //hacer funcion enviar mensaje !!!!
+        t_buffer* buffer = crear_buffer();
+        char* respuesta = "BLOQUEADO";
+        cargar_string_al_buffer(buffer, respuesta);
+        t_paquete* paq = crear_paquete(RESPUESTA_RECURSO, buffer);
+        enviar_paquete(paq, fd_cpu_dispatch);
+        destruir_paquete(paq);
+        if(se_bloqueo){
+            sem_wait(&planificacion_activa_semaforo);
+            sem_post(&planificacion_activa_semaforo);
+            sem_post(&cpu_vacia_semaforo);
+
+        }
+    }
+    if(!se_bloqueo){
+        //hacer funcion enviar mensaje !!!!
+        t_buffer* buffer = crear_buffer();
+        char* respuesta = "FUNCIONO";
+        cargar_string_al_buffer(buffer, respuesta);
+        t_paquete* paq = crear_paquete(RESPUESTA_RECURSO, buffer);
+        enviar_paquete(paq, fd_cpu_dispatch);
+        destruir_paquete(paq);
     }
 
     free(nombre_recurso_recibido);
@@ -368,6 +400,7 @@ void _manejar_signal()
 
 
     bool chequeo_si_alguna_coincide_nombre = true;
+    bool se_bloqueo = false;
     for(int i=0; i<cantidad_de_recursos; i++)
     {
         if (strcmp(recursos[i]->nombre, nombre_recurso_recibido) == 0)
@@ -376,6 +409,11 @@ void _manejar_signal()
             pthread_mutex_lock(&mutex_recursos);
             recursos[i]->instancias++;
             pthread_mutex_unlock(&mutex_recursos);
+
+            pthread_mutex_lock(&mutex_procesos);
+            PCB *pcb_de_cpu = (PCB *)queue_peek(procesos_excec);
+            liberar_si_tenia_asignado(pcb_de_cpu, nombre_recurso_recibido);
+            pthread_mutex_unlock(&mutex_procesos);
 
             log_info(kernel_log_debug, "SE SUMA UNA INSTANCIA AL RECURSO %s", nombre_recurso_recibido);
 
@@ -392,15 +430,29 @@ void _manejar_signal()
     {
         // MANDAR A EXIT
         _mandar_de_excec_a_exit("INVALID_RESOURCE");
+        se_bloqueo = true;
         // LIBERAR RECURSOS USADOS FALTA!!!!
     }
+    
 
-    else
-    {
-        pthread_mutex_lock(&mutex_procesos);
-        PCB *pcb_a_devolver_a_cpu = (PCB *)queue_pop(procesos_excec);
-        queue_push(procesos_excec, pcb_a_devolver_a_cpu);
-        pthread_mutex_unlock(&mutex_procesos);
+    if(se_bloqueo){
+        //hacer funcion enviar mensaje !!!!
+        t_buffer* buffer = crear_buffer();
+        char* respuesta = "BLOQUEADO";
+        cargar_string_al_buffer(buffer, respuesta);
+        t_paquete* paq = crear_paquete(RESPUESTA_RECURSO, buffer);
+        enviar_paquete(paq, fd_cpu_dispatch);
+        destruir_paquete(paq);
+    }
+    if(!se_bloqueo){
+        //hacer funcion enviar mensaje !!!!
+        t_buffer* buffer = crear_buffer();
+        char* respuesta = "FUNCIONO";
+        cargar_string_al_buffer(buffer, respuesta);
+        t_paquete* paq = crear_paquete(RESPUESTA_RECURSO, buffer);
+        enviar_paquete(paq, fd_cpu_dispatch);
+        destruir_paquete(paq);
+
     }
 
     free(nombre_recurso_recibido);

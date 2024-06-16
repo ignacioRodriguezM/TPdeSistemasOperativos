@@ -308,7 +308,7 @@ void _mandar_de_excec_a_exit(char *motivo)
     pthread_mutex_unlock(&mutex_procesos);
 
     liberar_recursos_asignados(proceso_movido);
-    
+
     avisarle_a_memoria_que_libere_recursos_de_proceso(proceso_movido->pid);
     // LIBERAR RECURSOS
     log_info(kernel_logger, "Finaliza el proceso %u - Motivo: %s", proceso_movido->pid, motivo);
@@ -339,15 +339,22 @@ void desbloquear_proceso_bloqueado_por_recurso(int index_cola)
     sem_wait(&planificacion_activa_semaforo);
     sem_post(&planificacion_activa_semaforo);
 
+    if (recursos[index_cola]->cola_bloqueados_por_recursos->elements->elements_count <= 0)
+    {
+        return;
+    }
+    
     pthread_mutex_lock(&mutex_procesos);
     PCB *proceso_movido = queue_pop(recursos[index_cola]->cola_bloqueados_por_recursos);
     if (proceso_movido->quantum == quantum)
     {
         queue_push(procesos_ready, proceso_movido);
+        sem_post(&algun_ready);
     }
-    if (proceso_movido->quantum < quantum && strcmp(algoritmo_planificacion, "VRR") == 0)
+    else if (proceso_movido->quantum < quantum && strcmp(algoritmo_planificacion, "VRR") == 0)
     {
         queue_push(procesos_ready_con_prioridad, proceso_movido);
+        sem_post(&algun_ready);
     }
     else
     {
@@ -377,7 +384,7 @@ void liberar_recursos_asignados(PCB *pcb)
 
                 if (recursos[j]->instancias <= 0)
                 {
-                    desbloquear_proceso_bloqueado_por_recurso(i);
+                    desbloquear_proceso_bloqueado_por_recurso(j);
                 }
                 break;
             }
@@ -386,9 +393,11 @@ void liberar_recursos_asignados(PCB *pcb)
     log_trace(kernel_log_debug, "Se liberaron recursos asignados, si los tenia");
 }
 
-void borrar_pcbs_en_exit(){
-    while(procesos_exit->elements->elements_count != 0){
-        PCB* a_borrar = (PCB*)queue_pop(procesos_excec);
+void borrar_pcbs_en_exit()
+{
+    while (procesos_exit->elements->elements_count != 0)
+    {
+        PCB *a_borrar = (PCB *)queue_pop(procesos_excec);
         free(a_borrar);
     }
 }
