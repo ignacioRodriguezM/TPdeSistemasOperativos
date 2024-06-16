@@ -348,6 +348,11 @@ void enviar_interrupcion_a_cpu()
 
 bool esta_en_excec(int pid_buscado)
 {
+    int sval;
+    sem_getvalue(&cpu_vacia_semaforo, &sval);
+    if(sval == 1){
+        return false;
+    }
     pthread_mutex_lock(&mutex_procesos);
     PCB *proceso = queue_peek(procesos_excec);
     pthread_mutex_unlock(&mutex_procesos);
@@ -396,10 +401,6 @@ bool buscar_en_colas_y_eliminar_el_proceso(int pid_a_finalizar)
 
         if (buscar_en_cola(pid_a_finalizar, recursos[i]->cola_bloqueados_por_recursos, "BLOQUEADOS POR RECURSO"))
         {
-            pthread_mutex_lock(&mutex_recursos);
-            recursos[i]->instancias++;
-            pthread_mutex_unlock(&mutex_recursos);
-
             sem_post(&grado_multiprogramacion_semaforo);
             return true;
         }

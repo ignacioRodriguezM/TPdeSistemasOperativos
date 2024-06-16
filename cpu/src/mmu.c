@@ -45,23 +45,25 @@ Direcciones _componer_direcciones(void *registroDireccion, uint8_t espacio)
     if (tam_pagina - direccion_fisica.desplazamiento < espacio)
     {
         direccion_fisica.tamanio = tam_pagina - direccion_fisica.desplazamiento;
-        uint8_t cantidad_de_paginas_a_ocupar = division_entera_redondear_arriba((espacio - direccion_fisica.tamanio), tam_pagina);
+        uint8_t cantidad_de_paginas_a_ocupar = division_entera_redondear_arriba((espacio - direccion_fisica.tamanio) , tam_pagina) + 1;
 
-        direcciones.direcciones = malloc(cantidad_de_paginas_a_ocupar * sizeof(Direccion_t));
+        direcciones.direcciones = malloc((cantidad_de_paginas_a_ocupar) * sizeof(Direccion_t));
        
         direcciones.cantidad_direcciones = cantidad_de_paginas_a_ocupar;
 
         uint8_t desplazamiento_final = (espacio - direccion_fisica.tamanio) % tam_pagina;
 
+        direccion_fisica.tamanio = tam_pagina - direccion_fisica.desplazamiento;
+        
         direcciones.direcciones[0] = direccion_fisica;
 
-        for (int i = 0; i < cantidad_de_paginas_a_ocupar; i++)
+        for (int i = 0; i < (cantidad_de_paginas_a_ocupar - 1); i++)
         {
 
             Direccion_t siguiente_direccion;
             siguiente_direccion.numero_pagina = i + 1 + direccion_fisica.numero_pagina;
 
-            if (i == (cantidad_de_paginas_a_ocupar - 1))
+            if (i == (cantidad_de_paginas_a_ocupar - 2))
             {
                 siguiente_direccion.desplazamiento = 0;
                 siguiente_direccion.tamanio = desplazamiento_final;
@@ -78,7 +80,6 @@ Direcciones _componer_direcciones(void *registroDireccion, uint8_t espacio)
     }
     else
     {
-        direccion_fisica.tamanio = tam_pagina - direccion_fisica.desplazamiento;
         
         direccion_fisica.tamanio = espacio;
 
@@ -135,7 +136,7 @@ Direcciones traducir_direccion_logica_a_fisicas(void *registroDireccion, uint8_t
     {
         uint16_t marco = consultar_tlb(PID, direcciones.direcciones[i].numero_pagina);
 
-        if (marco != ERROR_VALUE)
+        if (marco != 65535)
         {
             
             log_info(cpu_logger, "PID: <%u> - MARCO OBTENIDO POR TLB - Página: <%u> - Marco: <%u>", PID, direcciones.direcciones[i].numero_pagina, marco);

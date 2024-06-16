@@ -8,14 +8,13 @@ void atender_cpu_kernel_dispatch()
     while (control_key)
     {
         int cod_op = recibir_operacion(fd_kernel_dispatch);
+        aviso_de_interrupt = false;
+        bloq_flag = true;
+        interrupt_flag = true;
         switch (cod_op)
         {
         
         case PROCESO_A_EJECUTAR:
-
-            aviso_de_interrupt = false;
-            bloq_flag = true;
-            interrupt_flag = true;
 
             _extraer_contexto_de_ejecucion();
 
