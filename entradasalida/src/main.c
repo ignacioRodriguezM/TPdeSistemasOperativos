@@ -92,7 +92,26 @@ int main()
         nombre = config_valores.nombre_identificador;
         tipo_interfaz = config_valores.tipo_interfaz;
         tiempo_unidad_trabajo = config_valores.tiempo_unidad_trabajo;
+        tamanio_de_bloque = config_valores.block_size;
+        cantidad_de_bloques = config_valores.block_count;
 
+        // Conectarse como cliente a Kernel
+        log_info(entrada_salida_logger, "Conectandose a kernel...");
+        fd_kernel = crear_conexion(config_valores.ip_kernel, config_valores.puerto_kernel);
+        log_info(entrada_salida_logger, "Conexion a kernel Exitosa");
+
+        presentarse_con_kernel();
+
+        // Conectarse como cliente a Memoria
+        log_info(entrada_salida_logger, "Conectandose a memoria...");
+        fd_memoria = crear_conexion(config_valores.ip_memoria, config_valores.puerto_memoria);
+        log_info(entrada_salida_logger, "Conexion a memoria Exitosa");
+
+        // Atender los mensajes de KERNEL
+        pthread_t hilo_kernel_dialfs;
+        pthread_create(&hilo_kernel_stdout, NULL, (void *)atender_entrada_salida_kernel, NULL);
+        pthread_join(hilo_kernel_stdout, NULL);
+        
         //agregar Mas cosas
 
         break;

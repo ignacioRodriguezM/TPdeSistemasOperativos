@@ -19,5 +19,7 @@ extern int fd_kernel;
 extern char* nombre;
 extern interfaces_io tipo_interfaz;
 extern uint8_t tiempo_unidad_trabajo;
+extern int tamanio_de_bloque;
+extern int cantidad_de_bloques;
 
 #endif

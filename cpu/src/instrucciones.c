@@ -524,7 +524,7 @@ void IO_GEN_SLEEP(void *parametro, void *parametro2)
     destruir_paquete(a_enviar);
 }
 
-void IO_FS_CREATE(void *nombre_de_la_interfaz, void *nombre_del_archivo){
+void IO_FS_CREATE(void *nombre_de_la_interfaz, void *nombre_del_archivo, uint8_t tamanio_del_archivo){ //no se si 
     char *nombre_interfaz = (char *)nombre_de_la_interfaz;
     char *nombre_archivo = (char *)nombre_del_archivo;
 
@@ -549,6 +549,7 @@ void IO_FS_CREATE(void *nombre_de_la_interfaz, void *nombre_del_archivo){
     cargar_string_al_buffer(buffer, nombre_interfaz);
     cargar_string_al_buffer(buffer, "IO_FS_CREATE");
     cargar_string_al_buffer(buffer, nombre_archivo);
+    cargar_uint8_al_buffer(buffer, tamanio_del_archivo);
 
     t_paquete *a_enviar = crear_paquete(LLAMADA_A_IO, buffer);
 

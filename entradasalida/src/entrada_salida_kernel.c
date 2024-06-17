@@ -1,5 +1,5 @@
 #include "../include/entrada_salida_kernel.h"
-
+#include "../include/filesystem.h"
 void atender_entrada_salida_kernel()
 {
     bool control_key = 1;
@@ -48,6 +48,7 @@ void atender_entrada_salida_kernel()
             }
             else if (strcmp(operacion_a_realizar, "IO_FS_CREATE") == 0)
             {
+                caso_io_fs_create(buffer_recibido);
             }
             else if (strcmp(operacion_a_realizar, "IO_FS_DELETE") == 0)
             {
@@ -241,3 +242,58 @@ void caso_io_stdout_write(t_buffer *buffer_recibido)
         free(mensaje_de_respuesta);
     }
 }
+
+void caso_io_fs_create (t_buffer *buffer_recibido){
+    uint16_t pid = extraer_uint16_al_buffer(buffer_recibido);
+    char *nombre_del_archivo = extraer_string_al_buffer(buffer_recibido);
+    uint8_t tamanio_del_archivo_en_bytes = extraer_uint8_al_buffer(buffer_recibido);
+    int tamanio_del_archivo_en_bloques = (tamanio_del_archivo_en_bytes + tamanio_de_bloque - 1) / tamanio_de_bloque;
+
+    // Leer el bitmap
+    unsigned char *bitmap = leer_bitmap(cantidad_de_bloques);
+    if (bitmap == NULL) {
+        return;
+    }
+
+    // Buscar la primera secuencia de bloques libres
+    int bloque_libre = buscar_secuencia_libre(bitmap, cantidad_de_bloques, tamanio_del_archivo_en_bloques);
+    if (bloque_libre == -1) {
+        log_error(entrada_salida_logger, "Error: No hay suficientes bloques libres en el sistema de archivos.\n");
+    } else {
+        printf("La primera secuencia de %d bloques libres comienza en el bloque %d.\n", tamanio_del_archivo_en_bloques, bloque_libre);
+
+        // Marcar los bloques como ocupados
+        marcar_bloques_ocupados(bitmap, bloque_libre, tamanio_del_archivo_en_bloques);
+
+        // Escribir el bitmap actualizado de vuelta al archivo
+        int tamanio_bitmap = (cantidad_de_bloques + 7) / 8;
+        FILE *archivo = fopen("bitmap.dat", "wb");
+        if (archivo == NULL) {
+            perror("Error al abrir el archivo bitmap para escritura");
+            free(bitmap);
+            return;
+        }
+
+        fwrite(bitmap, 1, tamanio_bitmap, archivo);
+        fclose(archivo);
+
+        printf("Bloques marcados como ocupados y bitmap actualizado.\n");
+
+        // Crear metadata del archivo
+        crear_metadata(nombre_del_archivo, bloque_libre, tamanio_del_archivo_en_bytes);
+    }
+
+    // Liberar memoria
+    free(bitmap);
+
+    log_info(entrada_salida_logger, "PID: %d - Crear archivo: %s", pid, nombre_del_archivo);
+}
+
+    //1ero abrir y leer para chequear en el archivo bitmap si hay lugar
+    //ahi determino cual es la primera posicion en el bitmap que me puede guardar el arhivo de
+    //manera contigua
+
+    //2do cambiar la cantidad de bits que ocupe el archivo en el bitmap
+    //3ero crear el archivo de metadata con el nombre especificado y escribir la información del bloque inicial y el tamaño del archivo.
+    //4to actualizar el archivo de bloques
+
