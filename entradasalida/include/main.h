@@ -6,6 +6,7 @@
 #include "./configuracion_entrada_salida.h"
 #include "./entrada_salida_kernel.h"
 #include "./entrada_salida_memoria.h"
+#include "./filesystem.h"
 
 //Variables GLOBALES
 t_log* entrada_salida_logger;
@@ -20,5 +21,6 @@ interfaces_io tipo_interfaz;
 uint8_t tiempo_unidad_trabajo;
 int tamanio_de_bloque;
 int cantidad_de_bloques;
+int tamanio_bitarray_en_bytes;
 
 #endif

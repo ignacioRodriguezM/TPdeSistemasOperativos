@@ -91,6 +91,10 @@ typedef struct
 } t_paquete;
 
 
+int division_entera_redondear_arriba(int numerador, int denominador);
+
+
+
 int crear_conexion(char *ip, char* puerto);
 int iniciar_servidor(char* puerto, t_log* un_log, char* msj_server);
 int esperar_cliente(int socket_servidor, t_log* un_log,  char* nombre_cliente);

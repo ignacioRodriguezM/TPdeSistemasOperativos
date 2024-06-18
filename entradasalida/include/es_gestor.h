@@ -3,6 +3,7 @@
 
 #include <utils/shared.h>
 
+#include <commons/bitarray.h>
 #include <stdint.h>
 #include <pthread.h>
 #include <commons/txt.h>
@@ -21,5 +22,6 @@ extern interfaces_io tipo_interfaz;
 extern uint8_t tiempo_unidad_trabajo;
 extern int tamanio_de_bloque;
 extern int cantidad_de_bloques;
+extern int tamanio_bitarray_en_bytes;
 
 #endif
