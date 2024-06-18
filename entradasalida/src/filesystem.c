@@ -20,7 +20,7 @@ t_bitarray* leer_bitmap() {
     size_t leido = fread(bitarray, 1, tamanio_bitarray_en_bytes, archivo);
     if (leido != tamanio_bitarray_en_bytes) {
         perror("Error al leer el archivo bitmap");
-        free(bitmap);
+        free(bitarray);
         fclose(archivo);
         return NULL;
     }
@@ -164,11 +164,11 @@ void _crear_archivo_que_contiene_el_bitmap() {
     }
 
     size_t escrito = fwrite(bitmap->bitarray, 1, bitmap->size, archivo);
-    if (escrito != bitmap->size,) {
+    if (escrito != bitmap->size) {
         perror("Error al escribir en el archivo bitmap");
     }
 
-    printf("Archivo 'bitmap.dat' creado con tamaño %d bytes.\n", bitmap->size);
+    printf("Archivo 'bitmap.dat' creado con tamaño %lu bytes.\n", bitmap->size);
 
     bitarray_destroy(bitmap);
     fclose(archivo);

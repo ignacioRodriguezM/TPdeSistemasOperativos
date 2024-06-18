@@ -6,6 +6,7 @@
 #include "./configuracion_entrada_salida.h"
 #include "./entrada_salida_kernel.h"
 #include "./entrada_salida_memoria.h"
+#include "./filesystem.h"
 
 //Variables GLOBALES
 t_log* entrada_salida_logger;

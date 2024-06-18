@@ -259,7 +259,7 @@ void caso_io_fs_create(t_buffer *buffer_recibido)
     }
 
     // Buscar la primera secuencia de bloques libres
-    int bloque_libre = buscar_secuencia_libre(bitmap, cantidad_de_bloques, tamanio_del_archivo_en_bloques);
+    int bloque_libre = buscar_secuencia_libre(bitmap, tamanio_del_archivo_en_bloques);
 
     if (bloque_libre == -1)
     {
