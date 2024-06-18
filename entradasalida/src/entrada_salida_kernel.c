@@ -40,7 +40,6 @@ void atender_entrada_salida_kernel()
             else if (strcmp(operacion_a_realizar, "IO_STDIN_READ") == 0)
             {
                 caso_io_stdin_read(buffer_recibido);
-                
             }
             else if (strcmp(operacion_a_realizar, "IO_STDOUT_WRITE") == 0)
             {
@@ -48,7 +47,7 @@ void atender_entrada_salida_kernel()
             }
             else if (strcmp(operacion_a_realizar, "IO_FS_CREATE") == 0)
             {
-                //caso_io_fs_create(buffer_recibido);
+                caso_io_fs_create(buffer_recibido);
             }
             else if (strcmp(operacion_a_realizar, "IO_FS_DELETE") == 0)
             {
@@ -91,39 +90,38 @@ void presentarse_con_kernel()
     destruir_paquete(a_enviar);
 }
 
-char* obtener_mensaje_de_stdin(uint8_t tamanio){
-    
-    char* mensaje_final = malloc(tamanio);
+char *obtener_mensaje_de_stdin(uint8_t tamanio)
+{
 
-    char* leido = readline("> ");
+    char *mensaje_final = malloc(tamanio);
 
-    memcpy((char*)mensaje_final, (char*)leido, tamanio);
-    
+    char *leido = readline("> ");
+
+    memcpy((char *)mensaje_final, (char *)leido, tamanio);
+
     free(leido);
-    
+
     return mensaje_final;
 }
 
 void caso_io_stdin_read(t_buffer *buffer_recibido)
-{   
+{
     uint16_t pid = extraer_uint16_al_buffer(buffer_recibido);
     uint8_t tamanio = extraer_uint8_al_buffer(buffer_recibido);
     uint8_t cantidad_de_direcciones = extraer_uint8_al_buffer(buffer_recibido);
 
-    
-
-    char* mensaje = obtener_mensaje_de_stdin(tamanio);
+    char *mensaje = obtener_mensaje_de_stdin(tamanio);
 
     log_trace(entrada_salida_log_debug, "Mensaje a escribir : %s", mensaje);
 
     t_buffer *buffer_a_enviar_a_memoria = crear_buffer();
 
     //  [tamanio registro datos] [Cantidad] [TAM_A_escribir] [MARCO] [DESPLAZAMIENTO] [DATO] .. [TAM_A_escribir] [MARCO] [DESPLAZAMIENTO] [DATO] .....
-    
+
     cargar_uint8_al_buffer(buffer_a_enviar_a_memoria, tamanio);
     cargar_uint8_al_buffer(buffer_a_enviar_a_memoria, cantidad_de_direcciones);
-    
-    void* dato = (char*) mensaje;
+
+    void *dato = (char *)mensaje;
     for (int i = 0; i < cantidad_de_direcciones; i++)
     {
         uint8_t tam_a_escribir_por_pagina = extraer_uint8_al_buffer(buffer_recibido);
@@ -143,8 +141,6 @@ void caso_io_stdin_read(t_buffer *buffer_recibido)
 
     log_info(entrada_salida_logger, "PID: %u - Operacion: IO_STDIN_READ", pid);
 
-
-    
     t_paquete *a_enviar_a_memoria = crear_paquete(ESCRITURA, buffer_a_enviar_a_memoria);
 
     enviar_paquete(a_enviar_a_memoria, fd_memoria);
@@ -178,20 +174,18 @@ void caso_io_stdin_read(t_buffer *buffer_recibido)
 }
 
 void caso_io_stdout_write(t_buffer *buffer_recibido)
-{   
+{
     uint16_t pid = extraer_uint16_al_buffer(buffer_recibido);
     uint8_t tamanio = extraer_uint8_al_buffer(buffer_recibido);
     uint8_t cantidad_de_direcciones = extraer_uint8_al_buffer(buffer_recibido);
 
-    
-
     t_buffer *buffer_a_enviar_a_memoria = crear_buffer();
 
     // [TAM_A_leer] [MARCO] [DESPLAZAMIENTO] .. [TAM_A_leer] [MARCO] [DESPLAZAMIENTO] [DATO] .....
-    
+
     cargar_uint8_al_buffer(buffer_a_enviar_a_memoria, tamanio);
     cargar_uint8_al_buffer(buffer_a_enviar_a_memoria, cantidad_de_direcciones);
-    
+
     for (int i = 0; i < cantidad_de_direcciones; i++)
     {
         uint8_t tam_a_leer_por_pagina = extraer_uint8_al_buffer(buffer_recibido);
@@ -207,8 +201,6 @@ void caso_io_stdout_write(t_buffer *buffer_recibido)
 
     log_info(entrada_salida_logger, "PID: %u - Operacion: IO_STDOUT_WRITE", pid);
 
-
-    
     t_paquete *a_enviar_a_memoria = crear_paquete(LECTURA, buffer_a_enviar_a_memoria);
 
     enviar_paquete(a_enviar_a_memoria, fd_memoria);
@@ -224,7 +216,7 @@ void caso_io_stdout_write(t_buffer *buffer_recibido)
 
         char *mensaje_de_respuesta = extraer_string_al_buffer(recibido);
         log_trace(entrada_salida_log_debug, "RESPUESTA MEMORIA : %s", mensaje_de_respuesta);
-        
+
         printf("\n %s \n", mensaje_de_respuesta);
 
         destruir_buffer(recibido);
@@ -242,60 +234,55 @@ void caso_io_stdout_write(t_buffer *buffer_recibido)
         free(mensaje_de_respuesta);
     }
 }
+
+
 /*
-void caso_io_fs_create (t_buffer *buffer_recibido){
+1ero abrir y leer para chequear en el archivo bitmap si hay lugar
+    ahi determino cual es la primera posicion en el bitmap que me puede guardar el arhivo de manera contigua
+2do cambiar la cantidad de bits que ocupe el archivo en el bitmap
+3ero crear el archivo de metadata con el nombre especificado y escribir la información del bloque inicial y el tamaño del archivo.
+4to actualizar el archivo de bloques
+*/
+void caso_io_fs_create(t_buffer *buffer_recibido)
+{
+    // [PID] [NOMBRE_ARCHIVO]
     uint16_t pid = extraer_uint16_al_buffer(buffer_recibido);
     char *nombre_del_archivo = extraer_string_al_buffer(buffer_recibido);
-    uint8_t tamanio_del_archivo_en_bytes = extraer_uint8_al_buffer(buffer_recibido);
-    int tamanio_del_archivo_en_bloques = (tamanio_del_archivo_en_bytes + tamanio_de_bloque - 1) / tamanio_de_bloque;
+
+    int tamanio_del_archivo_en_bloques = 1;
 
     // Leer el bitmap
-    unsigned char *bitmap = leer_bitmap(cantidad_de_bloques);
-    if (bitmap == NULL) {
+    t_bitarray *bitmap = leer_bitmap(cantidad_de_bloques);
+    if (bitmap == NULL)
+    {
         return;
     }
 
     // Buscar la primera secuencia de bloques libres
     int bloque_libre = buscar_secuencia_libre(bitmap, cantidad_de_bloques, tamanio_del_archivo_en_bloques);
-    if (bloque_libre == -1) {
-        log_error(entrada_salida_logger, "Error: No hay suficientes bloques libres en el sistema de archivos.\n");
-    } else {
+
+    if (bloque_libre == -1)
+    {
+        log_error(entrada_salida_logger, "Error: No hay suficientes bloques libres CONTIGUOS en el sistema de archivos.\n");
+        return;
+    }
+    else
+    {
+
         printf("La primera secuencia de %d bloques libres comienza en el bloque %d.\n", tamanio_del_archivo_en_bloques, bloque_libre);
 
         // Marcar los bloques como ocupados
         marcar_bloques_ocupados(bitmap, bloque_libre, tamanio_del_archivo_en_bloques);
 
-        // Escribir el bitmap actualizado de vuelta al archivo
-        int tamanio_bitmap = (cantidad_de_bloques + 7) / 8;
-        FILE *archivo = fopen("bitmap.dat", "wb");
-        if (archivo == NULL) {
-            perror("Error al abrir el archivo bitmap para escritura");
-            free(bitmap);
-            return;
-        }
-
-        fwrite(bitmap, 1, tamanio_bitmap, archivo);
-        fclose(archivo);
-
-        printf("Bloques marcados como ocupados y bitmap actualizado.\n");
+        actualizar_archivo_bitmap(bitmap);
 
         // Crear metadata del archivo
-        crear_metadata(nombre_del_archivo, bloque_libre, tamanio_del_archivo_en_bytes);
+        crear_metadata(nombre_del_archivo, bloque_libre, tamanio_de_bloque);
     }
 
     // Liberar memoria
-    free(bitmap);
+    bitarray_destroy(bitmap);
 
     log_info(entrada_salida_logger, "PID: %d - Crear archivo: %s", pid, nombre_del_archivo);
 }
-
-    //1ero abrir y leer para chequear en el archivo bitmap si hay lugar
-    //ahi determino cual es la primera posicion en el bitmap que me puede guardar el arhivo de
-    //manera contigua
-
-    //2do cambiar la cantidad de bits que ocupe el archivo en el bitmap
-    //3ero crear el archivo de metadata con el nombre especificado y escribir la información del bloque inicial y el tamaño del archivo.
-    //4to actualizar el archivo de bloques
-
-*/
 

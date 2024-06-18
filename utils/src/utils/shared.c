@@ -278,6 +278,21 @@ void* serializar_paquete (t_paquete* un_paquete){
 
 	return coso;
 }
+int division_entera_redondear_arriba(int numerador, int denominador)
+{
+
+    // Verificar que el denominador no sea 0 para evitar la división por cero
+    if (denominador == 0)
+    {
+        printf("Error: división por cero.\n");
+        return -1; // O cualquier valor de error adecuado
+    }
+
+    // División entera redondeando hacia arriba
+    int resultado = (numerador + denominador - 1) / denominador;
+
+    return resultado;
+}
 
 void enviar_paquete (t_paquete* paquete, int conexion){
 	void* a_enviar = serializar_paquete(paquete);
