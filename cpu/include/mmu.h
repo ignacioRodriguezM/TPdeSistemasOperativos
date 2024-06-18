@@ -4,7 +4,7 @@
 #include "./c_gestor.h"
 #include "./tlb.h"
 
-Direcciones traducir_direccion_logica_a_fisicas(void *registroDireccion, uint8_t espacio);
+Direcciones traducir_direccion_logica_a_fisicas(void *registroDireccion, uint8_t tam_registro_direccion, uint8_t espacio);
 
 
 #endif

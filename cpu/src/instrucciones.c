@@ -242,11 +242,11 @@ void RESIZE(void *parametro)
 }
 
 // Lee el valor de memoria correspondiente a la Dirección Lógica que se encuentra en el Registro Dirección y lo almacena en el Registro Datos.
-void MOV_IN(void *registroDatos, void *registroDireccion, uint8_t tamanio_de_registro_datos)
+void MOV_IN(void *registroDatos, void *registroDireccion, uint8_t tamanio_de_registro_datos, uint8_t tamanio_de_registro_direccion)
 { // lee de memoria y lo guarda en un registro
     // aca debemos agregar la cantidad de marcos, etc respetando la manera de leer que esta en memoria
     PC_registro++;
-    Direcciones direcciones_fisicas = traducir_direccion_logica_a_fisicas(registroDireccion, tamanio_de_registro_datos);
+    Direcciones direcciones_fisicas = traducir_direccion_logica_a_fisicas(registroDireccion, tamanio_de_registro_direccion, tamanio_de_registro_datos);
 
     t_buffer *solicitud_de_lectura = crear_buffer();
 
@@ -296,10 +296,10 @@ void MOV_IN(void *registroDatos, void *registroDireccion, uint8_t tamanio_de_reg
 
 // MOV_OUT (Registro Dirección, Registro Datos):
 // Lee el valor del Registro Datos y lo escribe en la dirección física de memoria obtenida a partir de la Dirección Lógica almacenada en el Registro Dirección.
-void MOV_OUT(void *registroDireccion, void *registroDatos, uint8_t tamanio_de_registro_datos)
+void MOV_OUT(void *registroDireccion, void *registroDatos, uint8_t tamanio_de_registro_direccion, uint8_t tamanio_de_registro_datos)
 {
     PC_registro++;
-    Direcciones direcciones_fisicas = traducir_direccion_logica_a_fisicas(registroDireccion, tamanio_de_registro_datos);
+    Direcciones direcciones_fisicas = traducir_direccion_logica_a_fisicas(registroDireccion, tamanio_de_registro_direccion, tamanio_de_registro_datos);
 
     t_buffer *solicitud_de_escritura = crear_buffer();
 
@@ -475,11 +475,12 @@ void COPY_STRING(uint8_t tamanio_a_copiar)
     // uint32_t registroDestino = DI_registro;
 
     PC_registro++;
-    Direcciones direcciones_fisicas_origen = traducir_direccion_logica_a_fisicas(&SI_registro, tamanio_a_copiar);
+    uint8_t tamanio = sizeof(uint32_t);
+    Direcciones direcciones_fisicas_origen = traducir_direccion_logica_a_fisicas(&SI_registro,tamanio, tamanio_a_copiar);
 
     void *string_a_escribir = obtener_string_de_memoria(direcciones_fisicas_origen, tamanio_a_copiar);
 
-    Direcciones direcciones_fisicas_destino = traducir_direccion_logica_a_fisicas(&DI_registro, tamanio_a_copiar);
+    Direcciones direcciones_fisicas_destino = traducir_direccion_logica_a_fisicas(&DI_registro,tamanio, tamanio_a_copiar);
 
     escribir_string_en_memoria(direcciones_fisicas_destino, string_a_escribir, tamanio_a_copiar);
 
@@ -661,7 +662,7 @@ void IO_FS_WRITE(void *nombre_de_la_interfaz, void *nombre_del_archivo, void *re
         destruir_paquete(a_enviar);
 }
 
-void IO_STDIN_READ(void *nombre_de_la_interfaz, void *registro_direccion, void *registro_tamanio, uint8_t tamanio_del_registro)
+void IO_STDIN_READ(void *nombre_de_la_interfaz, void *registro_direccion, void *registro_tamanio, uint8_t tamanio_de_registro_direccion, uint8_t tamanio_del_registro)
 {
 
     char *nombre_interfaz = (char *)nombre_de_la_interfaz;
@@ -675,7 +676,7 @@ void IO_STDIN_READ(void *nombre_de_la_interfaz, void *registro_direccion, void *
         tamanio = *(uint8_t*) registro_tamanio;
     }
 
-    Direcciones direcciones_fisicas = traducir_direccion_logica_a_fisicas(registro_direccion, tamanio);
+    Direcciones direcciones_fisicas = traducir_direccion_logica_a_fisicas(registro_direccion, tamanio_de_registro_direccion, tamanio);
 
     PC_registro++;
     bloq_flag = false;
@@ -730,7 +731,7 @@ void IO_STDIN_READ(void *nombre_de_la_interfaz, void *registro_direccion, void *
 
 }
 
-void IO_STDOUT_WRITE(void *nombre_de_la_interfaz, void *registro_direccion, void *registro_tamanio, uint8_t tamanio_del_registro){
+void IO_STDOUT_WRITE(void *nombre_de_la_interfaz, void *registro_direccion, void *registro_tamanio,uint8_t tamanio_de_registro_direccion, uint8_t tamanio_del_registro){
     
     char *nombre_interfaz = (char *)nombre_de_la_interfaz;
 
@@ -744,7 +745,7 @@ void IO_STDOUT_WRITE(void *nombre_de_la_interfaz, void *registro_direccion, void
     }
 
 
-    Direcciones direcciones_fisicas = traducir_direccion_logica_a_fisicas(registro_direccion, tamanio);
+    Direcciones direcciones_fisicas = traducir_direccion_logica_a_fisicas(registro_direccion,tamanio_de_registro_direccion, tamanio);
 
     PC_registro++;
     bloq_flag = false;

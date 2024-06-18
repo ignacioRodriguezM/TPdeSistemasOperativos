@@ -48,7 +48,7 @@ void atender_entrada_salida_kernel()
             }
             else if (strcmp(operacion_a_realizar, "IO_FS_CREATE") == 0)
             {
-                caso_io_fs_create(buffer_recibido);
+                //caso_io_fs_create(buffer_recibido);
             }
             else if (strcmp(operacion_a_realizar, "IO_FS_DELETE") == 0)
             {
@@ -242,7 +242,7 @@ void caso_io_stdout_write(t_buffer *buffer_recibido)
         free(mensaje_de_respuesta);
     }
 }
-
+/*
 void caso_io_fs_create (t_buffer *buffer_recibido){
     uint16_t pid = extraer_uint16_al_buffer(buffer_recibido);
     char *nombre_del_archivo = extraer_string_al_buffer(buffer_recibido);
@@ -296,4 +296,6 @@ void caso_io_fs_create (t_buffer *buffer_recibido){
     //2do cambiar la cantidad de bits que ocupe el archivo en el bitmap
     //3ero crear el archivo de metadata con el nombre especificado y escribir la información del bloque inicial y el tamaño del archivo.
     //4to actualizar el archivo de bloques
+
+*/
 

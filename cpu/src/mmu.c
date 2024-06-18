@@ -29,12 +29,19 @@ int division_entera_redondear_arriba(int numerador, int denominador)
     return resultado;
 }
 
-Direcciones _componer_direcciones(void *registroDireccion, uint8_t espacio)
+Direcciones _componer_direcciones(void *registroDireccion, uint8_t tam_direccion, uint8_t espacio)
 {
 
     Direcciones direcciones;
+    uint32_t valor_registro_direccion;
+    
+    if(tam_direccion == sizeof(uint32_t)){
+    valor_registro_direccion = *(uint32_t *)registroDireccion;
+    }
+    else{
+    valor_registro_direccion = *(uint8_t *)registroDireccion;
+    }
 
-    uint32_t valor_registro_direccion = *(uint32_t *)registroDireccion;
 
     direcciones.cantidad_direcciones = 1;
 
@@ -126,10 +133,10 @@ uint16_t solicitar_marco_a_memoria(uint16_t pid, uint16_t pagina)
     }
 }
 
-Direcciones traducir_direccion_logica_a_fisicas(void *registroDireccion, uint8_t espacio)
+Direcciones traducir_direccion_logica_a_fisicas(void *registroDireccion, uint8_t tam_registro_direccion, uint8_t espacio)
 {
 
-    Direcciones direcciones = _componer_direcciones(registroDireccion, espacio);
+    Direcciones direcciones = _componer_direcciones(registroDireccion, tam_registro_direccion, espacio);
 
     
     for (int i = 0; i < direcciones.cantidad_direcciones; i++)

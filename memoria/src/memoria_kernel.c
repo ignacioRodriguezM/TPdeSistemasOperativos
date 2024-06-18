@@ -64,7 +64,7 @@ void crear_proceso()
     }
 
     char linea[256];
-    proceso->instrucciones = malloc(100 * sizeof(char *));
+    proceso->instrucciones = malloc(200 * sizeof(char *));
     while (fgets(linea, 256, archivo) != NULL)
     {
         // Quita el salto de línea si existe
@@ -78,7 +78,7 @@ void crear_proceso()
         proceso->cantidad_instrucciones++;
 
         // Verifica si se ha alcanzado el límite máximo de líneas
-        if (proceso->cantidad_instrucciones >= 100)
+        if (proceso->cantidad_instrucciones >= 200)
         {
             fprintf(stderr, "Se ha alcanzado el límite máximo de líneas\n");
             break;
