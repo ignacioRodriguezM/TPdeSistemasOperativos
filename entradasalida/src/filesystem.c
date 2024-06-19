@@ -9,7 +9,7 @@ t_bitarray *leer_bitmap()
     char full_path[256];
     snprintf(full_path, sizeof(full_path), "%sbitmap.dat", path_base);
 
-    FILE *archivo = fopen(full_path, "r");
+    FILE *archivo = fopen(full_path, "rb");
     if (archivo == NULL)
     {
         perror("Error al abrir el archivo bitmap");
@@ -39,13 +39,31 @@ t_bitarray *leer_bitmap()
     return bitmap;
 }
 
+
+// Pone ceros en las posiciones correspondientes del bitmap
+void liberar_bloques_del_bitmap (t_bitarray *bitmap, int bloque_inicio_barrido, int longitud)
+{
+    for(int i=0; i<longitud ; i++)
+    {
+        if(!bitarray_test_bit(bitmap, bloque_inicio_barrido + i))
+        {
+            log_error(entrada_salida_log_debug, "El bloque %d ya estaba libre (ERROR GRAVE, REVISAR) \n", bloque_inicio_barrido + i);
+        }
+        else
+        {
+            bitarray_clean_bit(bitmap, bloque_inicio_barrido + i);
+            // Limpia el bit correspondiente en el bitmap
+        }
+    }
+}
+
 // Escribir el bitmap actualizado de vuelta al archivo
 void actualizar_archivo_bitmap(t_bitarray *bitmap)
 {
     char full_path[256];
     snprintf(full_path, sizeof(full_path), "%sbitmap.dat", path_base);
 
-    FILE *archivo = fopen(full_path, "w");
+    FILE *archivo = fopen(full_path, "wb");
     if (archivo == NULL)
     {
         perror("Error al abrir el archivo bitmap para escritura");
@@ -113,6 +131,19 @@ void crear_metadata(const char *nombre_archivo, int bloque_inicial, int tamanio_
 
     printf("Archivo de metadata '%s' creado.\n", full_path);
 }
+void borrar_archivo_metadata(char* nombre_del_archivo)
+{
+    char full_path[256];
+    snprintf(full_path, sizeof(full_path), "%s%s", path_base, nombre_del_archivo);
+
+    // Eliminar el archivo
+    if (remove(full_path) != 0) {
+        perror("Error al borrar el archivo de metadata");
+    } else {
+        printf("Archivo de metadata '%s' borrado.\n", full_path);
+    }
+
+}
 
 METADATA leer_metadata(char* nombre_archivo)
 {
@@ -151,7 +182,7 @@ METADATA leer_metadata(char* nombre_archivo)
 // Crear un archivo con un tamaño específico
 void crear_archivo(char *nombre, int tamanio_del_archivo)
 {
-    FILE *archivo = fopen(nombre, "w");
+    FILE *archivo = fopen(nombre, "wb");
     if (archivo == NULL)
     {
         perror("Error al abrir el archivo");
@@ -232,7 +263,7 @@ void _verificar_si_existe_archivo_bitmap()
 
     FILE *file;
     // Intenta abrir el archivo en modo de lectura
-    file = fopen(full_path, "r");
+    file = fopen(full_path, "rb");
 
     if (file == NULL)
     {
@@ -256,7 +287,7 @@ void _crear_archivo_que_contiene_el_bitmap(char *ruta)
 
     t_bitarray *bitmap = bitarray_create_with_mode(bitarray, tamanio_bitarray_en_bytes, LSB_FIRST);
 
-    FILE *archivo = fopen(ruta, "w");
+    FILE *archivo = fopen(ruta, "wb");
     if (archivo == NULL)
     {
         perror("Error al abrir el archivo bitmap");

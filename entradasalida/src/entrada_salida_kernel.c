@@ -21,21 +21,8 @@ void atender_entrada_salida_kernel()
 
             if (strcmp(operacion_a_realizar, "IO_GEN_SLEEP") == 0)
             {
-                //[pid][unidades de trabajo]
-                uint16_t pid = extraer_uint16_al_buffer(buffer_recibido);
-                uint16_t unidades_de_trabajo = extraer_uint8_al_buffer(buffer_recibido);
-                destruir_buffer(buffer_recibido);
-                log_info(entrada_salida_logger, "PID: %u - Operacion: %s", pid, operacion_a_realizar);
-                esperarMilisegundos(unidades_de_trabajo * tiempo_unidad_trabajo);
-                // DEVOLVER CONFIRMACION AL KERNEL
-                t_buffer *buffer_a_enviar = crear_buffer();
-                cargar_string_al_buffer(buffer_a_enviar, nombre); //[nombre][pid]
-                cargar_uint16_al_buffer(buffer_a_enviar, pid);
-                t_paquete *a_enviar = crear_paquete(FIN_DE_EJECUCION_DE_IO, buffer_a_enviar);
+                caso_io_gen_sleep(buffer_recibido);
 
-                enviar_paquete(a_enviar, fd_kernel);
-
-                destruir_paquete(a_enviar);
             }
             else if (strcmp(operacion_a_realizar, "IO_STDIN_READ") == 0)
             {
@@ -51,6 +38,7 @@ void atender_entrada_salida_kernel()
             }
             else if (strcmp(operacion_a_realizar, "IO_FS_DELETE") == 0)
             {
+                caso_io_fs_delete(buffer_recibido);
             }
             else if (strcmp(operacion_a_realizar, "IO_FS_TRUNCATE") == 0)
             {
@@ -78,7 +66,6 @@ void atender_entrada_salida_kernel()
 }
 void presentarse_con_kernel()
 {
-
     t_buffer *buffer = crear_buffer();
     cargar_string_al_buffer(buffer, nombre);
     cargar_choclo_al_buffer(buffer, &tipo_interfaz, sizeof(interfaces_io));
@@ -88,6 +75,31 @@ void presentarse_con_kernel()
     enviar_paquete(a_enviar, fd_kernel);
 
     destruir_paquete(a_enviar);
+}
+void enviar_confirmacion_a_kernel (uint16_t pid)
+{
+    // DEVOLVER CONFIRMACION AL KERNEL
+        t_buffer *buffer_a_enviar = crear_buffer();
+        cargar_string_al_buffer(buffer_a_enviar, nombre); //[nombre][pid]
+        cargar_uint16_al_buffer(buffer_a_enviar, pid);
+        t_paquete *a_enviar = crear_paquete(FIN_DE_EJECUCION_DE_IO, buffer_a_enviar);
+
+        enviar_paquete(a_enviar, fd_kernel);
+
+        destruir_paquete(a_enviar);
+}
+
+void caso_io_gen_sleep(t_buffer *buffer_recibido)
+{
+    //[pid][unidades de trabajo]
+    uint16_t pid = extraer_uint16_al_buffer(buffer_recibido);
+    uint16_t unidades_de_trabajo = extraer_uint8_al_buffer(buffer_recibido);
+    destruir_buffer(buffer_recibido);
+    log_info(entrada_salida_logger, "PID: %u - Operacion: IO_GEN_SLEEP", pid);
+
+    esperarMilisegundos(unidades_de_trabajo * tiempo_unidad_trabajo);
+
+    enviar_confirmacion_a_kernel(pid);
 }
 
 char *obtener_mensaje_de_stdin(uint8_t tamanio)
@@ -159,15 +171,7 @@ void caso_io_stdin_read(t_buffer *buffer_recibido)
 
         destruir_buffer(recibido);
 
-        // DEVOLVER CONFIRMACION AL KERNEL
-        t_buffer *buffer_a_enviar = crear_buffer();
-        cargar_string_al_buffer(buffer_a_enviar, nombre); //[nombre][pid]
-        cargar_uint16_al_buffer(buffer_a_enviar, pid);
-        t_paquete *a_enviar = crear_paquete(FIN_DE_EJECUCION_DE_IO, buffer_a_enviar);
-
-        enviar_paquete(a_enviar, fd_kernel);
-
-        destruir_paquete(a_enviar);
+        enviar_confirmacion_a_kernel(pid);
 
         free(mensaje_de_respuesta);
     }
@@ -221,15 +225,7 @@ void caso_io_stdout_write(t_buffer *buffer_recibido)
 
         destruir_buffer(recibido);
 
-        // DEVOLVER CONFIRMACION AL KERNEL
-        t_buffer *buffer_a_enviar = crear_buffer();
-        cargar_string_al_buffer(buffer_a_enviar, nombre); //[nombre][pid]
-        cargar_uint16_al_buffer(buffer_a_enviar, pid);
-        t_paquete *a_enviar = crear_paquete(FIN_DE_EJECUCION_DE_IO, buffer_a_enviar);
-
-        enviar_paquete(a_enviar, fd_kernel);
-
-        destruir_paquete(a_enviar);
+        enviar_confirmacion_a_kernel(pid);
 
         free(mensaje_de_respuesta);
     }
@@ -248,10 +244,12 @@ void caso_io_fs_create(t_buffer *buffer_recibido)
     uint16_t pid = extraer_uint16_al_buffer(buffer_recibido);
     char *nombre_del_archivo = extraer_string_al_buffer(buffer_recibido);
 
+    esperarMilisegundos(tiempo_unidad_trabajo);
+    
     int tamanio_del_archivo_en_bloques = 1;
 
     // Leer el bitmap
-    t_bitarray *bitmap = leer_bitmap(cantidad_de_bloques);
+    t_bitarray *bitmap = leer_bitmap();
     if (bitmap == NULL)
     {
         return;
@@ -283,6 +281,10 @@ void caso_io_fs_create(t_buffer *buffer_recibido)
     bitarray_destroy(bitmap);
 
     log_info(entrada_salida_logger, "PID: %d - Crear archivo: %s", pid, nombre_del_archivo);
+
+    free(nombre_del_archivo);
+
+    enviar_confirmacion_a_kernel(pid);
 }
 
 void caso_io_fs_delete(t_buffer *buffer_recibido)
@@ -291,5 +293,28 @@ void caso_io_fs_delete(t_buffer *buffer_recibido)
     uint16_t pid = extraer_uint16_al_buffer(buffer_recibido);
     char *nombre_del_archivo = extraer_string_al_buffer(buffer_recibido);
 
-    
+    esperarMilisegundos(tiempo_unidad_trabajo);
+
+    METADATA info_archivo = leer_metadata(nombre_del_archivo);
+
+    t_bitarray *bitmap = leer_bitmap();
+    if (bitmap == NULL)
+    {
+        return;
+    }
+
+    // calcular cantidad de bloques ocupados por archivo
+    int bloques_ocupados = division_entera_redondear_arriba(info_archivo.tam_bytes, tamanio_de_bloque);
+
+    liberar_bloques_del_bitmap(bitmap, info_archivo.bloque_inicial, bloques_ocupados);
+    actualizar_archivo_bitmap(bitmap);
+    bitarray_destroy(bitmap);
+
+    borrar_archivo_metadata(nombre_del_archivo);
+
+    log_info(entrada_salida_logger, "PID: %d - Eliminar archivo: %s", pid, nombre_del_archivo);
+
+    free(nombre_del_archivo);
+
+    enviar_confirmacion_a_kernel(pid);
 }
