@@ -9,6 +9,12 @@
 #include <commons/txt.h>
 #include <commons/collections/list.h>
 
+typedef struct{
+    int bloque_inicial;
+    int tam_bytes;
+}METADATA;
+
+
 //Variables GLOBALES
 extern t_log* entrada_salida_logger;
 extern t_log* entrada_salida_log_debug;
@@ -20,8 +26,13 @@ extern int fd_kernel;
 extern char* nombre;
 extern interfaces_io tipo_interfaz;
 extern uint8_t tiempo_unidad_trabajo;
+
+
 extern int tamanio_de_bloque;
 extern int cantidad_de_bloques;
 extern int tamanio_bitarray_en_bytes;
+extern char* path_base;
+
+
 
 #endif

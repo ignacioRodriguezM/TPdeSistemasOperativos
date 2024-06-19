@@ -4,9 +4,12 @@
 #include "./es_gestor.h"
 #include "./configuracion_entrada_salida.h"
 
-///////////// funciones para crear archivos ///////
+///////////// funcion para crear archivos ///////
 void crear_archivo(char *nombre, int tamanio_del_archivo);
+
+///////////// funciones para operar metadatas  ///////
 void crear_metadata(const char *nombre_archivo, int bloque_inicial, int tamanio_archivo_en_bytes);
+METADATA leer_metadata(char* nombre_archivo);
 
 
 ///////////// funciones para operar el bitmap ///////
@@ -20,7 +23,10 @@ void marcar_bloques_ocupados(t_bitarray* bitmap, int inicio, int longitud);
 ///////////// inicializaciones ///////
 void inicializar_estructuras_filesystem ();
 
-void _crear_archivo_que_seria_el_disco();
-void _crear_archivo_que_contiene_el_bitmap();
+void _verificar_si_existe_archivo_bloques();
+void _verificar_si_existe_archivo_bitmap();
+void _verificar_que_la_ruta_exista();
+
+void _crear_archivo_que_contiene_el_bitmap(char* ruta);
 
 #endif

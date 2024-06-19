@@ -235,7 +235,6 @@ void caso_io_stdout_write(t_buffer *buffer_recibido)
     }
 }
 
-
 /*
 1ero abrir y leer para chequear en el archivo bitmap si hay lugar
     ahi determino cual es la primera posicion en el bitmap que me puede guardar el arhivo de manera contigua
@@ -263,7 +262,7 @@ void caso_io_fs_create(t_buffer *buffer_recibido)
 
     if (bloque_libre == -1)
     {
-        log_error(entrada_salida_logger, "Error: No hay suficientes bloques libres CONTIGUOS en el sistema de archivos.\n");
+        log_error(entrada_salida_logger, "Error: No hay suficiente espacio en el sistema de archivos.\n");
         return;
     }
     else
@@ -286,3 +285,11 @@ void caso_io_fs_create(t_buffer *buffer_recibido)
     log_info(entrada_salida_logger, "PID: %d - Crear archivo: %s", pid, nombre_del_archivo);
 }
 
+void caso_io_fs_delete(t_buffer *buffer_recibido)
+{
+    // [PID] [NOMBRE_ARCHIVO]
+    uint16_t pid = extraer_uint16_al_buffer(buffer_recibido);
+    char *nombre_del_archivo = extraer_string_al_buffer(buffer_recibido);
+
+    
+}

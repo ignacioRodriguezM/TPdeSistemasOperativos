@@ -94,6 +94,9 @@ int main()
         tiempo_unidad_trabajo = config_valores.tiempo_unidad_trabajo;
         tamanio_de_bloque = config_valores.block_size;
         cantidad_de_bloques = config_valores.block_count;
+        path_base = config_valores.path_base_dialfs;
+        tamanio_bitarray_en_bytes = division_entera_redondear_arriba(cantidad_de_bloques, 8); // 8 bits son 1 byte.
+
 
         inicializar_estructuras_filesystem();
 
