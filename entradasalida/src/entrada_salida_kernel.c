@@ -42,6 +42,7 @@ void atender_entrada_salida_kernel()
             }
             else if (strcmp(operacion_a_realizar, "IO_FS_TRUNCATE") == 0)
             {
+                caso_io_fs_truncate(buffer_recibido);
             }
             else if (strcmp(operacion_a_realizar, "IO_FS_WRITE") == 0)
             {

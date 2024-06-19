@@ -14,5 +14,6 @@ void caso_io_stdout_write(t_buffer* buffer_recibido);
 
 void caso_io_fs_create(t_buffer* buffer_recibido);
 void caso_io_fs_delete(t_buffer *buffer_recibido);
+void caso_io_fs_truncate (t_buffer* buffer_recibido);
 
 #endif
