@@ -14,7 +14,7 @@ void quitar_de_archivos(char *nombre_archivo)
 {
 
     t_link_element *current = archivos.lista_archivos->head;
-    for (int i = 0, i < archivos.cantidad_archivos, i++)
+    for (int i = 0; i < archivos.cantidad_archivos; i++)
     {
         char *string_a_comparar = (char *)current->data;
         if (strcmp(nombre_archivo, string_a_comparar) == 0)
@@ -54,9 +54,12 @@ void compactar_hacia_archivo(char* nombre_del_archivo)
 
     int bloques_ocupados = division_entera_redondear_arriba(*puntero_buffer, tamanio_de_bloque);
 
+    char *bitarray = (char *)malloc(tamanio_bitarray_en_bytes);
+    memset(bitarray, 0, tamanio_bitarray_en_bytes);
+
     t_bitarray *bitmap = bitarray_create_with_mode(bitarray, tamanio_bitarray_en_bytes, LSB_FIRST);
     
-    for(int i=0 ; i< bloques_ocupados, i++)
+    for(int i=0 ; i < bloques_ocupados; i++)
     {
         bitarray_set_bit(bitmap, i);
     }
@@ -109,7 +112,7 @@ void compactar (char *nombre_archivo, char* buffer, int *puntero_buffer){
         perror("Error al leer el archivo bitmap");
         free(buffer_viejo);
         fclose(file);
-        return NULL;
+        return;
     }
 
     memcpy(buffer + *puntero_buffer , buffer_viejo + (info_archivo.bloque_inicial * tamanio_de_bloque) , info_archivo.tam_bytes);   
@@ -131,7 +134,7 @@ t_bitarray *leer_bitmap()
     if (archivo == NULL)
     {
         perror("Error al abrir el archivo bitmap");
-        return NULL;
+        
     }
 
     char *bitarray = (char *)malloc(tamanio_bitarray_en_bytes);
@@ -139,7 +142,7 @@ t_bitarray *leer_bitmap()
     {
         perror("Error al reservar memoria para el bitmap");
         fclose(archivo);
-        return NULL;
+        
     }
 
     size_t leido = fread(bitarray, 1, tamanio_bitarray_en_bytes, archivo);
@@ -148,7 +151,7 @@ t_bitarray *leer_bitmap()
         perror("Error al leer el archivo bitmap");
         free(bitarray);
         fclose(archivo);
-        return NULL;
+        
     }
 
     t_bitarray *bitmap = bitarray_create_with_mode(bitarray, tamanio_bitarray_en_bytes, LSB_FIRST);

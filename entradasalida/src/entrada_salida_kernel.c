@@ -368,7 +368,7 @@ void caso_io_fs_truncate (t_buffer* buffer_recibido)
                 int ultimo_bloquev2 = info_archivo_actualizada.bloque_inicial + bloques_ocupadosv2;
 
                 marcar_bloques_ocupados(bitmap_actualizado, ultimo_bloquev2, cantidad_bloques_a_ocupar);
-                
+
             }
         }
     }
