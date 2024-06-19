@@ -99,11 +99,49 @@ int buscar_secuencia_libre(t_bitarray *bitmap, int longitud)
     return -1; // No se encontró una secuencia libre de la longitud requerida
 }
 
+bool chquear_bloques_libres_contiguos(t_bitarray *bitmap, int primer_bloque_a_chequear, int cantidad)
+{
+    int bloque_que_estoy_chequeando = primer_bloque_a_chequear;
+
+    for(int i=0; i < cantidad; i++)
+    {
+        if(bloque_que_estoy_chequeando >= cantidad_de_bloques)
+        {
+            return false;
+        }
+        if(bitarray_test_bit(bitmap, bloque_que_estoy_chequeando))
+        {
+            return false;
+        }
+        bloque_que_estoy_chequeando ++;
+    }
+
+    return true;
+}
+
+int cantidad_de_bloques_libres(t_bitarray* bitmap)
+{
+    int contador = 0;
+    for(int i=0 ; i < cantidad_de_bloques ; i++)
+    {
+        if( ! bitarray_test_bit(bitmap, i))
+        {
+            contador++;
+        }
+    }
+    
+    return contador;
+}
+
 // Marcar los bloques como ocupados en el bitmap
 void marcar_bloques_ocupados(t_bitarray *bitmap, int bloque_inicio, int longitud)
 {
     for (int i = 0; i < longitud; i++)
     {
+        if(bitarray_test_bit(bitmap, bloque_inicio + i))
+        {
+            log_error(entrada_salida_log_debug, "EL BIT YA ESTABA OCUPADO, FALLO GRAVE");
+        }
         bitarray_set_bit(bitmap, bloque_inicio + i);
     }
 }
@@ -142,6 +180,29 @@ void borrar_archivo_metadata(char* nombre_del_archivo)
     } else {
         printf("Archivo de metadata '%s' borrado.\n", full_path);
     }
+
+}
+
+void actualizar_archivo_metadata (char * nombre_archivo, int bloque_inicial, int nuevo_tamanio_archivo_en_bytes)
+{
+    char full_path[256];
+    snprintf(full_path, sizeof(full_path), "%s%s", path_base, nombre_archivo);
+
+    FILE *archivo = fopen(full_path, "w");
+    if (archivo == NULL)
+    {
+        perror("Error al crear el archivo de metadata");
+        return;
+    }
+
+    // Escribir metadata
+    fprintf(archivo, "BLOQUE_INICIAL=%d\n", bloque_inicial);
+    fprintf(archivo, "TAMANIO_ARCHIVO=%d\n", nuevo_tamanio_archivo_en_bytes);
+
+    // Cerrar el archivo
+    fclose(archivo);
+
+    printf("Archivo de metadata '%s' actualizado.\n", full_path);
 
 }
 

@@ -10,6 +10,7 @@ void crear_archivo(char *nombre, int tamanio_del_archivo);
 ///////////// funciones para operar metadatas  ///////
 void crear_metadata(const char *nombre_archivo, int bloque_inicial, int tamanio_archivo_en_bytes);
 void borrar_archivo_metadata(char* nombre_del_archivo);
+void actualizar_archivo_metadata (char * nombre_archivo, int bloque_inicial, int nuevo_tamanio_archivo_en_bytes);
 
 METADATA leer_metadata(char* nombre_archivo);
 
@@ -18,9 +19,11 @@ METADATA leer_metadata(char* nombre_archivo);
 t_bitarray* leer_bitmap();
 void actualizar_archivo_bitmap (t_bitarray* bitmap);
 
+int cantidad_de_bloques_libres(t_bitarray* bitmap);
 int buscar_secuencia_libre(t_bitarray* bitmap, int longitud);
 void marcar_bloques_ocupados(t_bitarray* bitmap, int inicio, int longitud);
 void liberar_bloques_del_bitmap (t_bitarray *bitmap, int bloque_inicio_barrido, int longitud);
+bool chquear_bloques_libres_contiguos(t_bitarray *bitmap, int primer_bloque_a_chequear, int cantidad);
 
 
 ///////////// inicializaciones ///////

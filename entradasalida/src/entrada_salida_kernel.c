@@ -318,3 +318,66 @@ void caso_io_fs_delete(t_buffer *buffer_recibido)
 
     enviar_confirmacion_a_kernel(pid);
 }
+
+void caso_io_fs_truncate (t_buffer* buffer_recibido)
+{
+    // [PID] [NOMBRE_ARCHIVO] [TAMANIO]
+    uint16_t pid = extraer_uint16_al_buffer(buffer_recibido);
+    char *nombre_del_archivo = extraer_string_al_buffer(buffer_recibido);
+    uint16_t nuevo_tamanio = extraer_uint16_al_buffer(buffer_recibido);
+
+    esperarMilisegundos(tiempo_unidad_trabajo);
+
+    METADATA info_archivo = leer_metadata(nombre_del_archivo);
+
+    t_bitarray *bitmap = leer_bitmap();
+    if (bitmap == NULL)
+    {
+        return;
+    }
+
+    int bloques_ocupados = division_entera_redondear_arriba(info_archivo.tam_bytes, tamanio_de_bloque);
+    int nuevo_tam_en_bloques = division_entera_redondear_arriba(nuevo_tamanio, tamanio_de_bloque);
+
+    if(nuevo_tamanio > info_archivo.tam_bytes) // AGRANDAR
+    {
+        int cantidad_bloques_a_ocupar = nuevo_tam_en_bloques - bloques_ocupados;
+        int ultimo_bloque = info_archivo.bloque_inicial + bloques_ocupados;
+        if(chquear_bloques_libres_contiguos(bitmap, ultimo_bloque, cantidad_bloques_a_ocupar))
+        {
+            marcar_bloques_ocupados(bitmap, ultimo_bloque, cantidad_bloques_a_ocupar);
+        }
+        else
+        {
+            if(cantidad_de_bloques_libres(bitmap) < cantidad_bloques_a_ocupar)
+            {
+                log_error(entrada_salida_log_debug, "NO SE PUEDE TRUNCAR EL ARCHIVO POR FALTA DE BLOQUES LIBRES");
+            }
+            else{
+                //COMPACTAR;
+            }
+        }
+    }
+    else if(nuevo_tamanio < info_archivo.tam_bytes) //ACHICAR
+    {
+        int cantidad_bloques_a_liberar = bloques_ocupados - nuevo_tam_en_bloques;
+        liberar_bloques_del_bitmap(bitmap, (info_archivo.bloque_inicial + nuevo_tam_en_bloques), cantidad_bloques_a_liberar);
+    }
+    else
+    {
+        log_error(entrada_salida_log_debug, "El tamanio al que se quiere truncar es el tamanio actual");
+    }
+
+
+    actualizar_archivo_bitmap(bitmap);
+    bitarray_destroy(bitmap);
+
+    actualizar_archivo_metadata (nombre_del_archivo, info_archivo.bloque_inicial, nuevo_tamanio);
+
+    log_info(entrada_salida_logger, "PID: %d - Truncar archivo: %s - %u", pid, nombre_del_archivo, nuevo_tamanio);
+
+    free(nombre_del_archivo);
+
+    enviar_confirmacion_a_kernel(pid);
+
+}
