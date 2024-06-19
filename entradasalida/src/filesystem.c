@@ -2,6 +2,124 @@
 #include "../include/configuracion_entrada_salida.h"
 #include <sys/stat.h> // SOLO PARA MKDIR
 
+void agregar_a_archivos(char *nombre_archivo)
+{
+    archivos.cantidad_archivos++;
+    list_add(archivos.lista_archivos, nombre_archivo);
+
+    //agregarlo al file de _creados
+    
+}
+void quitar_de_archivos(char *nombre_archivo)
+{
+
+    t_link_element *current = archivos.lista_archivos->head;
+    for (int i = 0, i < archivos.cantidad_archivos, i++)
+    {
+        char *string_a_comparar = (char *)current->data;
+        if (strcmp(nombre_archivo, string_a_comparar) == 0)
+        {
+            list_remove(archivos.lista_archivos, i);
+            archivos.cantidad_archivos--;
+            return;
+        }
+        else
+        {
+            current = current->next;
+        }
+    }
+
+    current = NULL;
+}
+
+void compactar_hacia_archivo(char* nombre_del_archivo)
+{
+    //esto seria como crear un nuevo disco temporal
+    int tamanio_del_archivo = tamanio_de_bloque * cantidad_de_bloques;
+    char *buffer = (char *)malloc(tamanio_del_archivo);
+
+    int* puntero_buffer = malloc(sizeof(int));
+
+    for(int i=0; i<archivos.cantidad_archivos; i++)
+    {
+        t_link_element *current = archivos.lista_archivos->head;
+        char *string_a_comparar = (char *)current->data;
+        if(strcmp(nombre_del_archivo, string_a_comparar) != 0)
+        {
+            compactar(string_a_comparar, buffer, puntero_buffer);
+        }
+    }
+
+    compactar(nombre_del_archivo, buffer, puntero_buffer);
+
+    int bloques_ocupados = division_entera_redondear_arriba(*puntero_buffer, tamanio_de_bloque);
+
+    t_bitarray *bitmap = bitarray_create_with_mode(bitarray, tamanio_bitarray_en_bytes, LSB_FIRST);
+    
+    for(int i=0 ; i< bloques_ocupados, i++)
+    {
+        bitarray_set_bit(bitmap, i);
+    }
+
+    actualizar_archivo_bitmap(bitmap);
+
+    free(bitmap);    
+
+    free(puntero_buffer);
+
+    FILE *archivo = fopen(nombre, "wb");
+    if (archivo == NULL)
+    {
+        perror("Error al abrir el archivo");
+        return;
+    }
+
+    // Escribir el buffer en el archivo
+    size_t escrito = fwrite(buffer, 1, tamanio_del_archivo, archivo);
+    if (escrito != tamanio_del_archivo)
+    {
+        perror("Error al escribir en el archivo");
+    }
+
+    // Liberar la memoria reservada
+    free(buffer);
+
+    // Cerrar el archivo
+    fclose(archivo);
+
+    printf("Archivos COMPACTADOS.\n");
+
+}
+
+void compactar (char *nombre_archivo, char* buffer, int *puntero_buffer){
+
+    int tamanio_del_archivo = tamanio_de_bloque * cantidad_de_bloques;
+
+    METADATA info_archivo = leer_metadata(nombre_archivo);
+
+    char full_path[256];
+    snprintf(full_path, sizeof(full_path), "%sbloques.dat", path_base);
+    FILE *file;
+    file = fopen(full_path, "rb");
+    char *buffer_viejo = (char *)malloc(tamanio_del_archivo);
+
+    size_t leido = fread(buffer_viejo, 1, tamanio_del_archivo, file);
+    if (leido != tamanio_bitarray_en_bytes)
+    {
+        perror("Error al leer el archivo bitmap");
+        free(buffer_viejo);
+        fclose(file);
+        return NULL;
+    }
+
+    memcpy(buffer + *puntero_buffer , buffer_viejo + (info_archivo.bloque_inicial * tamanio_de_bloque) , info_archivo.tam_bytes);   
+
+    actualizar_archivo_metadata(nombre_archivo, *puntero_buffer, info_archivo.tam_bytes);
+
+    *puntero_buffer += info_archivo.tam_bytes; // +1?
+
+    free(buffer_viejo);
+}
 // Función para leer el bitmap desde el archivo
 t_bitarray *leer_bitmap()
 {
@@ -39,13 +157,12 @@ t_bitarray *leer_bitmap()
     return bitmap;
 }
 
-
 // Pone ceros en las posiciones correspondientes del bitmap
-void liberar_bloques_del_bitmap (t_bitarray *bitmap, int bloque_inicio_barrido, int longitud)
+void liberar_bloques_del_bitmap(t_bitarray *bitmap, int bloque_inicio_barrido, int longitud)
 {
-    for(int i=0; i<longitud ; i++)
+    for (int i = 0; i < longitud; i++)
     {
-        if(!bitarray_test_bit(bitmap, bloque_inicio_barrido + i))
+        if (!bitarray_test_bit(bitmap, bloque_inicio_barrido + i))
         {
             log_error(entrada_salida_log_debug, "El bloque %d ya estaba libre (ERROR GRAVE, REVISAR) \n", bloque_inicio_barrido + i);
         }
@@ -103,33 +220,33 @@ bool chquear_bloques_libres_contiguos(t_bitarray *bitmap, int primer_bloque_a_ch
 {
     int bloque_que_estoy_chequeando = primer_bloque_a_chequear;
 
-    for(int i=0; i < cantidad; i++)
+    for (int i = 0; i < cantidad; i++)
     {
-        if(bloque_que_estoy_chequeando >= cantidad_de_bloques)
+        if (bloque_que_estoy_chequeando >= cantidad_de_bloques)
         {
             return false;
         }
-        if(bitarray_test_bit(bitmap, bloque_que_estoy_chequeando))
+        if (bitarray_test_bit(bitmap, bloque_que_estoy_chequeando))
         {
             return false;
         }
-        bloque_que_estoy_chequeando ++;
+        bloque_que_estoy_chequeando++;
     }
 
     return true;
 }
 
-int cantidad_de_bloques_libres(t_bitarray* bitmap)
+int cantidad_de_bloques_libres(t_bitarray *bitmap)
 {
     int contador = 0;
-    for(int i=0 ; i < cantidad_de_bloques ; i++)
+    for (int i = 0; i < cantidad_de_bloques; i++)
     {
-        if( ! bitarray_test_bit(bitmap, i))
+        if (!bitarray_test_bit(bitmap, i))
         {
             contador++;
         }
     }
-    
+
     return contador;
 }
 
@@ -138,7 +255,7 @@ void marcar_bloques_ocupados(t_bitarray *bitmap, int bloque_inicio, int longitud
 {
     for (int i = 0; i < longitud; i++)
     {
-        if(bitarray_test_bit(bitmap, bloque_inicio + i))
+        if (bitarray_test_bit(bitmap, bloque_inicio + i))
         {
             log_error(entrada_salida_log_debug, "EL BIT YA ESTABA OCUPADO, FALLO GRAVE");
         }
@@ -169,21 +286,23 @@ void crear_metadata(const char *nombre_archivo, int bloque_inicial, int tamanio_
 
     printf("Archivo de metadata '%s' creado.\n", full_path);
 }
-void borrar_archivo_metadata(char* nombre_del_archivo)
+void borrar_archivo_metadata(char *nombre_del_archivo)
 {
     char full_path[256];
     snprintf(full_path, sizeof(full_path), "%s%s", path_base, nombre_del_archivo);
 
     // Eliminar el archivo
-    if (remove(full_path) != 0) {
+    if (remove(full_path) != 0)
+    {
         perror("Error al borrar el archivo de metadata");
-    } else {
+    }
+    else
+    {
         printf("Archivo de metadata '%s' borrado.\n", full_path);
     }
-
 }
 
-void actualizar_archivo_metadata (char * nombre_archivo, int bloque_inicial, int nuevo_tamanio_archivo_en_bytes)
+void actualizar_archivo_metadata(char *nombre_archivo, int bloque_inicial, int nuevo_tamanio_archivo_en_bytes)
 {
     char full_path[256];
     snprintf(full_path, sizeof(full_path), "%s%s", path_base, nombre_archivo);
@@ -203,10 +322,9 @@ void actualizar_archivo_metadata (char * nombre_archivo, int bloque_inicial, int
     fclose(archivo);
 
     printf("Archivo de metadata '%s' actualizado.\n", full_path);
-
 }
 
-METADATA leer_metadata(char* nombre_archivo)
+METADATA leer_metadata(char *nombre_archivo)
 {
     char full_path[256];
     snprintf(full_path, sizeof(full_path), "%s%s", path_base, nombre_archivo);
@@ -214,18 +332,21 @@ METADATA leer_metadata(char* nombre_archivo)
     METADATA informacion_archivo;
 
     FILE *archivo = fopen(full_path, "r");
-    if (archivo == NULL) {
+    if (archivo == NULL)
+    {
         printf("Error al abrir el archivo para lectura.\n");
         return informacion_archivo;
     }
 
-     // Leer los enteros del archivo
-    if (fscanf(archivo, "BLOQUE_INICIAL=%d\n", &(informacion_archivo.bloque_inicial)) != 1) {
+    // Leer los enteros del archivo
+    if (fscanf(archivo, "BLOQUE_INICIAL=%d\n", &(informacion_archivo.bloque_inicial)) != 1)
+    {
         printf("Error al leer BLOQUE_INICIAL.\n");
         fclose(archivo);
         return informacion_archivo;
     }
-    if (fscanf(archivo, "TAMANIO_ARCHIVO=%d\n", &(informacion_archivo.tam_bytes)) != 1) {
+    if (fscanf(archivo, "TAMANIO_ARCHIVO=%d\n", &(informacion_archivo.tam_bytes)) != 1)
+    {
         printf("Error al leer TAMANIO_ARCHIVO.\n");
         fclose(archivo);
         return informacion_archivo;

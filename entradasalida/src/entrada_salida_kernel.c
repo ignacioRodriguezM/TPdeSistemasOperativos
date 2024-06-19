@@ -354,15 +354,28 @@ void caso_io_fs_truncate (t_buffer* buffer_recibido)
             {
                 log_error(entrada_salida_log_debug, "NO SE PUEDE TRUNCAR EL ARCHIVO POR FALTA DE BLOQUES LIBRES");
             }
-            else{
-                //COMPACTAR;
+            else
+            {
+                log_trace(entrada_salida_log_debug, "PID: %u - Inicio de Compactacion", pid);
+                compactar_hacia_archivo(nombre_del_archivo);
+                log_trace(entrada_salida_log_debug, "PID: %u - Fin de Compactacion", pid);
+
+                METADATA info_archivo_actualizada = leer_metadata(nombre_del_archivo);
+
+                t_bitarray *bitmap_actualizado = leer_bitmap();
+
+                int bloques_ocupadosv2 = division_entera_redondear_arriba(info_archivo_actualizada.tam_bytes, tamanio_de_bloque);
+                int ultimo_bloquev2 = info_archivo_actualizada.bloque_inicial + bloques_ocupadosv2;
+
+                marcar_bloques_ocupados(bitmap_actualizado, ultimo_bloquev2, cantidad_bloques_a_ocupar);
+                
             }
         }
     }
     else if(nuevo_tamanio < info_archivo.tam_bytes) //ACHICAR
     {
         int cantidad_bloques_a_liberar = bloques_ocupados - nuevo_tam_en_bloques;
-        liberar_bloques_del_bitmap(bitmap, (info_archivo.bloque_inicial + nuevo_tam_en_bloques), cantidad_bloques_a_liberar);
+        liberar_bloques_del_bitmap(bitmap, (info_archivo.bloque_inicial + nuevo_tam_en_bloques), cantidad_bloques_a_liberar);       
     }
     else
     {

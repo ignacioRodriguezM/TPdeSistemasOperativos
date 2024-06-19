@@ -14,6 +14,10 @@ void actualizar_archivo_metadata (char * nombre_archivo, int bloque_inicial, int
 
 METADATA leer_metadata(char* nombre_archivo);
 
+////////////////////compactar archivos/////////
+void compactar_hacia_archivo(char *nombre_del_archivo);
+void compactar (char *nombre_archivo, char* buffer, int *puntero_buffer);
+
 
 ///////////// funciones para operar el bitmap ///////
 t_bitarray* leer_bitmap();

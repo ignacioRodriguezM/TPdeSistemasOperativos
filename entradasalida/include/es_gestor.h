@@ -14,6 +14,11 @@ typedef struct{
     int tam_bytes;
 }METADATA;
 
+typedef struct{
+    int cantidad_archivos;
+    t_list* lista_archivos;
+}Archivos;
+
 
 //Variables GLOBALES
 extern t_log* entrada_salida_logger;
@@ -33,6 +38,6 @@ extern int cantidad_de_bloques;
 extern int tamanio_bitarray_en_bytes;
 extern char* path_base;
 
-
+extern Archivos archivos;
 
 #endif
