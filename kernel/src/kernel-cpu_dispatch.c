@@ -574,7 +574,40 @@ void _manejar_bloqueo()
         else if (strcmp(operacion_a_realizar, "IO_FS_TRUNCATE") == 0)
         {
         }
+        else if (strcmp(operacion_a_realizar, "IO_FS_WRITE") == 0)
+        {   
+            char *nombre_archivo = extraer_string_al_buffer(buffer_recibido);
+            uint8_t tamanio_total_a_leer = extraer_uint8_al_buffer(buffer_recibido);
+            uint8_t cantidad_de_direccions = extraer_uint8_al_buffer(buffer_recibido);
 
+            PCB *pcb_a_editar = (PCB *)queue_peek(procesos_excec);
+            pcb_a_editar->operacion_de_io_por_la_que_fue_bloqueado = crear_buffer();
+
+            cargar_string_al_buffer(pcb_a_editar->operacion_de_io_por_la_que_fue_bloqueado, nombre_interfaz);
+            cargar_string_al_buffer(pcb_a_editar->operacion_de_io_por_la_que_fue_bloqueado, operacion_a_realizar);
+            cargar_uint16_al_buffer(pcb_a_editar->operacion_de_io_por_la_que_fue_bloqueado, pcb_a_editar->pid);
+
+            //[tamanio registro datos] [Cantidad] [TAM_A_leer] [MARCO] [DESPLAZAMIENTO]  .. [TAM_A_leer] [MARCO] [DESPLAZAMIENTO] .....
+            cargar_uint8_al_buffer(pcb_a_editar->operacion_de_io_por_la_que_fue_bloqueado, tamanio_total_a_leer);
+            cargar_uint8_al_buffer(pcb_a_editar->operacion_de_io_por_la_que_fue_bloqueado, cantidad_de_direccions);
+
+            for (int i = 0; i < cantidad_de_direccions; i++)
+            {
+                uint8_t tam_a_leer_por_pagina = extraer_uint8_al_buffer(buffer_recibido);
+                uint16_t numero_de_pagina = extraer_uint16_al_buffer(buffer_recibido);
+                uint32_t desplazamiento = extraer_uint32_al_buffer(buffer_recibido);
+
+                cargar_uint8_al_buffer(pcb_a_editar->operacion_de_io_por_la_que_fue_bloqueado, tam_a_leer_por_pagina);
+                cargar_uint16_al_buffer(pcb_a_editar->operacion_de_io_por_la_que_fue_bloqueado, numero_de_pagina);
+                cargar_uint32_al_buffer(pcb_a_editar->operacion_de_io_por_la_que_fue_bloqueado, desplazamiento);
+            }
+
+            mandar_a_io_o_cola_bloqueados(nombre_interfaz);
+        }
+        else if (strcmp(operacion_a_realizar, "IO_FS_WRITE") == 0)
+        {
+
+        }
         // HACER RESTO DE IFs
     }
     else
