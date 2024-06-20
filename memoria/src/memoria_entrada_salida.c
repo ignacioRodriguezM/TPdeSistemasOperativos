@@ -34,7 +34,7 @@ void atender_multiples_entrada_salida(int *socket_ptr)
     }
 }
 
-void manejar_stdin_read(int fd_io)
+void manejar_read(int fd_io)
 { // aka _escribir_en_una_determinada_direccion
     t_buffer *buffer_recibido = recibir_buffer_sin_cod_op(fd_io);
 
@@ -79,7 +79,7 @@ void manejar_stdin_read(int fd_io)
     enviar_paquete(paquete_confirmacion, fd_io);
     destruir_paquete(paquete_confirmacion);
 }
-void manejar_stdout_write(int fd_io)
+void manejar_write(int fd_io)
 {
     void *registroDatos;
 

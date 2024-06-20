@@ -5,7 +5,7 @@
 
 void atender_memoria_entrada_salida ();
 void atender_multiples_entrada_salida(int *socket_ptr);
-void manejar_stdin_read(int fd_io);
-void manejar_stdout_write(int fd_io);
+void manejar_read(int fd_io);
+void manejar_write(int fd_io);
 
 #endif
