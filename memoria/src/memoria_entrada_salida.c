@@ -64,6 +64,8 @@ void manejar_stdin_read(int fd_io)
         // Escribir los datos en la memoria física
         memcpy(direccion_fisica, datos_a_escribir, tamanio_de_direccion);
 
+        mem_hexdump(direccion_fisica, tamanio_de_direccion);
+
         free(datos_a_escribir);
     }
 
@@ -96,6 +98,7 @@ void manejar_stdout_write(int fd_io)
 
     uint8_t cantidad_de_direcciones = extraer_uint8_al_buffer(buffer_recibido);
 
+    uint8_t offset = 0;
     for (int i = 0; i < cantidad_de_direcciones; i++)
     {
 
@@ -106,8 +109,16 @@ void manejar_stdout_write(int fd_io)
         // Calcular la dirección física
         void *direccion_fisica = memoria_usuario + (marco * tam_pagina) + desplazamiento;
 
-        memcpy(registroDatos + (i * tamanio_de_direccion), direccion_fisica, tamanio_de_direccion);
+        memcpy(registroDatos + offset, direccion_fisica, tamanio_de_direccion);
+
+        offset += tamanio_de_direccion;
+
+        mem_hexdump(direccion_fisica, tamanio_de_direccion);
+
     }
+
+
+    mem_hexdump(registroDatos, tamanio_de_registro_datos);
 
     destruir_buffer(buffer_recibido);
 

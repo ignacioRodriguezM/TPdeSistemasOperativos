@@ -147,16 +147,19 @@ void _leer_una_determinada_direccion (){
     
     uint8_t cantidad_de_direcciones = extraer_uint8_al_buffer(buffer_recibido);
     
+    uint8_t offset = 0;
     for (int i = 0; i < cantidad_de_direcciones ; i++){
     
-    uint8_t tamanio_de_direccion = extraer_uint8_al_buffer(buffer_recibido);
-    uint16_t marco = extraer_uint16_al_buffer(buffer_recibido);
-    uint32_t desplazamiento = extraer_uint32_al_buffer(buffer_recibido);
-    
-    // Calcular la dirección física
+        uint8_t tamanio_de_direccion = extraer_uint8_al_buffer(buffer_recibido);
+        uint16_t marco = extraer_uint16_al_buffer(buffer_recibido);
+        uint32_t desplazamiento = extraer_uint32_al_buffer(buffer_recibido);
+        
+        // Calcular la dirección física
         void *direccion_fisica = memoria_usuario + (marco * tam_pagina) + desplazamiento;
 
-        memcpy(registroDatos + (i * tamanio_de_direccion), direccion_fisica, tamanio_de_direccion);
+        memcpy(registroDatos + offset, direccion_fisica, tamanio_de_direccion);
+
+        offset += tamanio_de_direccion;
     }
     
     destruir_buffer(buffer_recibido);  
@@ -207,6 +210,8 @@ void _escribir_una_determinada_direccion() {
         memcpy(direccion_fisica, datos_a_escribir, tamanio_de_direccion);
 
         free(datos_a_escribir);
+        
+        mem_hexdump(direccion_fisica, tamanio_de_direccion);
     }
 
     destruir_buffer(buffer_recibido);

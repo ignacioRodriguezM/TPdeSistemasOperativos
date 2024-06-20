@@ -217,12 +217,12 @@ void caso_io_stdout_write(t_buffer *buffer_recibido)
     {
     case LECTURA:
 
-        t_buffer *recibido = recibir_buffer_sin_cod_op(fd_memoria);
+       t_buffer *recibido = recibir_buffer_sin_cod_op(fd_memoria);
 
-        char *mensaje_de_respuesta = extraer_string_al_buffer(recibido);
-        log_trace(entrada_salida_log_debug, "RESPUESTA MEMORIA : %s", mensaje_de_respuesta);
+        void *mensaje_de_respuesta = extraer_choclo_al_buffer(recibido);
+        log_trace(entrada_salida_log_debug, "RESPUESTA MEMORIA : %s", (char*)mensaje_de_respuesta);
 
-        printf("\n %s \n", mensaje_de_respuesta);
+        printf("\n %s \n", (char*)mensaje_de_respuesta);
 
         destruir_buffer(recibido);
 
