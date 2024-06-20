@@ -211,7 +211,6 @@ void _escribir_una_determinada_direccion() {
 
         free(datos_a_escribir);
         
-        mem_hexdump(direccion_fisica, tamanio_de_direccion);
     }
 
     destruir_buffer(buffer_recibido);

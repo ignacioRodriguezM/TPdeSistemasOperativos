@@ -64,8 +64,6 @@ void manejar_stdin_read(int fd_io)
         // Escribir los datos en la memoria física
         memcpy(direccion_fisica, datos_a_escribir, tamanio_de_direccion);
 
-        mem_hexdump(direccion_fisica, tamanio_de_direccion);
-
         free(datos_a_escribir);
     }
 
@@ -113,12 +111,7 @@ void manejar_stdout_write(int fd_io)
 
         offset += tamanio_de_direccion;
 
-        mem_hexdump(direccion_fisica, tamanio_de_direccion);
-
     }
-
-
-    mem_hexdump(registroDatos, tamanio_de_registro_datos);
 
     destruir_buffer(buffer_recibido);
 
