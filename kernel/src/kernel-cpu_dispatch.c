@@ -86,97 +86,63 @@ void extraer_y_actualizar_pcb_en_excecute(t_buffer *buffer_recibido)
     pcb_a_editar->registros.si = si;
     pcb_a_editar->registros.di = di;
 }
-bool _chequear_la_io(char *nombre_interfaz, char *operacion)
+bool chequear_la_io_en_colas(char *nombre_interfaz, int tipo_interfaz)
 {
-
-    if (strcmp(operacion, "IO_GEN_SLEEP") == 0)
+    for (int i = 0; i < contador_de_colas_bloqueados; i++)
     {
-        for (int i = 0; i < contador_de_colas_bloqueados; i++)
+        if (strcmp(colas_bloqueados[i]->nombre, nombre_interfaz) == 0)
         {
-
-            if (strcmp(colas_bloqueados[i]->nombre, nombre_interfaz) == 0)
+            if (colas_bloqueados[i]->conectado == true)
             {
-                if (colas_bloqueados[i]->conectado == true)
+                if (colas_bloqueados[i]->tipo_interfaz == tipo_interfaz)
                 {
-                    if (colas_bloqueados[i]->tipo_interfaz == 0)
-                    {
-                        return true;
-                    }
-                }
-                else
-                {
-                    return false;
+                    return true;
                 }
             }
+            else
+            {
+                return false;
+            }
         }
-        return false;
+    }
+    return false;
+}
+bool _chequear_la_io(char *nombre_interfaz, char *operacion)
+{
+    if (strcmp(operacion, "IO_GEN_SLEEP") == 0)
+    {
+        return chequear_la_io_en_colas(nombre_interfaz, 0);
     }
     else if (strcmp(operacion, "IO_STDIN_READ") == 0)
     {
-        for (int i = 0; i < contador_de_colas_bloqueados; i++)
-        {
-
-            if (strcmp(colas_bloqueados[i]->nombre, nombre_interfaz) == 0)
-            {
-                if (colas_bloqueados[i]->conectado == true)
-                {
-                    if (colas_bloqueados[i]->tipo_interfaz == 1)
-                    {
-                        return true;
-                    }
-                }
-                else
-                {
-                    return false;
-                }
-            }
-        }
-        return false;
+        return chequear_la_io_en_colas(nombre_interfaz, 1);
     }
     else if (strcmp(operacion, "IO_STDOUT_WRITE") == 0)
     {
-        for (int i = 0; i < contador_de_colas_bloqueados; i++)
-        {
-
-            if (strcmp(colas_bloqueados[i]->nombre, nombre_interfaz) == 0)
-            {
-                if (colas_bloqueados[i]->conectado == true)
-                {
-                    if (colas_bloqueados[i]->tipo_interfaz == 2)
-                    {
-                        return true;
-                    }
-                }
-                else
-                {
-                    return false;
-                }
-            }
-        }
-        return false;
+        return chequear_la_io_en_colas(nombre_interfaz, 2);
     }
-    else
+    else if (strcmp(operacion, "IO_FS_CREATE") == 0)
     {
-        for (int i = 0; i < contador_de_colas_bloqueados; i++)
-        {
-
-            if (strcmp(colas_bloqueados[i]->nombre, nombre_interfaz) == 0)
-            {
-                if (colas_bloqueados[i]->conectado == true)
-                {
-                    if (colas_bloqueados[i]->tipo_interfaz == 3)
-                    {
-                        return true;
-                    }
-                }
-                else
-                {
-                    return false;
-                }
-            }
-        }
-        return false;
+        return chequear_la_io_en_colas(nombre_interfaz, 3);
     }
+    else if (strcmp(operacion, "IO_FS_DELETE") == 0)
+    {
+        return chequear_la_io_en_colas(nombre_interfaz, 3);
+    }
+    else if (strcmp(operacion, "IO_FS_TRUNCATE") == 0)
+    {
+        return chequear_la_io_en_colas(nombre_interfaz, 3);
+    }
+    else if (strcmp(operacion, "IO_FS_READ") == 0)
+    {
+        return chequear_la_io_en_colas(nombre_interfaz, 3);
+    }
+    else if (strcmp(operacion, "IO_FS_WRITE") == 0)
+    {
+        return chequear_la_io_en_colas(nombre_interfaz, 3);
+    }
+
+    return false;
 }
 
 void _manejar_desalojo()
@@ -251,17 +217,17 @@ void agregar_recurso_en_pcb(PCB *pcb, const char *nombre_recurso)
     }
 }
 
-void bloquear_por_recurso (Recursos* un_recurso){
+void bloquear_por_recurso(Recursos *un_recurso)
+{
     pthread_mutex_lock(&mutex_procesos);
 
     PCB *pcb_de_cpu = (PCB *)queue_pop(procesos_excec);
     queue_push(un_recurso->cola_bloqueados_por_recursos, pcb_de_cpu);
 
     pthread_mutex_unlock(&mutex_procesos);
-    
+
     log_info(kernel_logger, "PID: <%u> - Estado Anterior: <EXCECUTE> - Estado Actual: <BLOQUEADO>", pcb_de_cpu->pid);
     log_info(kernel_logger, "PID: <%u> - Bloqueado por: <%s>", pcb_de_cpu->pid, un_recurso->nombre);
-
 }
 void _manejar_wait()
 {
@@ -312,7 +278,7 @@ void _manejar_wait()
                     }
                 }
 
-                bloquear_por_recurso(recursos[i]);              
+                bloquear_por_recurso(recursos[i]);
             }
             break;
         }
@@ -322,30 +288,31 @@ void _manejar_wait()
     {
         // MANDAR A EXIT
         _mandar_de_excec_a_exit("INVALID_RESOURCE");
-
     }
-       
-    if(se_bloqueo || chequeo_si_alguna_coincide_nombre){
-        //hacer funcion enviar mensaje !!!!
-        t_buffer* buffer = crear_buffer();
-        char* respuesta = "BLOQUEADO";
+
+    if (se_bloqueo || chequeo_si_alguna_coincide_nombre)
+    {
+        // hacer funcion enviar mensaje !!!!
+        t_buffer *buffer = crear_buffer();
+        char *respuesta = "BLOQUEADO";
         cargar_string_al_buffer(buffer, respuesta);
-        t_paquete* paq = crear_paquete(RESPUESTA_RECURSO, buffer);
+        t_paquete *paq = crear_paquete(RESPUESTA_RECURSO, buffer);
         enviar_paquete(paq, fd_cpu_dispatch);
         destruir_paquete(paq);
-        if(se_bloqueo){
+        if (se_bloqueo)
+        {
             sem_wait(&planificacion_activa_semaforo);
             sem_post(&planificacion_activa_semaforo);
             sem_post(&cpu_vacia_semaforo);
-
         }
     }
-    if(!se_bloqueo){
-        //hacer funcion enviar mensaje !!!!
-        t_buffer* buffer = crear_buffer();
-        char* respuesta = "FUNCIONO";
+    if (!se_bloqueo)
+    {
+        // hacer funcion enviar mensaje !!!!
+        t_buffer *buffer = crear_buffer();
+        char *respuesta = "FUNCIONO";
         cargar_string_al_buffer(buffer, respuesta);
-        t_paquete* paq = crear_paquete(RESPUESTA_RECURSO, buffer);
+        t_paquete *paq = crear_paquete(RESPUESTA_RECURSO, buffer);
         enviar_paquete(paq, fd_cpu_dispatch);
         destruir_paquete(paq);
     }
@@ -398,10 +365,9 @@ void _manejar_signal()
     sem_wait(&planificacion_activa_semaforo);
     sem_post(&planificacion_activa_semaforo);
 
-
     bool chequeo_si_alguna_coincide_nombre = true;
     bool se_bloqueo = false;
-    for(int i=0; i<cantidad_de_recursos; i++)
+    for (int i = 0; i < cantidad_de_recursos; i++)
     {
         if (strcmp(recursos[i]->nombre, nombre_recurso_recibido) == 0)
         {
@@ -424,7 +390,6 @@ void _manejar_signal()
             }
             break;
         }
-        
     }
     if (chequeo_si_alguna_coincide_nombre)
     {
@@ -433,26 +398,26 @@ void _manejar_signal()
         se_bloqueo = true;
         // LIBERAR RECURSOS USADOS FALTA!!!!
     }
-    
 
-    if(se_bloqueo){
-        //hacer funcion enviar mensaje !!!!
-        t_buffer* buffer = crear_buffer();
-        char* respuesta = "BLOQUEADO";
+    if (se_bloqueo)
+    {
+        // hacer funcion enviar mensaje !!!!
+        t_buffer *buffer = crear_buffer();
+        char *respuesta = "BLOQUEADO";
         cargar_string_al_buffer(buffer, respuesta);
-        t_paquete* paq = crear_paquete(RESPUESTA_RECURSO, buffer);
+        t_paquete *paq = crear_paquete(RESPUESTA_RECURSO, buffer);
         enviar_paquete(paq, fd_cpu_dispatch);
         destruir_paquete(paq);
     }
-    if(!se_bloqueo){
-        //hacer funcion enviar mensaje !!!!
-        t_buffer* buffer = crear_buffer();
-        char* respuesta = "FUNCIONO";
+    if (!se_bloqueo)
+    {
+        // hacer funcion enviar mensaje !!!!
+        t_buffer *buffer = crear_buffer();
+        char *respuesta = "FUNCIONO";
         cargar_string_al_buffer(buffer, respuesta);
-        t_paquete* paq = crear_paquete(RESPUESTA_RECURSO, buffer);
+        t_paquete *paq = crear_paquete(RESPUESTA_RECURSO, buffer);
         enviar_paquete(paq, fd_cpu_dispatch);
         destruir_paquete(paq);
-
     }
 
     free(nombre_recurso_recibido);
@@ -566,19 +531,7 @@ void _manejar_bloqueo()
         }
         else if (strcmp(operacion_a_realizar, "IO_FS_CREATE") == 0)
         {
-            
-        }
-        else if (strcmp(operacion_a_realizar, "IO_FS_DELETE") == 0)
-        {
-        }
-        else if (strcmp(operacion_a_realizar, "IO_FS_TRUNCATE") == 0)
-        {
-        }
-        else if (strcmp(operacion_a_realizar, "IO_FS_WRITE") == 0)
-        {   
-            char *nombre_archivo = extraer_string_al_buffer(buffer_recibido);
-            uint8_t tamanio_total_a_leer = extraer_uint8_al_buffer(buffer_recibido);
-            uint8_t cantidad_de_direccions = extraer_uint8_al_buffer(buffer_recibido);
+            char *nombre_del_archivo = extraer_string_al_buffer(buffer_recibido);
 
             PCB *pcb_a_editar = (PCB *)queue_peek(procesos_excec);
             pcb_a_editar->operacion_de_io_por_la_que_fue_bloqueado = crear_buffer();
@@ -587,28 +540,118 @@ void _manejar_bloqueo()
             cargar_string_al_buffer(pcb_a_editar->operacion_de_io_por_la_que_fue_bloqueado, operacion_a_realizar);
             cargar_uint16_al_buffer(pcb_a_editar->operacion_de_io_por_la_que_fue_bloqueado, pcb_a_editar->pid);
 
-            //[tamanio registro datos] [Cantidad] [TAM_A_leer] [MARCO] [DESPLAZAMIENTO]  .. [TAM_A_leer] [MARCO] [DESPLAZAMIENTO] .....
-            cargar_uint8_al_buffer(pcb_a_editar->operacion_de_io_por_la_que_fue_bloqueado, tamanio_total_a_leer);
-            cargar_uint8_al_buffer(pcb_a_editar->operacion_de_io_por_la_que_fue_bloqueado, cantidad_de_direccions);
+            cargar_string_al_buffer(pcb_a_editar->operacion_de_io_por_la_que_fue_bloqueado, nombre_del_archivo);
 
-            for (int i = 0; i < cantidad_de_direccions; i++)
+            mandar_a_io_o_cola_bloqueados(nombre_interfaz);
+        }
+        else if (strcmp(operacion_a_realizar, "IO_FS_DELETE") == 0)
+        {
+            char *nombre_del_archivo = extraer_string_al_buffer(buffer_recibido);
+
+            PCB *pcb_a_editar = (PCB *)queue_peek(procesos_excec);
+            pcb_a_editar->operacion_de_io_por_la_que_fue_bloqueado = crear_buffer();
+
+            cargar_string_al_buffer(pcb_a_editar->operacion_de_io_por_la_que_fue_bloqueado, nombre_interfaz);
+            cargar_string_al_buffer(pcb_a_editar->operacion_de_io_por_la_que_fue_bloqueado, operacion_a_realizar);
+            cargar_uint16_al_buffer(pcb_a_editar->operacion_de_io_por_la_que_fue_bloqueado, pcb_a_editar->pid);
+
+            cargar_string_al_buffer(pcb_a_editar->operacion_de_io_por_la_que_fue_bloqueado, nombre_del_archivo);
+
+            mandar_a_io_o_cola_bloqueados(nombre_interfaz);
+
+        }
+        else if (strcmp(operacion_a_realizar, "IO_FS_TRUNCATE") == 0)
+        {
+            char *nombre_del_archivo = extraer_string_al_buffer(buffer_recibido);
+
+            uint8_t tamanio = extraer_uint8_al_buffer(buffer_recibido);
+
+            PCB *pcb_a_editar = (PCB *)queue_peek(procesos_excec);
+            pcb_a_editar->operacion_de_io_por_la_que_fue_bloqueado = crear_buffer();
+
+            cargar_string_al_buffer(pcb_a_editar->operacion_de_io_por_la_que_fue_bloqueado, nombre_interfaz);
+            cargar_string_al_buffer(pcb_a_editar->operacion_de_io_por_la_que_fue_bloqueado, operacion_a_realizar);
+            cargar_uint16_al_buffer(pcb_a_editar->operacion_de_io_por_la_que_fue_bloqueado, pcb_a_editar->pid);
+
+            cargar_string_al_buffer(pcb_a_editar->operacion_de_io_por_la_que_fue_bloqueado, nombre_del_archivo);
+
+
+            cargar_uint8_al_buffer(pcb_a_editar->operacion_de_io_por_la_que_fue_bloqueado, tamanio);
+
+            mandar_a_io_o_cola_bloqueados(nombre_interfaz);
+
+        }
+        else if (strcmp(operacion_a_realizar, "IO_FS_WRITE") == 0)
+        {
+            //[nombre_archivo] [puntero archivo] [tam_total]
+            // [cantidad] [tam_parcial] [marco] [des] [tam_parcial] [marco] [des] ....
+            char *nombre_del_archivo = extraer_string_al_buffer(buffer_recibido);
+            uint16_t puntero = extraer_uint16_al_buffer(buffer_recibido);
+            uint8_t tamanio_total = extraer_uint8_al_buffer(buffer_recibido);
+            uint8_t cantidad_de_direcciones = extraer_uint8_al_buffer(buffer_recibido);
+
+
+            PCB *pcb_a_editar = (PCB *)queue_peek(procesos_excec);
+            pcb_a_editar->operacion_de_io_por_la_que_fue_bloqueado = crear_buffer();
+
+            cargar_string_al_buffer(pcb_a_editar->operacion_de_io_por_la_que_fue_bloqueado, nombre_interfaz);
+            cargar_string_al_buffer(pcb_a_editar->operacion_de_io_por_la_que_fue_bloqueado, operacion_a_realizar);
+            cargar_uint16_al_buffer(pcb_a_editar->operacion_de_io_por_la_que_fue_bloqueado, pcb_a_editar->pid);
+
+            cargar_string_al_buffer(pcb_a_editar->operacion_de_io_por_la_que_fue_bloqueado, nombre_del_archivo);
+            cargar_uint16_al_buffer(pcb_a_editar->operacion_de_io_por_la_que_fue_bloqueado, puntero);
+            cargar_uint8_al_buffer(pcb_a_editar->operacion_de_io_por_la_que_fue_bloqueado, tamanio_total);
+            cargar_uint8_al_buffer(pcb_a_editar->operacion_de_io_por_la_que_fue_bloqueado, cantidad_de_direcciones);
+
+            for(int i=0; i<cantidad_de_direcciones; i++)
             {
-                uint8_t tam_a_leer_por_pagina = extraer_uint8_al_buffer(buffer_recibido);
+                uint8_t tam_a_escribir_o_leer_por_pagina = extraer_uint8_al_buffer(buffer_recibido);
                 uint16_t numero_de_pagina = extraer_uint16_al_buffer(buffer_recibido);
                 uint32_t desplazamiento = extraer_uint32_al_buffer(buffer_recibido);
 
-                cargar_uint8_al_buffer(pcb_a_editar->operacion_de_io_por_la_que_fue_bloqueado, tam_a_leer_por_pagina);
+                cargar_uint8_al_buffer(pcb_a_editar->operacion_de_io_por_la_que_fue_bloqueado, tam_a_escribir_o_leer_por_pagina);
+                cargar_uint16_al_buffer(pcb_a_editar->operacion_de_io_por_la_que_fue_bloqueado, numero_de_pagina);
+                cargar_uint32_al_buffer(pcb_a_editar->operacion_de_io_por_la_que_fue_bloqueado, desplazamiento);
+            }
+
+            mandar_a_io_o_cola_bloqueados(nombre_interfaz);
+            
+        }
+        else if (strcmp(operacion_a_realizar, "IO_FS_READ") == 0)
+        {
+            //[nombre_archivo] [puntero archivo] [tam_total]
+            // [cantidad] [tam_parcial] [marco] [des] [tam_parcial] [marco] [des] ....
+            char *nombre_del_archivo = extraer_string_al_buffer(buffer_recibido);
+            uint16_t puntero = extraer_uint16_al_buffer(buffer_recibido);
+            uint8_t tamanio_total = extraer_uint8_al_buffer(buffer_recibido);
+            uint8_t cantidad_de_direcciones = extraer_uint8_al_buffer(buffer_recibido);
+
+
+            PCB *pcb_a_editar = (PCB *)queue_peek(procesos_excec);
+            pcb_a_editar->operacion_de_io_por_la_que_fue_bloqueado = crear_buffer();
+
+            cargar_string_al_buffer(pcb_a_editar->operacion_de_io_por_la_que_fue_bloqueado, nombre_interfaz);
+            cargar_string_al_buffer(pcb_a_editar->operacion_de_io_por_la_que_fue_bloqueado, operacion_a_realizar);
+            cargar_uint16_al_buffer(pcb_a_editar->operacion_de_io_por_la_que_fue_bloqueado, pcb_a_editar->pid);
+
+            cargar_string_al_buffer(pcb_a_editar->operacion_de_io_por_la_que_fue_bloqueado, nombre_del_archivo);
+            cargar_uint16_al_buffer(pcb_a_editar->operacion_de_io_por_la_que_fue_bloqueado, puntero);
+            cargar_uint8_al_buffer(pcb_a_editar->operacion_de_io_por_la_que_fue_bloqueado, tamanio_total);
+            cargar_uint8_al_buffer(pcb_a_editar->operacion_de_io_por_la_que_fue_bloqueado, cantidad_de_direcciones);
+
+            for(int i=0; i<cantidad_de_direcciones; i++)
+            {
+                uint8_t tam_a_escribir_o_leer_por_pagina = extraer_uint8_al_buffer(buffer_recibido);
+                uint16_t numero_de_pagina = extraer_uint16_al_buffer(buffer_recibido);
+                uint32_t desplazamiento = extraer_uint32_al_buffer(buffer_recibido);
+
+                cargar_uint8_al_buffer(pcb_a_editar->operacion_de_io_por_la_que_fue_bloqueado, tam_a_escribir_o_leer_por_pagina);
                 cargar_uint16_al_buffer(pcb_a_editar->operacion_de_io_por_la_que_fue_bloqueado, numero_de_pagina);
                 cargar_uint32_al_buffer(pcb_a_editar->operacion_de_io_por_la_que_fue_bloqueado, desplazamiento);
             }
 
             mandar_a_io_o_cola_bloqueados(nombre_interfaz);
         }
-        else if (strcmp(operacion_a_realizar, "IO_FS_WRITE") == 0)
-        {
-
-        }
-        // HACER RESTO DE IFs
     }
     else
     {
@@ -663,5 +706,4 @@ void mandar_a_io_o_cola_bloqueados(char *nombre_interfaz)
 
     mover_de_excec_a_cola_bloqueado(nombre_interfaz);
     log_info(kernel_logger, "PID: %u - Bloqueado por: INTERFAZ : %s", pcb_a_editar->pid, nombre_interfaz);
-
 }

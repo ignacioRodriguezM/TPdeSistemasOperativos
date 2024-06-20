@@ -680,6 +680,7 @@ void IO_FS_CREATE(void *nombre_de_la_interfaz, void *nombre_del_archivo)
     cargar_uint32_al_buffer(buffer, DI_registro);
     cargar_string_al_buffer(buffer, nombre_interfaz);
     cargar_string_al_buffer(buffer, "IO_FS_CREATE");
+
     cargar_string_al_buffer(buffer, nombre_archivo);
 
     t_paquete *a_enviar = crear_paquete(LLAMADA_A_IO, buffer);
@@ -730,7 +731,7 @@ void IO_FS_TRUNCATE(void *nombre_de_la_interfaz, void *nombre_del_archivo, void 
     bloq_flag = false;
     interrupt_flag = false;
     t_buffer *buffer = crear_buffer();
-    //[pid] [pc] [registros] [nombre_interfaz] [operacion]
+    //[pid] [pc] [registros] [nombre_interfaz] [operacion] [nombre_archivo] [tamanio]
 
     cargar_uint16_al_buffer(buffer, PID);
     cargar_uint32_al_buffer(buffer, PC_registro);
@@ -773,15 +774,33 @@ void IO_FS_WRITE(void *nombre_de_la_interfaz, void *nombre_del_archivo, void *re
     char *nombre_interfaz = (char *)nombre_de_la_interfaz;
     char *nombre_archivo = (char *)nombre_del_archivo;
 
-    uint8_t tamanio = *(uint8_t *)registro_tamanio;
+    uint8_t tamanio_a_escribir;
+    if(tam_registro_tam == sizeof(uint8_t))
+    {
+        tamanio_a_escribir = (uint8_t*) registro_tamanio;
+    }
+    else{
+        tamanio_a_escribir = (uint32_t*) registro_tamanio;
+    }
 
-    Direcciones direcciones_fisicas = traducir_direccion_logica_a_fisicas(registro_direccion, tam_registro_dir, tamanio);
+    uint16_t valor_puntero_archivo;
+    if(tam_registro_puntero == sizeof(uint8_t))
+    {
+        valor_puntero_archivo = (uint8_t*) registro_puntero_de_archivo;
+    }
+    else{
+        valor_puntero_archivo = (uint32_t*) registro_puntero_de_archivo;
+    }
+
+
+    Direcciones direcciones_fisicas = traducir_direccion_logica_a_fisicas(registro_direccion, tam_registro_dir, tamanio_a_escribir);
 
     PC_registro++;
     bloq_flag = false;
     interrupt_flag = false;
     t_buffer *buffer = crear_buffer();
-    //[pid] [pc] [registros] [nombre_interfaz] [operacion]
+    //[pid] [pc] [registros] [nombre_interfaz] [operacion] [nombre_archivo] [puntero archivo] [tam_total]
+    // [cantidad] [tam_parcial] [marco] [des] [tam_parcial] [marco] [des] ....
 
     cargar_uint16_al_buffer(buffer, PID);
     cargar_uint32_al_buffer(buffer, PC_registro);
@@ -796,9 +815,12 @@ void IO_FS_WRITE(void *nombre_de_la_interfaz, void *nombre_del_archivo, void *re
     cargar_uint32_al_buffer(buffer, SI_registro);
     cargar_uint32_al_buffer(buffer, DI_registro);
     cargar_string_al_buffer(buffer, nombre_interfaz);
-    cargar_string_al_buffer(buffer, "IO_FS_TRUNCATE");
+    cargar_string_al_buffer(buffer, "IO_FS_WRITE");
     cargar_string_al_buffer(buffer, nombre_archivo);
-    cargar_uint8_al_buffer(buffer, tamanio);
+
+    cargar_uint16_al_buffer(buffer, valor_puntero_archivo);
+
+    cargar_uint8_al_buffer(buffer, tamanio_a_escribir);
 
     // Cargar la cantidad de direcciones
     uint8_t cantidad = direcciones_fisicas.cantidad_direcciones;
@@ -824,11 +846,76 @@ void IO_FS_WRITE(void *nombre_de_la_interfaz, void *nombre_del_archivo, void *re
 
 void IO_FS_READ(void *nombre_de_la_interfaz, void *nombre_del_archivo, void *registro_direccion, void *registro_tamanio, void *registro_puntero_de_archivo, uint8_t tam_registro_dir, uint8_t tam_registro_tam, uint8_t tam_registro_puntero)
 {
+    char *nombre_interfaz = (char *)nombre_de_la_interfaz;
+    char *nombre_archivo = (char *)nombre_del_archivo;
+
+    uint8_t tamanio_a_escribir;
+    if(tam_registro_tam == sizeof(uint8_t))
+    {
+        tamanio_a_escribir = (uint8_t*) registro_tamanio;
+    }
+    else{
+        tamanio_a_escribir = (uint32_t*) registro_tamanio;
+    }
+
+    uint16_t valor_puntero_archivo;
+    if(tam_registro_puntero == sizeof(uint8_t))
+    {
+        valor_puntero_archivo = (uint8_t*) registro_puntero_de_archivo;
+    }
+    else{
+        valor_puntero_archivo = (uint32_t*) registro_puntero_de_archivo;
+    }
 
 
+    Direcciones direcciones_fisicas = traducir_direccion_logica_a_fisicas(registro_direccion, tam_registro_dir, tamanio_a_escribir);
 
+    PC_registro++;
+    bloq_flag = false;
+    interrupt_flag = false;
+    t_buffer *buffer = crear_buffer();
+    //[pid] [pc] [registros] [nombre_interfaz] [operacion] [nombre_archivo] [puntero archivo] [tam_total]
+    // [cantidad] [tam_parcial] [marco] [des] [tam_parcial] [marco] [des] ....
 
+    cargar_uint16_al_buffer(buffer, PID);
+    cargar_uint32_al_buffer(buffer, PC_registro);
+    cargar_uint8_al_buffer(buffer, AX_registro);
+    cargar_uint8_al_buffer(buffer, BX_registro);
+    cargar_uint8_al_buffer(buffer, CX_registro);
+    cargar_uint8_al_buffer(buffer, DX_registro);
+    cargar_uint32_al_buffer(buffer, EAX_registro);
+    cargar_uint32_al_buffer(buffer, EBX_registro);
+    cargar_uint32_al_buffer(buffer, ECX_registro);
+    cargar_uint32_al_buffer(buffer, EDX_registro);
+    cargar_uint32_al_buffer(buffer, SI_registro);
+    cargar_uint32_al_buffer(buffer, DI_registro);
+    cargar_string_al_buffer(buffer, nombre_interfaz);
+    cargar_string_al_buffer(buffer, "IO_FS_READ");
+    cargar_string_al_buffer(buffer, nombre_archivo);
 
+    cargar_uint16_al_buffer(buffer, valor_puntero_archivo);
 
+    cargar_uint8_al_buffer(buffer, tamanio_a_escribir);
+
+    // Cargar la cantidad de direcciones
+    uint8_t cantidad = direcciones_fisicas.cantidad_direcciones;
+    cargar_uint8_al_buffer(buffer, cantidad);
+
+    // [TAM_A_escribir] [MARCO] [DESPLAZAMIENTO] .. [TAM_A_escribir] [MARCO] [DESPLAZAMIENTO] .....
+
+    for (int i = 0; i < cantidad; i++)
+    {
+        cargar_uint8_al_buffer(buffer, direcciones_fisicas.direcciones[i].tamanio);
+        cargar_uint16_al_buffer(buffer, direcciones_fisicas.direcciones[i].numero_pagina);
+        cargar_uint32_al_buffer(buffer, direcciones_fisicas.direcciones[i].desplazamiento);
+    }
+
+    t_paquete *a_enviar = crear_paquete(LLAMADA_A_IO, buffer);
+
+    enviar_paquete(a_enviar, fd_kernel_dispatch);
+
+    destruir_paquete(a_enviar);
+
+    free(direcciones_fisicas.direcciones);
 
 }
