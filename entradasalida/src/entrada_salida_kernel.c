@@ -399,54 +399,92 @@ void caso_io_fs_truncate (t_buffer* buffer_recibido)
 }
 // void caso_io_fs_write(t_buffer *buffer_recibido){
 
-//     //debo recibir de cpu la direccion que se necesito leer
 //     uint16_t pid = extraer_uint16_al_buffer(buffer_recibido);
-//     char *nombre_del_archivo = extraer_string_al_buffer(buffer_recibido);
-    
-//     esperarMilisegundos(tiempo_unidad_trabajo);
+//     char *nombre_archivo = extraer_string_al_buffer(buffer_recibido);
+//     uint16_t puntero = extraer_uint16_al_buffer(buffer_recibido);
+//     uint8_t tamanio_total = extraer_uint8_al_buffer(buffer_recibido);
+//     uint8_t cantidad_de_direcciones = extraer_uint8_al_buffer(buffer_recibido);
 
-//     METADATA info_archivo = leer_metadata(nombre_del_archivo);
+//     t_buffer *buffer_a_enviar_a_memoria = crear_buffer();
 
-//     t_bitarray *bitmap = leer_bitmap();
-//     if (bitmap == NULL)
+//     // [TAM_A_leer] [MARCO] [DESPLAZAMIENTO] .. [TAM_A_leer] [MARCO] [DESPLAZAMIENTO] [DATO] .....
+
+//     cargar_uint8_al_buffer(buffer_a_enviar_a_memoria, tamanio_total);
+//     cargar_uint8_al_buffer(buffer_a_enviar_a_memoria, cantidad_de_direcciones);
+
+//     for (int i = 0; i < cantidad_de_direcciones; i++)
 //     {
-//         return;
-//     }
-    
-//     if (puntero_archivo + tamanio > tamanio_archivo) {
-//         log_error(entrada_salida_logger, "Error: La escritura excede el tamaño del archivo.");
-//         return;
+//         uint8_t tam_a_leer_por_pagina = extraer_uint8_al_buffer(buffer_recibido);
+//         uint16_t numero_de_pagina = extraer_uint16_al_buffer(buffer_recibido);
+//         uint32_t desplazamiento = extraer_uint32_al_buffer(buffer_recibido);
+
+//         cargar_uint8_al_buffer(buffer_a_enviar_a_memoria, tam_a_leer_por_pagina);
+//         cargar_uint16_al_buffer(buffer_a_enviar_a_memoria, numero_de_pagina);
+//         cargar_uint32_al_buffer(buffer_a_enviar_a_memoria, desplazamiento);
 //     }
 
-// //FALTA!!
-//     // Leer datos desde la memoria 
-//     // char *datos_memoria = leer_datos_desde_memoria(direccion_logica, tamanio);
-    
+//     destruir_buffer(buffer_recibido);
 
-//     // Abrir archivo de bloques para escritura
-//     FILE *archivo_bloques = fopen("bloques.dat", "rb+");
-//     if (archivo_bloques == NULL) {
-//         perror("Error al abrir el archivo de bloques");
+//     log_info(entrada_salida_logger, "PID: %u - Operacion: IO_FS_WRITE", pid);
+
+//     t_paquete *a_enviar_a_memoria = crear_paquete(LECTURA, buffer_a_enviar_a_memoria);
+
+//     enviar_paquete(a_enviar_a_memoria, fd_memoria);
+
+//     destruir_paquete(a_enviar_a_memoria);
+//     // espero a que memoria me de el contenido para escribir en el archivo
+//     int cod_op = recibir_operacion(fd_memoria);
+//     switch (cod_op)
+//     {
+//     case LECTURA:
+
+//        t_buffer *recibido = recibir_buffer_sin_cod_op(fd_memoria);
+
+//         void *mensaje_de_respuesta = extraer_choclo_al_buffer(recibido);
+//         log_trace(entrada_salida_log_debug, "RESPUESTA MEMORIA : %s", (char*)mensaje_de_respuesta);
+
+//         METADATA info_archivo = leer_metadata(nombre_archivo);
+
+//         t_bitarray *bitmap = leer_bitmap();
+//         if (bitmap == NULL)
+//         {
+//             return;
+//         }
+        
+//         if (puntero + tamanio > tamanio_total) {
+//             log_error(entrada_salida_logger, "Error: La escritura excede el tamaño del archivo.");
+//             return;
+//         }      
+
+//         // Abrir archivo de bloques para escritura
+//         FILE *archivo_bloques = fopen("bloques.dat", "rb+");
+//         if (archivo_bloques == NULL) {
+//             perror("Error al abrir el archivo de bloques");
+//             free(recibido);
+//             return;
+//         }
+
+//         // Calcular la posición de escritura en el archivo de bloques
+        
+//         int posicion_archivo = bloque_inicial * tamanio_de_bloque + puntero;
+//         fseek(archivo_bloques, posicion_archivo, SEEK_SET);
+
+//         // Escribir datos en el archivo de bloques
+//         fwrite(mensaje_de_respuesta, 1, tamanio, archivo_bloques);
+//         fclose(archivo_bloques);
+
+//         // Liberar memoria
 //         free(datos_memoria);
-//         return;
+
+//         log_info(entrada_salida_logger, "PID: %d - Escribir Archivo: %s - Tamanio Archivo: %d - Puntero archivo: %d", pid, nombre_del_archivo, tamanio_archivo, puntero_archivo);
 //     }
 
-//     // Calcular la posición de escritura en el archivo de bloques
-    
-//     int posicion_archivo = bloque_inicial * tamanio_de_bloque + puntero_archivo;
-//     fseek(archivo_bloques, posicion_archivo, SEEK_SET);
+//         destruir_buffer(recibido);
 
-//     // Escribir datos en el archivo de bloques
-//     fwrite(datos_memoria, 1, tamanio, archivo_bloques);
-//     fclose(archivo_bloques);
+//         enviar_confirmacion_a_kernel(pid);
 
-//     // Liberar memoria
-//     free(datos_memoria);
-
-//     log_info(entrada_salida_logger, "PID: %d - Escribir Archivo: %s - Tamanio Archivo: %d - Puntero archivo: %d", pid, nombre_del_archivo, tamanio_archivo, puntero_archivo);
-// }
-//     //envio toda esa direccion a memoria y memoria me devuelve un registro con ese valor
-//     //cargo ese registro que me devolvio memoria al filesystem a partir de registro puntero archivo
+//         free(mensaje_de_respuesta);
+//     }
 
 // void caso_io_fs_read(t_buffer *buffer_recibido){
 
