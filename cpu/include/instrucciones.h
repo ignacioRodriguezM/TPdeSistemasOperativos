@@ -20,5 +20,9 @@ void IO_STDIN_READ(void *nombre_de_la_interfaz, void *registro_direccion, void* 
 void IO_STDOUT_WRITE(void *nombre_de_la_interfaz, void *registro_direccion, void *registro_tamanio,uint8_t tamanio_de_registro_direccion, uint8_t tamanio_del_registro);
 
 
+void IO_FS_CREATE(void *nombre_de_la_interfaz, void *nombre_del_archivo);
+void IO_FS_DELETE(void *nombre_de_la_interfaz, void *nombre_del_archivo);
+void IO_FS_TRUNCATE(void *nombre_de_la_interfaz, void *nombre_del_archivo, void *registro_tamanio, uint8_t tamanio_del_registro);
+
 
 #endif
