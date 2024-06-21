@@ -25,10 +25,10 @@ void atender_multiples_entrada_salida(int *socket_ptr)
         switch (cod_op)
         {
         case ESCRITURA:
-            manejar_stdin_read(client_socket);
+            manejar_read(client_socket);
             break;
         case LECTURA:
-            manejar_stdout_write(client_socket);
+            manejar_write(client_socket);
             break;
         }
     }

@@ -21,11 +21,11 @@ void inicializar_diccionarios() {
     dictionary_put(operation_switcher, "IO_GEN_SLEEP", (void*)(uintptr_t)10);
     dictionary_put(operation_switcher, "IO_STDIN_READ", (void*)(uintptr_t)11);
     dictionary_put(operation_switcher, "IO_STDOUT_WRITE", (void*)(uintptr_t)12);
-    //dictionary_put(operation_switcher, "IO_FS_CREATE", (void*)(uintptr_t)13);
-    //dictionary_put(operation_switcher, "IO_FS_DELETE", (void*)(uintptr_t)14);
-    //dictionary_put(operation_switcher, "IO_FS_TRUNCATE", (void*)(uintptr_t)15);
-    //dictionary_put(operation_switcher, "IO_FS_WRITE", (void*)(uintptr_t)16);
-    //dictionary_put(operation_switcher, "IO_FS_READ", (void*)(uintptr_t)17);
+    dictionary_put(operation_switcher, "IO_FS_CREATE", (void*)(uintptr_t)13);
+    dictionary_put(operation_switcher, "IO_FS_DELETE", (void*)(uintptr_t)14);
+    dictionary_put(operation_switcher, "IO_FS_TRUNCATE", (void*)(uintptr_t)15);
+    dictionary_put(operation_switcher, "IO_FS_WRITE", (void*)(uintptr_t)16);
+    dictionary_put(operation_switcher, "IO_FS_READ", (void*)(uintptr_t)17);
     dictionary_put(operation_switcher, "EXIT", (void*)(uintptr_t)18);
 
     // DICCIONARIO DE REGISTROS
@@ -179,18 +179,35 @@ void decode(char* funcion, int num_params, char** params) {
             break;
         case 13:
             // IO_FS_CREATE
+            log_info(cpu_logger, "PID: <%u> - Ejecutando: <%s> - <%s, %s>", PID, funcion, params[0], params[1]);
+            IO_FS_CREATE(params[0], params[1]);
             break;
         case 14:
             // IO_FS_DELETE
+            log_info(cpu_logger, "PID: <%u> - Ejecutando: <%s> - <%s, %s>", PID, funcion, params[0], params[1]);
+            IO_FS_DELETE(params[0], params[1]);
             break;
         case 15:
             // IO_FS_TRUNCATE
+            log_info(cpu_logger, "PID: <%u> - Ejecutando: <%s> - <%s, %s, %s>", PID, funcion, params[0], params[1], params[2]);
+            tam1 = tamanio_de_registro(params[2]);
+            IO_FS_TRUNCATE(params[0], params[1], void_params[2]);
             break;
         case 16:
             // IO_FS_WRITE
+            log_info(cpu_logger, "PID: <%u> - Ejecutando: <%s> - <%s, %s, %s, %s, %s>", PID, funcion, params[0], params[1], params[2], params[3], params[4]);
+            tamanio_direccion = tamanio_de_registro(params[2]);
+            tam1 = tamanio_de_registro(params[3]);
+            tam2 = tamanio_de_registro(params[4]);
+            IO_FS_WRITE(params[0], params[1], void_params[2], void_params[3], void_params[4], tamanio_direccion, tam1, tam2);
             break;
         case 17:
             // IO_FS_READ
+            log_info(cpu_logger, "PID: <%u> - Ejecutando: <%s> - <%s, %s, %s, %s, %s>", PID, funcion, params[0], params[1], params[2], params[3], params[4]);
+            tamanio_direccion = tamanio_de_registro(params[2]);
+            tam1 = tamanio_de_registro(params[3]);
+            tam2 = tamanio_de_registro(params[4]);
+            IO_FS_READ(params[0], params[1], void_params[2], void_params[3], void_params[4], tamanio_direccion, tam1, tam2);
             break;
         case 18:
             // EXIT

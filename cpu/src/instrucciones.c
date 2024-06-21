@@ -752,11 +752,11 @@ void IO_FS_TRUNCATE(void *nombre_de_la_interfaz, void *nombre_del_archivo, void 
     uint8_t tamanio;
     if (tamanio_del_registro == sizeof(uint8_t))
     {
-        tamanio = (uint8_t *)registro_tamanio;
+        tamanio = *(uint8_t *)registro_tamanio;
     }
     else
     {
-        tamanio = (uint32_t *)registro_tamanio;
+        tamanio = *(uint32_t *)registro_tamanio;
     }
 
     cargar_uint8_al_buffer(buffer, tamanio);
@@ -777,19 +777,19 @@ void IO_FS_WRITE(void *nombre_de_la_interfaz, void *nombre_del_archivo, void *re
     uint8_t tamanio_a_escribir;
     if(tam_registro_tam == sizeof(uint8_t))
     {
-        tamanio_a_escribir = (uint8_t*) registro_tamanio;
+        tamanio_a_escribir = *(uint8_t*) registro_tamanio;
     }
     else{
-        tamanio_a_escribir = (uint32_t*) registro_tamanio;
+        tamanio_a_escribir = *(uint32_t*) registro_tamanio;
     }
 
     uint16_t valor_puntero_archivo;
     if(tam_registro_puntero == sizeof(uint8_t))
     {
-        valor_puntero_archivo = (uint8_t*) registro_puntero_de_archivo;
+        valor_puntero_archivo = *(uint8_t*) registro_puntero_de_archivo;
     }
     else{
-        valor_puntero_archivo = (uint32_t*) registro_puntero_de_archivo;
+        valor_puntero_archivo = *(uint32_t*) registro_puntero_de_archivo;
     }
 
 
@@ -852,19 +852,19 @@ void IO_FS_READ(void *nombre_de_la_interfaz, void *nombre_del_archivo, void *reg
     uint8_t tamanio_a_escribir;
     if(tam_registro_tam == sizeof(uint8_t))
     {
-        tamanio_a_escribir = (uint8_t*) registro_tamanio;
+        tamanio_a_escribir = *(uint8_t*) registro_tamanio;
     }
     else{
-        tamanio_a_escribir = (uint32_t*) registro_tamanio;
+        tamanio_a_escribir = *(uint32_t*) registro_tamanio;
     }
 
     uint16_t valor_puntero_archivo;
     if(tam_registro_puntero == sizeof(uint8_t))
     {
-        valor_puntero_archivo = (uint8_t*) registro_puntero_de_archivo;
+        valor_puntero_archivo = *(uint8_t*) registro_puntero_de_archivo;
     }
     else{
-        valor_puntero_archivo = (uint32_t*) registro_puntero_de_archivo;
+        valor_puntero_archivo = *(uint32_t*) registro_puntero_de_archivo;
     }
 
 
