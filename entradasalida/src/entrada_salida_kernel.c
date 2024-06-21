@@ -46,11 +46,11 @@ void atender_entrada_salida_kernel()
             }
             else if (strcmp(operacion_a_realizar, "IO_FS_WRITE") == 0)
             {
-                // caso_io_fs_write(buffer_recibido);
+                caso_io_fs_write(buffer_recibido);
             }
             else if (strcmp(operacion_a_realizar, "IO_FS_READ") == 0)
             {
-                // caso_io_fs_read(buffer_recibido);
+                caso_io_fs_read(buffer_recibido);
             }
 
             free(nombre_io_llegado_del_kernel);
@@ -327,7 +327,7 @@ void caso_io_fs_truncate (t_buffer* buffer_recibido)
     // [PID] [NOMBRE_ARCHIVO] [TAMANIO]
     uint16_t pid = extraer_uint16_al_buffer(buffer_recibido);
     char *nombre_del_archivo = extraer_string_al_buffer(buffer_recibido);
-    uint16_t nuevo_tamanio = extraer_uint16_al_buffer(buffer_recibido);
+    uint8_t nuevo_tamanio = extraer_uint8_al_buffer(buffer_recibido);
 
     esperarMilisegundos(tiempo_unidad_trabajo);
 
