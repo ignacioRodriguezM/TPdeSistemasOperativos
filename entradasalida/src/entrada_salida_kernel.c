@@ -486,19 +486,16 @@ void caso_io_fs_truncate (t_buffer* buffer_recibido)
 //         free(mensaje_de_respuesta);
 //     }
 
-// void caso_io_fs_read(t_buffer *buffer_recibido){
-
+// void caso_io_fs_read(t_buffer *buffer_recibido) {
 //     uint16_t pid = extraer_uint16_al_buffer(buffer_recibido);
-//     char *nombre_del_archivo = extraer_string_al_buffer(buffer_recibido);
+//     char *nombre_archivo = extraer_string_al_buffer(buffer_recibido);
+//     uint16_t puntero = extraer_uint16_al_buffer(buffer_recibido);
+//     uint8_t tamanio_total = extraer_uint8_al_buffer(buffer_recibido);
 //     uint16_t direccion_logica = extraer_uint16_al_buffer(buffer_recibido);
-//     uint8_t tamanio = extraer_uint8_al_buffer(buffer_recibido);
-//     uint16_t puntero_archivo = extraer_uint16_al_buffer(buffer_recibido);
 
-//     esperarMilisegundos(config_valores.tiempo_unidad_trabajo);
-
-//     METADATA info_archivo = leer_metadata(nombre_del_archivo);
+//     METADATA info_archivo = leer_metadata(nombre_archivo);
 //     if (info_archivo == NULL) {
-//         log_error(entrada_salida_logger, "Error: No se pudo leer la metadata del archivo '%s'.", nombre_del_archivo);
+//         log_error(entrada_salida_logger, "Error: No se pudo leer la metadata del archivo '%s'.", nombre_archivo);
 //         return;
 //     }
 
@@ -507,7 +504,7 @@ void caso_io_fs_truncate (t_buffer* buffer_recibido)
 //         return;
 //     }
 
-//     if (puntero_archivo + tamanio > info_archivo.tamanio_archivo) {
+//     if (puntero + tamanio_total > info_archivo.tamanio_archivo) {
 //         log_error(entrada_salida_logger, "Error: La lectura excede el tamaño del archivo.");
 //         return;
 //     }
@@ -520,25 +517,30 @@ void caso_io_fs_truncate (t_buffer* buffer_recibido)
 //     }
 
 //     // Calcular la posición de lectura en el archivo de bloques
-//     int tamanio_de_bloque = config_valores.block_size;
-//     int posicion_archivo = info_archivo.bloque_inicial * tamanio_de_bloque + puntero_archivo;
+//     int posicion_archivo = info_archivo.bloque_inicial * tamanio_de_bloque + puntero;
 //     fseek(archivo_bloques, posicion_archivo, SEEK_SET);
 
 //     // Leer datos del archivo de bloques
-//     char *datos_leidos = (char *)malloc(tamanio);
+//     char *datos_leidos = (char *)malloc(tamanio_total);
 //     if (datos_leidos == NULL) {
 //         perror("Error al reservar memoria para los datos leídos");
 //         fclose(archivo_bloques);
 //         return;
 //     }
-//     fread(datos_leidos, 1, tamanio, archivo_bloques);
+//     fread(datos_leidos, 1, tamanio_total, archivo_bloques);
 //     fclose(archivo_bloques);
 
-//     // Escribir datos a la memoria
-//     escribir_datos_a_memoria(direccion_logica, datos_leidos, tamanio);
+//     // Preparar el buffer para enviar a memoria
+//     t_buffer *buffer_a_enviar_a_memoria = crear_buffer();
+//     cargar_uint16_al_buffer(buffer_a_enviar_a_memoria, direccion_logica);
+//     cargar_uint8_al_buffer(buffer_a_enviar_a_memoria, tamanio_total);
+//     cargar_string_al_buffer(buffer_a_enviar_a_memoria, datos_leidos, tamanio_total);
 
-//     // Liberar memoria
+//     // Enviar datos a memoria
+//     t_paquete *a_enviar_a_memoria = crear_paquete(ESCRITURA, buffer_a_enviar_a_memoria);
+//     enviar_paquete(a_enviar_a_memoria, fd_memoria);
+
+//     destruir_paquete(a_enviar_a_memoria);
+//     destruir_buffer(buffer_a_enviar_a_memoria);
 //     free(datos_leidos);
-
-//     log_info(entrada_salida_logger, "PID: %d - Leer Archivo: %s - Tamanio: %d - Puntero archivo: %d", pid, nombre_del_archivo, tamanio, puntero_archivo);
-// }    
+// }
