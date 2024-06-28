@@ -4,6 +4,12 @@
 #include "./es_gestor.h"
 #include "./configuracion_entrada_salida.h"
 
+/////////////////////////////////iajhbfdui
+void agregar_a_archivos(char *nombre_archivo);
+void quitar_de_archivos(char *nombre_archivo);
+
+
+
 ///////////// funcion para crear archivos ///////
 void crear_archivo(char *nombre, int tamanio_del_archivo);
 

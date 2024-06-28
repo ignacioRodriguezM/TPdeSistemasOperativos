@@ -264,7 +264,6 @@ void caso_io_fs_create(t_buffer *buffer_recibido)
     if (bloque_libre == -1)
     {
         log_error(entrada_salida_logger, "Error: No hay suficiente espacio en el sistema de archivos.\n");
-        return;
     }
     else
     {
@@ -278,6 +277,9 @@ void caso_io_fs_create(t_buffer *buffer_recibido)
 
         // Crear metadata del archivo
         crear_metadata(nombre_del_archivo, bloque_libre, tamanio_de_bloque);
+
+        agregar_a_archivos(nombre_del_archivo);
+
     }
 
     // Liberar memoria
@@ -316,6 +318,8 @@ void caso_io_fs_delete(t_buffer *buffer_recibido)
     borrar_archivo_metadata(nombre_del_archivo);
 
     log_info(entrada_salida_logger, "PID: %d - Eliminar archivo: %s", pid, nombre_del_archivo);
+
+    quitar_de_archivos(nombre_del_archivo);
 
     free(nombre_del_archivo);
 
