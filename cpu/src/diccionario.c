@@ -191,7 +191,7 @@ void decode(char* funcion, int num_params, char** params) {
             // IO_FS_TRUNCATE
             log_info(cpu_logger, "PID: <%u> - Ejecutando: <%s> - <%s, %s, %s>", PID, funcion, params[0], params[1], params[2]);
             tam1 = tamanio_de_registro(params[2]);
-            IO_FS_TRUNCATE(params[0], params[1], void_params[2]);
+            IO_FS_TRUNCATE(params[0], params[1], void_params[2], tam1);
             break;
         case 16:
             // IO_FS_WRITE

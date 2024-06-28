@@ -587,7 +587,7 @@ void _manejar_bloqueo()
             // [cantidad] [tam_parcial] [marco] [des] [tam_parcial] [marco] [des] ....
             char *nombre_del_archivo = extraer_string_al_buffer(buffer_recibido);
             uint16_t puntero = extraer_uint16_al_buffer(buffer_recibido);
-            uint8_t tamanio_total = extraer_uint8_al_buffer(buffer_recibido);
+            uint8_t tamanio_a_escribir = extraer_uint8_al_buffer(buffer_recibido);
             uint8_t cantidad_de_direcciones = extraer_uint8_al_buffer(buffer_recibido);
 
 

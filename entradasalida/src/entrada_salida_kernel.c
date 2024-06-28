@@ -397,150 +397,150 @@ void caso_io_fs_truncate (t_buffer* buffer_recibido)
     enviar_confirmacion_a_kernel(pid);
 
 }
-// void caso_io_fs_write(t_buffer *buffer_recibido){
+void caso_io_fs_write(t_buffer *buffer_recibido){
 
-//     uint16_t pid = extraer_uint16_al_buffer(buffer_recibido);
-//     char *nombre_archivo = extraer_string_al_buffer(buffer_recibido);
-//     uint16_t puntero = extraer_uint16_al_buffer(buffer_recibido);
-//     uint8_t tamanio_total = extraer_uint8_al_buffer(buffer_recibido);
-//     uint8_t cantidad_de_direcciones = extraer_uint8_al_buffer(buffer_recibido);
+    uint16_t pid = extraer_uint16_al_buffer(buffer_recibido);
+    char *nombre_archivo = extraer_string_al_buffer(buffer_recibido);
+    uint16_t puntero = extraer_uint16_al_buffer(buffer_recibido);
+    uint8_t tamanio_a_escribir = extraer_uint8_al_buffer(buffer_recibido);
+    uint8_t cantidad_de_direcciones = extraer_uint8_al_buffer(buffer_recibido);
 
-//     t_buffer *buffer_a_enviar_a_memoria = crear_buffer();
+    t_buffer *buffer_a_enviar_a_memoria = crear_buffer();
 
-//     // [TAM_A_leer] [MARCO] [DESPLAZAMIENTO] .. [TAM_A_leer] [MARCO] [DESPLAZAMIENTO] [DATO] .....
+    // [TAM_A_leer] [MARCO] [DESPLAZAMIENTO] .. [TAM_A_leer] [MARCO] [DESPLAZAMIENTO] [DATO] .....
 
-//     cargar_uint8_al_buffer(buffer_a_enviar_a_memoria, tamanio_total);
-//     cargar_uint8_al_buffer(buffer_a_enviar_a_memoria, cantidad_de_direcciones);
+    cargar_uint8_al_buffer(buffer_a_enviar_a_memoria, tamanio_a_escribir);
+    cargar_uint8_al_buffer(buffer_a_enviar_a_memoria, cantidad_de_direcciones);
 
-//     for (int i = 0; i < cantidad_de_direcciones; i++)
-//     {
-//         uint8_t tam_a_leer_por_pagina = extraer_uint8_al_buffer(buffer_recibido);
-//         uint16_t numero_de_pagina = extraer_uint16_al_buffer(buffer_recibido);
-//         uint32_t desplazamiento = extraer_uint32_al_buffer(buffer_recibido);
+    for (int i = 0; i < cantidad_de_direcciones; i++)
+    {
+        uint8_t tam_a_leer_por_pagina = extraer_uint8_al_buffer(buffer_recibido);
+        uint16_t numero_de_pagina = extraer_uint16_al_buffer(buffer_recibido);
+        uint32_t desplazamiento = extraer_uint32_al_buffer(buffer_recibido);
 
-//         cargar_uint8_al_buffer(buffer_a_enviar_a_memoria, tam_a_leer_por_pagina);
-//         cargar_uint16_al_buffer(buffer_a_enviar_a_memoria, numero_de_pagina);
-//         cargar_uint32_al_buffer(buffer_a_enviar_a_memoria, desplazamiento);
-//     }
+        cargar_uint8_al_buffer(buffer_a_enviar_a_memoria, tam_a_leer_por_pagina);
+        cargar_uint16_al_buffer(buffer_a_enviar_a_memoria, numero_de_pagina);
+        cargar_uint32_al_buffer(buffer_a_enviar_a_memoria, desplazamiento);
+    }
 
-//     destruir_buffer(buffer_recibido);
+    destruir_buffer(buffer_recibido);
 
-//     log_info(entrada_salida_logger, "PID: %u - Operacion: IO_FS_WRITE", pid);
+    log_info(entrada_salida_logger, "PID: %u - Operacion: IO_FS_WRITE", pid);
 
-//     t_paquete *a_enviar_a_memoria = crear_paquete(LECTURA, buffer_a_enviar_a_memoria);
+    t_paquete *a_enviar_a_memoria = crear_paquete(LECTURA, buffer_a_enviar_a_memoria);
 
-//     enviar_paquete(a_enviar_a_memoria, fd_memoria);
+    enviar_paquete(a_enviar_a_memoria, fd_memoria);
 
-//     destruir_paquete(a_enviar_a_memoria);
-//     // espero a que memoria me de el contenido para escribir en el archivo
-//     int cod_op = recibir_operacion(fd_memoria);
-//     switch (cod_op)
-//     {
-//     case LECTURA:
+    destruir_paquete(a_enviar_a_memoria);
+    // espero a que memoria me de el contenido para escribir en el archivo
+    int cod_op = recibir_operacion(fd_memoria);
+    switch (cod_op)
+    {
+    case LECTURA:
 
-//        t_buffer *recibido = recibir_buffer_sin_cod_op(fd_memoria);
+       t_buffer *recibido = recibir_buffer_sin_cod_op(fd_memoria);
 
-//         void *mensaje_de_respuesta = extraer_choclo_al_buffer(recibido);
-//         log_trace(entrada_salida_log_debug, "RESPUESTA MEMORIA : %s", (char*)mensaje_de_respuesta);
+        void *mensaje_de_respuesta = extraer_choclo_al_buffer(recibido);
+        log_trace(entrada_salida_log_debug, "RESPUESTA MEMORIA : %s", (char*)mensaje_de_respuesta);
 
-//         METADATA info_archivo = leer_metadata(nombre_archivo);
+        METADATA info_archivo = leer_metadata(nombre_archivo);
 
-//         t_bitarray *bitmap = leer_bitmap();
-//         if (bitmap == NULL)
-//         {
-//             return;
-//         }
+        t_bitarray *bitmap = leer_bitmap();
+        if (bitmap == NULL)
+        {
+            return;
+        }
         
-//         if (puntero + tamanio > tamanio_total) {
-//             log_error(entrada_salida_logger, "Error: La escritura excede el tamaño del archivo.");
-//             return;
-//         }      
+        if (puntero + tamanio_a_escribir > info_archivo.tam_bytes) {
+            log_error(entrada_salida_logger, "Error: La escritura excede el tamaño del archivo.");
+            return;
+        }      
 
-//         // Abrir archivo de bloques para escritura
-//         FILE *archivo_bloques = fopen("bloques.dat", "rb+");
-//         if (archivo_bloques == NULL) {
-//             perror("Error al abrir el archivo de bloques");
-//             free(recibido);
-//             return;
-//         }
+        // Abrir archivo de bloques para escritura
+        FILE *archivo_bloques = fopen("bloques.dat", "rb+");
+        if (archivo_bloques == NULL) {
+            perror("Error al abrir el archivo de bloques");
+            // free(recibido);
+            return;
+        }
 
-//         // Calcular la posición de escritura en el archivo de bloques
+        // Calcular la posición de escritura en el archivo de bloques
         
-//         int posicion_archivo = bloque_inicial * tamanio_de_bloque + puntero;
-//         fseek(archivo_bloques, posicion_archivo, SEEK_SET);
+        int posicion_archivo = info_archivo.bloque_inicial * tamanio_de_bloque + puntero;
+        fseek(archivo_bloques, posicion_archivo, SEEK_SET);
 
-//         // Escribir datos en el archivo de bloques
-//         fwrite(mensaje_de_respuesta, 1, tamanio, archivo_bloques);
-//         fclose(archivo_bloques);
+        // Escribir datos en el archivo de bloques
+        fwrite(mensaje_de_respuesta, 1, tamanio_a_escribir, archivo_bloques);
+        fclose(archivo_bloques);
 
-//         // Liberar memoria
-//         free(datos_memoria);
+        // Liberar memoria
+        // free(datos_memoria);
 
-//         log_info(entrada_salida_logger, "PID: %d - Escribir Archivo: %s - Tamanio Archivo: %d - Puntero archivo: %d", pid, nombre_del_archivo, tamanio_archivo, puntero_archivo);
-//     }
+        log_info(entrada_salida_logger, "PID: %d - Escribir Archivo: %s - Tamanio Archivo: %d - Puntero archivo: %d", pid, nombre_archivo, info_archivo.tam_bytes, puntero);
+    }
 
-//         destruir_buffer(recibido);
+        // destruir_buffer(recibido);
 
-//         enviar_confirmacion_a_kernel(pid);
+        enviar_confirmacion_a_kernel(pid);
 
-//         free(mensaje_de_respuesta);
-//     }
+        // free(mensaje_de_respuesta);
+    }
 
-// void caso_io_fs_read(t_buffer *buffer_recibido) {
-//     uint16_t pid = extraer_uint16_al_buffer(buffer_recibido);
-//     char *nombre_archivo = extraer_string_al_buffer(buffer_recibido);
-//     uint16_t puntero = extraer_uint16_al_buffer(buffer_recibido);
-//     uint8_t tamanio_total = extraer_uint8_al_buffer(buffer_recibido);
-//     uint16_t direccion_logica = extraer_uint16_al_buffer(buffer_recibido);
+void caso_io_fs_read(t_buffer *buffer_recibido) {
+    uint16_t pid = extraer_uint16_al_buffer(buffer_recibido);
+    char *nombre_archivo = extraer_string_al_buffer(buffer_recibido);
+    uint16_t puntero = extraer_uint16_al_buffer(buffer_recibido);
+    uint8_t tamanio_a_copiar = extraer_uint8_al_buffer(buffer_recibido);
+    uint16_t direccion_logica = extraer_uint16_al_buffer(buffer_recibido);
 
-//     METADATA info_archivo = leer_metadata(nombre_archivo);
-//     if (info_archivo == NULL) {
-//         log_error(entrada_salida_logger, "Error: No se pudo leer la metadata del archivo '%s'.", nombre_archivo);
-//         return;
-//     }
+    METADATA info_archivo = leer_metadata(nombre_archivo);
+    // if (info_archivo == NULL) {
+    //     log_error(entrada_salida_logger, "Error: No se pudo leer la metadata del archivo '%s'.", nombre_archivo);
+    //     return;
+    // }
 
-//     t_bitarray *bitmap = leer_bitmap(config_valores.block_count);
-//     if (bitmap == NULL) {
-//         return;
-//     }
+    t_bitarray *bitmap = leer_bitmap(cantidad_de_bloques);
+    if (bitmap == NULL) {
+        return;
+    }
 
-//     if (puntero + tamanio_total > info_archivo.tamanio_archivo) {
-//         log_error(entrada_salida_logger, "Error: La lectura excede el tamaño del archivo.");
-//         return;
-//     }
+    if (puntero + tamanio_a_copiar > info_archivo.tam_bytes) {
+        log_error(entrada_salida_logger, "Error: La lectura excede el tamaño del archivo.");
+        return;
+    }
 
-//     // Abrir archivo de bloques para lectura
-//     FILE *archivo_bloques = fopen("bloques.dat", "rb");
-//     if (archivo_bloques == NULL) {
-//         perror("Error al abrir el archivo de bloques");
-//         return;
-//     }
+    // Abrir archivo de bloques para lectura
+    FILE *archivo_bloques = fopen("bloques.dat", "rb");
+    if (archivo_bloques == NULL) {
+        perror("Error al abrir el archivo de bloques");
+        return;
+    }
 
-//     // Calcular la posición de lectura en el archivo de bloques
-//     int posicion_archivo = info_archivo.bloque_inicial * tamanio_de_bloque + puntero;
-//     fseek(archivo_bloques, posicion_archivo, SEEK_SET);
+    // Calcular la posición de lectura en el archivo de bloques
+    int posicion_archivo = info_archivo.bloque_inicial * tamanio_de_bloque + puntero;
+    fseek(archivo_bloques, posicion_archivo, SEEK_SET);
 
-//     // Leer datos del archivo de bloques
-//     char *datos_leidos = (char *)malloc(tamanio_total);
-//     if (datos_leidos == NULL) {
-//         perror("Error al reservar memoria para los datos leídos");
-//         fclose(archivo_bloques);
-//         return;
-//     }
-//     fread(datos_leidos, 1, tamanio_total, archivo_bloques);
-//     fclose(archivo_bloques);
+    // Leer datos del archivo de bloques
+    char *datos_leidos = (char *)malloc(tamanio_a_copiar);
+    if (datos_leidos == NULL) {
+        perror("Error al reservar memoria para los datos leídos");
+        fclose(archivo_bloques);
+        return;
+    }
+    fread(datos_leidos, 1, tamanio_a_copiar, archivo_bloques);
+    fclose(archivo_bloques);
 
-//     // Preparar el buffer para enviar a memoria
-//     t_buffer *buffer_a_enviar_a_memoria = crear_buffer();
-//     cargar_uint16_al_buffer(buffer_a_enviar_a_memoria, direccion_logica);
-//     cargar_uint8_al_buffer(buffer_a_enviar_a_memoria, tamanio_total);
-//     cargar_string_al_buffer(buffer_a_enviar_a_memoria, datos_leidos, tamanio_total);
+    // Preparar el buffer para enviar a memoria
+    t_buffer *buffer_a_enviar_a_memoria = crear_buffer();
+    cargar_uint16_al_buffer(buffer_a_enviar_a_memoria, direccion_logica);
+    cargar_uint8_al_buffer(buffer_a_enviar_a_memoria, tamanio_a_copiar);
+    cargar_string_al_buffer(buffer_a_enviar_a_memoria, datos_leidos);
 
-//     // Enviar datos a memoria
-//     t_paquete *a_enviar_a_memoria = crear_paquete(ESCRITURA, buffer_a_enviar_a_memoria);
-//     enviar_paquete(a_enviar_a_memoria, fd_memoria);
+    // Enviar datos a memoria
+    t_paquete *a_enviar_a_memoria = crear_paquete(ESCRITURA, buffer_a_enviar_a_memoria);
+    enviar_paquete(a_enviar_a_memoria, fd_memoria);
 
-//     destruir_paquete(a_enviar_a_memoria);
-//     destruir_buffer(buffer_a_enviar_a_memoria);
-//     free(datos_leidos);
-// }
+    destruir_paquete(a_enviar_a_memoria);
+    destruir_buffer(buffer_a_enviar_a_memoria);
+    free(datos_leidos);
+}
