@@ -6,4 +6,4 @@ INICIAR_PROCESO /pruebas.txt
 
 FINALIZAR_PROCESO 0
 
-EJECUTAR_SCRIPT /home/utnso/...
+EJECUTAR_SCRIPT /home/utnso/Desktop/SCRIPT_BASIC

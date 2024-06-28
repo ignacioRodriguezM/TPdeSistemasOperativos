@@ -637,6 +637,8 @@ void _manejar_bloqueo()
             cargar_string_al_buffer(pcb_a_editar->operacion_de_io_por_la_que_fue_bloqueado, nombre_del_archivo);
             cargar_uint16_al_buffer(pcb_a_editar->operacion_de_io_por_la_que_fue_bloqueado, puntero);
             cargar_uint8_al_buffer(pcb_a_editar->operacion_de_io_por_la_que_fue_bloqueado, tamanio_total);
+
+            
             cargar_uint8_al_buffer(pcb_a_editar->operacion_de_io_por_la_que_fue_bloqueado, cantidad_de_direcciones);
 
             for(int i=0; i<cantidad_de_direcciones; i++)
