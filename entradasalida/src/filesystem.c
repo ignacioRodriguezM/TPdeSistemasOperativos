@@ -39,6 +39,7 @@ void compactar_hacia_archivo(char* nombre_del_archivo)
     char *buffer = (char *)malloc(tamanio_del_archivo);
 
     int* puntero_buffer = malloc(sizeof(int));
+    *puntero_buffer = 0;
 
     for(int i=0; i<archivos.cantidad_archivos; i++)
     {
@@ -47,6 +48,10 @@ void compactar_hacia_archivo(char* nombre_del_archivo)
         if(strcmp(nombre_del_archivo, string_a_comparar) != 0)
         {
             compactar(string_a_comparar, buffer, puntero_buffer);
+        }
+        else
+        {
+            current = current->next;
         }
     }
 
@@ -193,11 +198,8 @@ void actualizar_archivo_bitmap(t_bitarray *bitmap)
 
     fwrite(bitmap->bitarray, 1, tamanio_bitarray_en_bytes, archivo);
     fclose(archivo);
-
-    printf("Bloques marcados como ocupados y bitmap actualizado.\n");
 }
 
-// Buscar la primera secuencia de `longitud` ceros consecutivos en el bitmap
 int buscar_secuencia_libre(t_bitarray *bitmap, int longitud)
 {
     for (int i = 0; i <= cantidad_de_bloques - longitud; i++)
@@ -414,6 +416,9 @@ void inicializar_estructuras_filesystem()
     _verificar_si_existe_archivo_bloques();
 
     _verificar_si_existe_archivo_bitmap();
+
+
+    
     return;
 }
 
