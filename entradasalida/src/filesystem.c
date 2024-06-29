@@ -7,8 +7,7 @@ void agregar_a_archivos(char *nombre_archivo)
     archivos.cantidad_archivos++;
     list_add(archivos.lista_archivos, nombre_archivo);
 
-    //agregarlo al file de _creados
-    
+    // agregarlo al file de _creados
 }
 void quitar_de_archivos(char *nombre_archivo)
 {
@@ -32,27 +31,22 @@ void quitar_de_archivos(char *nombre_archivo)
     current = NULL;
 }
 
-void compactar_hacia_archivo(char* nombre_del_archivo)
+void compactar_hacia_archivo(char *nombre_del_archivo)
 {
-    //esto seria como crear un nuevo disco temporal
-    int tamanio_del_archivo = tamanio_de_bloque * cantidad_de_bloques;
-    char *buffer = (char *)malloc(tamanio_del_archivo);
 
-    int* puntero_buffer = malloc(sizeof(int));
+    int tamanio_del_archivo = tamanio_de_bloque * cantidad_de_bloques;
+    void *buffer = malloc(tamanio_del_archivo);
+
+    int *puntero_buffer = malloc(sizeof(int));
     *puntero_buffer = 0;
 
-    t_link_element *current = archivos.lista_archivos->head;
     
-    for(int i=0; i<archivos.cantidad_archivos; i++)
+    for (int i = 0; i < archivos.cantidad_archivos; i++)
     {
-        char *string_a_comparar = (char *)current->data;
-        if(strcmp(nombre_del_archivo, string_a_comparar) != 0)
+        char *string_a_comparar = (char *)list_get(archivos.lista_archivos, i);
+        if (strcmp(nombre_del_archivo, string_a_comparar) != 0)
         {
             compactar(string_a_comparar, buffer, puntero_buffer);
-        }
-        else
-        {
-            current = current->next;
         }
     }
 
@@ -64,27 +58,30 @@ void compactar_hacia_archivo(char* nombre_del_archivo)
     memset(bitarray, 0, tamanio_bitarray_en_bytes);
 
     t_bitarray *bitmap = bitarray_create_with_mode(bitarray, tamanio_bitarray_en_bytes, LSB_FIRST);
-    
-    for(int i=0 ; i < bloques_ocupados; i++)
+
+    for (int i = 0; i < bloques_ocupados; i++)
     {
         bitarray_set_bit(bitmap, i);
     }
 
     actualizar_archivo_bitmap(bitmap);
 
-    free(bitmap);    
+    bitarray_destroy(bitmap);
 
     free(puntero_buffer);
 
-    FILE *archivo = fopen(nombre, "wb");
-    if (archivo == NULL)
+    char full_path[256];
+    snprintf(full_path, sizeof(full_path), "%sbloques.dat", path_base);
+    FILE *archivo_bloques = fopen(full_path, "wb");
+    
+    if (archivo_bloques == NULL)
     {
         perror("Error al abrir el archivo");
         return;
     }
 
     // Escribir el buffer en el archivo
-    size_t escrito = fwrite(buffer, 1, tamanio_del_archivo, archivo);
+    size_t escrito = fwrite(buffer, 1, tamanio_del_archivo, archivo_bloques);
     if (escrito != tamanio_del_archivo)
     {
         perror("Error al escribir en el archivo");
@@ -94,13 +91,13 @@ void compactar_hacia_archivo(char* nombre_del_archivo)
     free(buffer);
 
     // Cerrar el archivo
-    fclose(archivo);
+    fclose(archivo_bloques);
 
     printf("Archivos COMPACTADOS.\n");
-
 }
 
-void compactar (char *nombre_archivo, char* buffer, int *puntero_buffer){
+void compactar(char *nombre_archivo, void *buffer, int *puntero_buffer)
+{
 
     int tamanio_del_archivo = tamanio_de_bloque * cantidad_de_bloques;
 
@@ -110,7 +107,7 @@ void compactar (char *nombre_archivo, char* buffer, int *puntero_buffer){
     snprintf(full_path, sizeof(full_path), "%sbloques.dat", path_base);
     FILE *file;
     file = fopen(full_path, "rb");
-    char *buffer_viejo = (char *)malloc(tamanio_del_archivo);
+    void *buffer_viejo = malloc(tamanio_del_archivo);
 
     size_t leido = fread(buffer_viejo, 1, tamanio_del_archivo, file);
     if (leido != tamanio_del_archivo)
@@ -121,7 +118,7 @@ void compactar (char *nombre_archivo, char* buffer, int *puntero_buffer){
         return;
     }
 
-    memcpy(buffer + *puntero_buffer , buffer_viejo + (info_archivo.bloque_inicial * tamanio_de_bloque) , info_archivo.tam_bytes);   
+    memcpy(buffer + *puntero_buffer, buffer_viejo + (info_archivo.bloque_inicial * tamanio_de_bloque), info_archivo.tam_bytes);
 
     actualizar_archivo_metadata(nombre_archivo, *puntero_buffer, info_archivo.tam_bytes);
 
@@ -140,7 +137,6 @@ t_bitarray *leer_bitmap()
     if (archivo == NULL)
     {
         perror("Error al abrir el archivo bitmap");
-        
     }
 
     char *bitarray = (char *)malloc(tamanio_bitarray_en_bytes);
@@ -148,7 +144,6 @@ t_bitarray *leer_bitmap()
     {
         perror("Error al reservar memoria para el bitmap");
         fclose(archivo);
-        
     }
 
     size_t leido = fread(bitarray, 1, tamanio_bitarray_en_bytes, archivo);
@@ -157,7 +152,6 @@ t_bitarray *leer_bitmap()
         perror("Error al leer el archivo bitmap");
         free(bitarray);
         fclose(archivo);
-        
     }
 
     t_bitarray *bitmap = bitarray_create_with_mode(bitarray, tamanio_bitarray_en_bytes, LSB_FIRST);
@@ -340,7 +334,7 @@ METADATA leer_metadata(char *nombre_archivo)
     FILE *archivo = fopen(full_path, "r");
     if (archivo == NULL)
     {
-        printf("Error al abrir el archivo para lectura.\n");
+        printf("Error al abrir el archivo para lectura %s.\n", full_path);
         return informacion_archivo;
     }
 
@@ -418,8 +412,6 @@ void inicializar_estructuras_filesystem()
 
     _verificar_si_existe_archivo_bitmap();
 
-
-    
     return;
 }
 

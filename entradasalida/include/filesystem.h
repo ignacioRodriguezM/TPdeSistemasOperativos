@@ -22,7 +22,7 @@ METADATA leer_metadata(char* nombre_archivo);
 
 ////////////////////compactar archivos/////////
 void compactar_hacia_archivo(char *nombre_del_archivo);
-void compactar (char *nombre_archivo, char* buffer, int *puntero_buffer);
+void compactar (char *nombre_archivo, void* buffer, int *puntero_buffer);
 
 
 ///////////// funciones para operar el bitmap ///////

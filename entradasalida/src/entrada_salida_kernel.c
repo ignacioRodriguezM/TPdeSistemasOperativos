@@ -287,7 +287,6 @@ void caso_io_fs_create(t_buffer *buffer_recibido)
 
     log_info(entrada_salida_logger, "PID: %d - Crear archivo: %s", pid, nombre_del_archivo);
 
-    free(nombre_del_archivo);
 
     enviar_confirmacion_a_kernel(pid);
 }
@@ -392,7 +391,9 @@ void caso_io_fs_truncate (t_buffer* buffer_recibido)
     actualizar_archivo_bitmap(bitmap);
     bitarray_destroy(bitmap);
 
-    actualizar_archivo_metadata (nombre_del_archivo, info_archivo.bloque_inicial, nuevo_tamanio);
+    METADATA info_archivo_actualizada = leer_metadata(nombre_del_archivo);
+
+    actualizar_archivo_metadata (nombre_del_archivo, info_archivo_actualizada.bloque_inicial, nuevo_tamanio);
 
     log_info(entrada_salida_logger, "PID: %d - Truncar archivo: %s - %u", pid, nombre_del_archivo, nuevo_tamanio);
 
@@ -461,7 +462,9 @@ void caso_io_fs_write(t_buffer *buffer_recibido){
         }      
 
         // Abrir archivo de bloques para escritura
-        FILE *archivo_bloques = fopen("bloques.dat", "rb+");
+        char archivo_bloques_path[256];
+        snprintf(archivo_bloques_path, sizeof(archivo_bloques_path), "%sbloques.dat", path_base);
+        FILE *archivo_bloques = fopen(archivo_bloques_path, "rb+");
         if (archivo_bloques == NULL) {
             perror("Error al abrir el archivo de bloques");
             return;
@@ -519,7 +522,9 @@ void caso_io_fs_read(t_buffer *buffer_recibido) {
     }
 
     // Abrir archivo de bloques para lectura
-    FILE *archivo_bloques = fopen("bloques.dat", "rb");
+    char archivo_bloques_path[256];
+    snprintf(archivo_bloques_path, sizeof(archivo_bloques_path), "%sbloques.dat", path_base);
+    FILE *archivo_bloques = fopen(archivo_bloques_path, "rb+");
     if (archivo_bloques == NULL) {
         perror("Error al abrir el archivo de bloques");
         return;
