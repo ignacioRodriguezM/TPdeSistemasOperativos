@@ -113,7 +113,7 @@ void compactar (char *nombre_archivo, char* buffer, int *puntero_buffer){
     char *buffer_viejo = (char *)malloc(tamanio_del_archivo);
 
     size_t leido = fread(buffer_viejo, 1, tamanio_del_archivo, file);
-    if (leido != tamanio_bitarray_en_bytes)
+    if (leido != tamanio_del_archivo)
     {
         perror("Error al leer el archivo bitmap");
         free(buffer_viejo);
