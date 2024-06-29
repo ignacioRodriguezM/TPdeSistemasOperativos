@@ -22,7 +22,6 @@ void atender_entrada_salida_kernel()
             if (strcmp(operacion_a_realizar, "IO_GEN_SLEEP") == 0)
             {
                 caso_io_gen_sleep(buffer_recibido);
-
             }
             else if (strcmp(operacion_a_realizar, "IO_STDIN_READ") == 0)
             {
@@ -79,17 +78,17 @@ void presentarse_con_kernel()
 
     destruir_paquete(a_enviar);
 }
-void enviar_confirmacion_a_kernel (uint16_t pid)
+void enviar_confirmacion_a_kernel(uint16_t pid)
 {
     // DEVOLVER CONFIRMACION AL KERNEL
-        t_buffer *buffer_a_enviar = crear_buffer();
-        cargar_string_al_buffer(buffer_a_enviar, nombre); //[nombre][pid]
-        cargar_uint16_al_buffer(buffer_a_enviar, pid);
-        t_paquete *a_enviar = crear_paquete(FIN_DE_EJECUCION_DE_IO, buffer_a_enviar);
+    t_buffer *buffer_a_enviar = crear_buffer();
+    cargar_string_al_buffer(buffer_a_enviar, nombre); //[nombre][pid]
+    cargar_uint16_al_buffer(buffer_a_enviar, pid);
+    t_paquete *a_enviar = crear_paquete(FIN_DE_EJECUCION_DE_IO, buffer_a_enviar);
 
-        enviar_paquete(a_enviar, fd_kernel);
+    enviar_paquete(a_enviar, fd_kernel);
 
-        destruir_paquete(a_enviar);
+    destruir_paquete(a_enviar);
 }
 
 void caso_io_gen_sleep(t_buffer *buffer_recibido)
@@ -219,12 +218,12 @@ void caso_io_stdout_write(t_buffer *buffer_recibido)
     {
     case LECTURA:
 
-       t_buffer *recibido = recibir_buffer_sin_cod_op(fd_memoria);
+        t_buffer *recibido = recibir_buffer_sin_cod_op(fd_memoria);
 
         void *mensaje_de_respuesta = extraer_choclo_al_buffer(recibido);
-        log_trace(entrada_salida_log_debug, "RESPUESTA MEMORIA : %s", (char*)mensaje_de_respuesta);
+        log_trace(entrada_salida_log_debug, "RESPUESTA MEMORIA : %s", (char *)mensaje_de_respuesta);
 
-        printf("\n %s \n", (char*)mensaje_de_respuesta);
+        printf("\n %s \n", (char *)mensaje_de_respuesta);
 
         destruir_buffer(recibido);
 
@@ -248,7 +247,7 @@ void caso_io_fs_create(t_buffer *buffer_recibido)
     char *nombre_del_archivo = extraer_string_al_buffer(buffer_recibido);
 
     esperarMilisegundos(tiempo_unidad_trabajo);
-    
+
     int tamanio_del_archivo_en_bloques = 1;
 
     // Leer el bitmap
@@ -279,14 +278,12 @@ void caso_io_fs_create(t_buffer *buffer_recibido)
         crear_metadata(nombre_del_archivo, bloque_libre, tamanio_de_bloque);
 
         agregar_a_archivos(nombre_del_archivo);
-
     }
 
     // Liberar memoria
     bitarray_destroy(bitmap);
 
     log_info(entrada_salida_logger, "PID: %d - Crear archivo: %s", pid, nombre_del_archivo);
-
 
     enviar_confirmacion_a_kernel(pid);
 }
@@ -325,7 +322,7 @@ void caso_io_fs_delete(t_buffer *buffer_recibido)
     enviar_confirmacion_a_kernel(pid);
 }
 
-void caso_io_fs_truncate (t_buffer* buffer_recibido)
+void caso_io_fs_truncate(t_buffer *buffer_recibido)
 {
     // [PID] [NOMBRE_ARCHIVO] [TAMANIO]
     uint16_t pid = extraer_uint16_al_buffer(buffer_recibido);
@@ -345,17 +342,17 @@ void caso_io_fs_truncate (t_buffer* buffer_recibido)
     int bloques_ocupados = division_entera_redondear_arriba(info_archivo.tam_bytes, tamanio_de_bloque);
     int nuevo_tam_en_bloques = division_entera_redondear_arriba(nuevo_tamanio, tamanio_de_bloque);
 
-    if(nuevo_tamanio > info_archivo.tam_bytes) // AGRANDAR
+    if (nuevo_tamanio > info_archivo.tam_bytes) // AGRANDAR
     {
         int cantidad_bloques_a_ocupar = nuevo_tam_en_bloques - bloques_ocupados;
         int ultimo_bloque = info_archivo.bloque_inicial + bloques_ocupados;
-        if(chquear_bloques_libres_contiguos(bitmap, ultimo_bloque, cantidad_bloques_a_ocupar))
+        if (chquear_bloques_libres_contiguos(bitmap, ultimo_bloque, cantidad_bloques_a_ocupar))
         {
             marcar_bloques_ocupados(bitmap, ultimo_bloque, cantidad_bloques_a_ocupar);
         }
         else
         {
-            if(cantidad_de_bloques_libres(bitmap) < cantidad_bloques_a_ocupar)
+            if (cantidad_de_bloques_libres(bitmap) < cantidad_bloques_a_ocupar)
             {
                 log_error(entrada_salida_log_debug, "NO SE PUEDE TRUNCAR EL ARCHIVO POR FALTA DE BLOQUES LIBRES");
             }
@@ -373,36 +370,34 @@ void caso_io_fs_truncate (t_buffer* buffer_recibido)
                 int ultimo_bloquev2 = info_archivo_actualizada.bloque_inicial + bloques_ocupadosv2;
 
                 marcar_bloques_ocupados(bitmap_actualizado, ultimo_bloquev2, cantidad_bloques_a_ocupar);
-
             }
         }
     }
-    else if(nuevo_tamanio < info_archivo.tam_bytes) //ACHICAR
+    else if (nuevo_tamanio < info_archivo.tam_bytes) // ACHICAR
     {
         int cantidad_bloques_a_liberar = bloques_ocupados - nuevo_tam_en_bloques;
-        liberar_bloques_del_bitmap(bitmap, (info_archivo.bloque_inicial + nuevo_tam_en_bloques), cantidad_bloques_a_liberar);       
+        liberar_bloques_del_bitmap(bitmap, (info_archivo.bloque_inicial + nuevo_tam_en_bloques), cantidad_bloques_a_liberar);
     }
     else
     {
         log_error(entrada_salida_log_debug, "El tamanio al que se quiere truncar es el tamanio actual");
     }
 
-
     actualizar_archivo_bitmap(bitmap);
     bitarray_destroy(bitmap);
 
     METADATA info_archivo_actualizada = leer_metadata(nombre_del_archivo);
 
-    actualizar_archivo_metadata (nombre_del_archivo, info_archivo_actualizada.bloque_inicial, nuevo_tamanio);
+    actualizar_archivo_metadata(nombre_del_archivo, info_archivo_actualizada.bloque_inicial, nuevo_tamanio);
 
     log_info(entrada_salida_logger, "PID: %d - Truncar archivo: %s - %u", pid, nombre_del_archivo, nuevo_tamanio);
 
     free(nombre_del_archivo);
 
     enviar_confirmacion_a_kernel(pid);
-
 }
-void caso_io_fs_write(t_buffer *buffer_recibido){
+void caso_io_fs_write(t_buffer *buffer_recibido)
+{
 
     uint16_t pid = extraer_uint16_al_buffer(buffer_recibido);
     char *nombre_archivo = extraer_string_al_buffer(buffer_recibido);
@@ -443,10 +438,10 @@ void caso_io_fs_write(t_buffer *buffer_recibido){
     {
     case LECTURA:
 
-       t_buffer *recibido = recibir_buffer_sin_cod_op(fd_memoria);
+        t_buffer *recibido = recibir_buffer_sin_cod_op(fd_memoria);
 
         void *mensaje_de_respuesta = extraer_choclo_al_buffer(recibido);
-        log_trace(entrada_salida_log_debug, "RESPUESTA MEMORIA : %s", (char*)mensaje_de_respuesta);
+        log_trace(entrada_salida_log_debug, "RESPUESTA MEMORIA : %s", (char *)mensaje_de_respuesta);
 
         METADATA info_archivo = leer_metadata(nombre_archivo);
 
@@ -455,23 +450,25 @@ void caso_io_fs_write(t_buffer *buffer_recibido){
         {
             return;
         }
-        
-        if (puntero + tamanio_a_escribir > info_archivo.tam_bytes) {
+
+        if (puntero + tamanio_a_escribir > info_archivo.tam_bytes)
+        {
             log_error(entrada_salida_logger, "Error: La escritura excede el tamaño del archivo.");
             return;
-        }      
+        }
 
         // Abrir archivo de bloques para escritura
         char archivo_bloques_path[256];
         snprintf(archivo_bloques_path, sizeof(archivo_bloques_path), "%sbloques.dat", path_base);
         FILE *archivo_bloques = fopen(archivo_bloques_path, "rb+");
-        if (archivo_bloques == NULL) {
+        if (archivo_bloques == NULL)
+        {
             perror("Error al abrir el archivo de bloques");
             return;
         }
 
         // Calcular la posición de escritura en el archivo de bloques
-        
+
         int posicion_archivo = info_archivo.bloque_inicial * tamanio_de_bloque + puntero;
         fseek(archivo_bloques, posicion_archivo, SEEK_SET);
 
@@ -483,40 +480,38 @@ void caso_io_fs_write(t_buffer *buffer_recibido){
         // free(datos_memoria);
 
         log_info(entrada_salida_logger, "PID: %d - Escribir Archivo: %s - Tamanio Archivo: %d - Puntero archivo: %d", pid, nombre_archivo, info_archivo.tam_bytes, puntero);
+
+        free(mensaje_de_respuesta);
     }
 
-        // destruir_buffer(recibido);
+    // destruir_buffer(recibido);
 
-        enviar_confirmacion_a_kernel(pid);
+    enviar_confirmacion_a_kernel(pid);
 
-        // free(mensaje_de_respuesta);
-    }
+}
 
-void caso_io_fs_read(t_buffer *buffer_recibido) {
+void caso_io_fs_read(t_buffer *buffer_recibido)
+{
     uint16_t pid = extraer_uint16_al_buffer(buffer_recibido);
     char *nombre_archivo = extraer_string_al_buffer(buffer_recibido);
     uint16_t puntero = extraer_uint16_al_buffer(buffer_recibido);
     uint8_t tamanio_a_copiar = extraer_uint8_al_buffer(buffer_recibido);
 
-
-
     uint8_t cantidad_de_direcciones = extraer_uint8_al_buffer(buffer_recibido);
 
     // [TAM_A_leer] [MARCO] [DESPLAZAMIENTO] .. [TAM_A_leer] [MARCO] [DESPLAZAMIENTO] [DATO] .....
 
-
     METADATA info_archivo = leer_metadata(nombre_archivo);
-    // if (info_archivo == NULL) {
-    //     log_error(entrada_salida_logger, "Error: No se pudo leer la metadata del archivo '%s'.", nombre_archivo);
-    //     return;
-    // }
+   
 
     t_bitarray *bitmap = leer_bitmap();
-    if (bitmap == NULL) {
+    if (bitmap == NULL)
+    {
         return;
     }
 
-    if (puntero + tamanio_a_copiar > info_archivo.tam_bytes) {
+    if (puntero + tamanio_a_copiar > info_archivo.tam_bytes)
+    {
         log_error(entrada_salida_logger, "Error: La lectura excede el tamaño del archivo.");
         return;
     }
@@ -525,7 +520,8 @@ void caso_io_fs_read(t_buffer *buffer_recibido) {
     char archivo_bloques_path[256];
     snprintf(archivo_bloques_path, sizeof(archivo_bloques_path), "%sbloques.dat", path_base);
     FILE *archivo_bloques = fopen(archivo_bloques_path, "rb+");
-    if (archivo_bloques == NULL) {
+    if (archivo_bloques == NULL)
+    {
         perror("Error al abrir el archivo de bloques");
         return;
     }
@@ -535,8 +531,9 @@ void caso_io_fs_read(t_buffer *buffer_recibido) {
     fseek(archivo_bloques, posicion_archivo, SEEK_SET);
 
     // Leer datos del archivo de bloques
-    char *datos_leidos = (char *)malloc(tamanio_a_copiar);
-    if (datos_leidos == NULL) {
+    void *datos_leidos = malloc(tamanio_a_copiar);
+    if (datos_leidos == NULL)
+    {
         perror("Error al reservar memoria para los datos leídos");
         fclose(archivo_bloques);
         return;
@@ -544,12 +541,14 @@ void caso_io_fs_read(t_buffer *buffer_recibido) {
     fread(datos_leidos, 1, tamanio_a_copiar, archivo_bloques);
     fclose(archivo_bloques);
 
+    mem_hexdump(datos_leidos, tamanio_a_copiar);
+
     // Preparar el buffer para enviar a memoria
     t_buffer *buffer_a_enviar_a_memoria = crear_buffer();
 
     cargar_uint8_al_buffer(buffer_a_enviar_a_memoria, cantidad_de_direcciones);
 
-    char *dato = (char *)datos_leidos;
+    void *dato_pos = datos_leidos;
 
     for (int i = 0; i < cantidad_de_direcciones; i++)
     {
@@ -560,9 +559,9 @@ void caso_io_fs_read(t_buffer *buffer_recibido) {
         cargar_uint8_al_buffer(buffer_a_enviar_a_memoria, tam_a_escribir_por_pagina);
         cargar_uint16_al_buffer(buffer_a_enviar_a_memoria, numero_de_pagina);
         cargar_uint32_al_buffer(buffer_a_enviar_a_memoria, desplazamiento);
-        cargar_choclo_al_buffer(buffer_a_enviar_a_memoria, dato, tam_a_escribir_por_pagina);
+        cargar_choclo_al_buffer(buffer_a_enviar_a_memoria, dato_pos, tam_a_escribir_por_pagina);
 
-        dato += tam_a_escribir_por_pagina;
+        dato_pos += tam_a_escribir_por_pagina;
     }
 
     // Enviar datos a memoria

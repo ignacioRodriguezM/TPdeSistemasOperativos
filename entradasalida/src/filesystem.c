@@ -120,7 +120,8 @@ void compactar(char *nombre_archivo, void *buffer, int *puntero_buffer)
 
     memcpy(buffer + *puntero_buffer, buffer_viejo + (info_archivo.bloque_inicial * tamanio_de_bloque), info_archivo.tam_bytes);
 
-    actualizar_archivo_metadata(nombre_archivo, *puntero_buffer, info_archivo.tam_bytes);
+    int bloque_de_archivo = division_entera_redondear_arriba(*puntero_buffer, tamanio_de_bloque);
+    actualizar_archivo_metadata(nombre_archivo, bloque_de_archivo, info_archivo.tam_bytes);
 
     *puntero_buffer += info_archivo.tam_bytes; // +1?
 
