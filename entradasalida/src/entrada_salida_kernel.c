@@ -349,6 +349,11 @@ void caso_io_fs_truncate(t_buffer *buffer_recibido)
         if (chquear_bloques_libres_contiguos(bitmap, ultimo_bloque, cantidad_bloques_a_ocupar))
         {
             marcar_bloques_ocupados(bitmap, ultimo_bloque, cantidad_bloques_a_ocupar);
+
+            actualizar_archivo_bitmap(bitmap);
+            bitarray_destroy(bitmap);
+
+            actualizar_archivo_metadata(nombre_del_archivo, info_archivo.bloque_inicial, nuevo_tamanio);
         }
         else
         {
@@ -370,6 +375,12 @@ void caso_io_fs_truncate(t_buffer *buffer_recibido)
                 int ultimo_bloquev2 = info_archivo_actualizada.bloque_inicial + bloques_ocupadosv2;
 
                 marcar_bloques_ocupados(bitmap_actualizado, ultimo_bloquev2, cantidad_bloques_a_ocupar);
+
+                actualizar_archivo_bitmap(bitmap_actualizado);
+                bitarray_destroy(bitmap_actualizado);
+                bitarray_destroy(bitmap);
+
+                actualizar_archivo_metadata(nombre_del_archivo, info_archivo_actualizada.bloque_inicial, nuevo_tamanio);
             }
         }
     }
@@ -377,18 +388,20 @@ void caso_io_fs_truncate(t_buffer *buffer_recibido)
     {
         int cantidad_bloques_a_liberar = bloques_ocupados - nuevo_tam_en_bloques;
         liberar_bloques_del_bitmap(bitmap, (info_archivo.bloque_inicial + nuevo_tam_en_bloques), cantidad_bloques_a_liberar);
+        actualizar_archivo_bitmap(bitmap);
+        bitarray_destroy(bitmap);
+
+
+        actualizar_archivo_metadata(nombre_del_archivo, info_archivo.bloque_inicial, nuevo_tamanio);
     }
     else
     {
         log_error(entrada_salida_log_debug, "El tamanio al que se quiere truncar es el tamanio actual");
+        actualizar_archivo_bitmap(bitmap);
+        bitarray_destroy(bitmap);
+
+        actualizar_archivo_metadata(nombre_del_archivo, info_archivo.bloque_inicial, nuevo_tamanio); 
     }
-
-    actualizar_archivo_bitmap(bitmap);
-    bitarray_destroy(bitmap);
-
-    METADATA info_archivo_actualizada = leer_metadata(nombre_del_archivo);
-
-    actualizar_archivo_metadata(nombre_del_archivo, info_archivo_actualizada.bloque_inicial, nuevo_tamanio);
 
     log_info(entrada_salida_logger, "PID: %d - Truncar archivo: %s - %u", pid, nombre_del_archivo, nuevo_tamanio);
 
