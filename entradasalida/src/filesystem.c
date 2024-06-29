@@ -41,9 +41,10 @@ void compactar_hacia_archivo(char* nombre_del_archivo)
     int* puntero_buffer = malloc(sizeof(int));
     *puntero_buffer = 0;
 
+    t_link_element *current = archivos.lista_archivos->head;
+    
     for(int i=0; i<archivos.cantidad_archivos; i++)
     {
-        t_link_element *current = archivos.lista_archivos->head;
         char *string_a_comparar = (char *)current->data;
         if(strcmp(nombre_del_archivo, string_a_comparar) != 0)
         {
