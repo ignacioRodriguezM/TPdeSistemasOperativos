@@ -541,11 +541,11 @@ void caso_io_fs_read(t_buffer *buffer_recibido)
     fread(datos_leidos, 1, tamanio_a_copiar, archivo_bloques);
     fclose(archivo_bloques);
 
-    mem_hexdump(datos_leidos, tamanio_a_copiar);
 
     // Preparar el buffer para enviar a memoria
     t_buffer *buffer_a_enviar_a_memoria = crear_buffer();
 
+    cargar_uint8_al_buffer(buffer_a_enviar_a_memoria, 0); // CAMBIAR!!
     cargar_uint8_al_buffer(buffer_a_enviar_a_memoria, cantidad_de_direcciones);
 
     void *dato_pos = datos_leidos;
