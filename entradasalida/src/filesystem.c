@@ -413,6 +413,8 @@ void inicializar_estructuras_filesystem()
 
     _verificar_si_existe_archivo_bitmap();
 
+    _cargar_archivos_de_ejecuciones_anteriores();
+
     return;
 }
 
@@ -438,6 +440,53 @@ void _verificar_si_existe_archivo_bloques()
         printf("El archivo ya existe en: %s\n", full_path);
         fclose(file);
     }
+}
+
+void _cargar_archivos_de_ejecuciones_anteriores()
+{
+    char *directorio = path_base;
+
+    DIR *dir = opendir(directorio);
+
+    // Verificar si se pudo abrir el directorio
+    if (dir == NULL) {
+        perror("No se pudo abrir el directorio");
+        return;
+    }
+
+    // Estructura para almacenar la información de cada entrada del directorio
+    struct dirent *entrada;
+
+    // Leer y listar las entradas del directorio
+    while ((entrada = readdir(dir)) != NULL) {
+        // Imprimir el nombre de cada archivo/directorio
+        if(strcmp(entrada->d_name, "bitmap.dat") != 0 && strcmp(entrada->d_name, "bloques.dat") != 0
+            && strcmp(entrada->d_name, ".") != 0 && strcmp(entrada->d_name, "..") != 0)
+        {
+            char* nombre_de_archivo = malloc(strlen(entrada->d_name) + 1);
+             if (nombre_de_archivo == NULL) {
+                perror("No se pudo asignar memoria");
+                closedir(dir);
+                exit(EXIT_FAILURE);
+            }
+
+            // Copiar el nombre del archivo
+            strcpy(nombre_de_archivo, entrada->d_name);
+
+            // Incrementar el contador y agregar el nombre a la lista
+            archivos.cantidad_archivos++;
+            list_add(archivos.lista_archivos, nombre_de_archivo);
+
+            log_trace(entrada_salida_log_debug, "Se carga el archivo <%s> de una ejecucion anterior", nombre_de_archivo);
+
+        }
+        
+    }
+
+    // Cerrar el directorio
+    closedir(dir);
+
+    return;
 }
 
 void _verificar_si_existe_archivo_bitmap()

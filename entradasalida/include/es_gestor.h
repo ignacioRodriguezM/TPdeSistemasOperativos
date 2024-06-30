@@ -3,6 +3,7 @@
 
 #include <utils/shared.h>
 
+#include <dirent.h>
 #include <commons/bitarray.h>
 #include <stdint.h>
 #include <pthread.h>

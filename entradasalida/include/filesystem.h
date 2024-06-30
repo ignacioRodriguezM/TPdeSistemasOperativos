@@ -42,6 +42,7 @@ void inicializar_estructuras_filesystem ();
 void _verificar_si_existe_archivo_bloques();
 void _verificar_si_existe_archivo_bitmap();
 void _verificar_que_la_ruta_exista();
+void _cargar_archivos_de_ejecuciones_anteriores();
 
 void _crear_archivo_que_contiene_el_bitmap(char* ruta);
 
