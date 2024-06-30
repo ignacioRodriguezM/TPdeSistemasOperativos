@@ -102,6 +102,10 @@ void atender_multiples_entrada_salida(int *socket_ptr)
                 sem_post(&planificacion_activa_semaforo);  
                 
                 _mover_de_cola_bloqueados_a_ready_o_aux(nombre_de_io, pid);
+                //
+                loguear_pids_de_ready();
+
+                log_info(kernel_logger, "Cola Ready: %s", procesos_ready->elements);
                 mover_a_io_si_hay_algun_proceso_encolado(nombre_de_io); //verificar si hay algun proceso en su cola de bloqueados, si hay, lo manda a "ejecutar" en la io
 
                    
@@ -162,4 +166,11 @@ void _mover_de_cola_bloqueados_a_ready_o_aux(char* nombre_de_io, uint16_t pid){
             break;
         }
     }
+}
+void loguear_pids_de_ready (){
+//     //recorrer toda la lista de procesos_ready y guardar todos los elementos
+//     en un buffer 
+//     loguear ese buffer a traves del kernel_logger
+    
+
 }
