@@ -99,8 +99,7 @@ int main()
 
         archivos.lista_archivos = list_create(); // ARREGLAR EN CASO DE QUE EXISTAN ARCHIVOS DE UNA EJKECCUCION PREVIA
 
-        //CARGAR ESTRUCTURAS PASADAS ();
-
+        //CARGAR ESTRUCTURAS PASADAS O INICIALIZARLAS
         inicializar_estructuras_filesystem();
 
         // Conectarse como cliente a Kernel
