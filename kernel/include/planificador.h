@@ -17,7 +17,8 @@ void _enviar_interrupcion_quantum();
 void manejar_quantum(PCB* proceso);
 void liberar_recursos_asignados(PCB *pcb);
 void borrar_pcbs_en_exit();
-
+void log_obligatorio_ready(t_queue *procesos_ready);
+char* crear_string_de_pids(t_queue *cola_ready);
 
 
 #endif

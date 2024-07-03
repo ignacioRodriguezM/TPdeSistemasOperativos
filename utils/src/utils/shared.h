@@ -136,5 +136,7 @@ t_buffer* recibir_buffer_sin_cod_op (int socket);
 
 void esperarMilisegundos(uint16_t milisegundos);
 
+void log_obligatorio_ready(t_queue *procesos_ready);
+char* crear_string_de_pids(t_queue *cola_ready);
 
 #endif
