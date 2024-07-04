@@ -352,22 +352,23 @@ void desbloquear_proceso_bloqueado_por_recurso(int index_cola)
     {
         queue_push(procesos_ready, proceso_movido);
         sem_post(&algun_ready);
+        log_info(kernel_logger, "PID: %u - Desbloqueado ", proceso_movido->pid);
+        log_info(kernel_logger, "PID: %u - Estado Anterior: BLOQ - Estado Actual: READY", proceso_movido->pid);
+        log_obligatorio_ready(procesos_ready);
     }
     else if (proceso_movido->quantum < quantum && strcmp(algoritmo_planificacion, "VRR") == 0)
     {
         queue_push(procesos_ready_con_prioridad, proceso_movido);
         sem_post(&algun_ready);
+        log_info(kernel_logger, "PID: %u - Desbloqueado ", proceso_movido->pid);
+        log_info(kernel_logger, "PID: %u - Estado Anterior: BLOQ - Estado Actual: READY", proceso_movido->pid);
+        log_obligatorio_ready(procesos_ready_con_prioridad);
     }
     else
     {
         log_error(kernel_log_debug, "ERROR EL QUANTUM DEL PROCESO A DESBLOQUEAR POR SIGNAL NO ESTA BIEN");
     }
     pthread_mutex_unlock(&mutex_procesos);
-
-    log_info(kernel_logger, "PID: %u - Desbloqueado ", proceso_movido->pid);
-    log_info(kernel_logger, "PID: %u - Estado Anterior: BLOQ - Estado Actual: READY", proceso_movido->pid);
-    // log_info(kernel_logger, "Cola Ready procesos_ready: [<LISTA DE PIDS>]");
-    log_obligatorio_ready(procesos_ready);
 }
 
 void liberar_recursos_asignados(PCB *pcb)
@@ -439,7 +440,7 @@ void log_obligatorio_ready(t_queue *procesos_ready) {
 
     // Loguear el mensaje con los PIDs
     char *mensaje = string_from_format("Cola Ready / Ready Prioridad: %s", encolado_en_ready);
-    log_info(kernel_logger, mensaje);
+    log_info(kernel_logger, "%s" , mensaje);
 
     // Liberar memoria
     free(encolado_en_ready);
