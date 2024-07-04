@@ -7,3 +7,13 @@ INICIAR_PROCESO /prueba_01
 FINALIZAR_PROCESO 0
 
 EJECUTAR_SCRIPT /home/utnso/Desktop/SCRIPT_BASIC
+
+INICIAR_PROCESO /scripts_memoria/FS_1
+
+INICIAR_PROCESO /scripts_memoria/FS_2
+
+Fallout 1 Fallout 2 Fallout 3 Fallout: New Vegas Fallout 4 Fallout 76
+
+INICIAR_PROCESO /scripts_memoria/FS_3
+
+INICIAR_PROCESO /scripts_memoria/FS_4
