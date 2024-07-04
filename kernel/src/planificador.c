@@ -82,7 +82,7 @@ void mover_procesos_de_new_a_ready()
         
         // TERMINAR ESTE LOG
         // log_info(kernel_logger, "Cola Ready procesos_ready: [<LISTA DE PIDS>]");
-        log_obligatorio_ready(procesos_ready);
+        log_obligatorio_ready();
         // puedo crear un buffer y ahi ir guardandno todos lo s pids
 
         pthread_mutex_unlock(&mutex_procesos);
@@ -283,7 +283,7 @@ void mover_de_excec_a_ready()
     log_info(kernel_logger, "PID: %u - Desalojado por fin de Quantum", proceso_movido->pid);
     log_info(kernel_logger, "PID: %u - Estado Anterior: EXCEC - Estado Actual: READY", proceso_movido->pid);
     // log_info(kernel_logger, "Cola Ready procesos_ready: [<LISTA DE PIDS>]");
-    log_obligatorio_ready(procesos_ready);
+    log_obligatorio_ready();
 
     sem_post(&cpu_vacia_semaforo);
     sem_post(&algun_ready);
@@ -354,15 +354,15 @@ void desbloquear_proceso_bloqueado_por_recurso(int index_cola)
         sem_post(&algun_ready);
         log_info(kernel_logger, "PID: %u - Desbloqueado ", proceso_movido->pid);
         log_info(kernel_logger, "PID: %u - Estado Anterior: BLOQ - Estado Actual: READY", proceso_movido->pid);
-        log_obligatorio_ready(procesos_ready);
+        log_obligatorio_ready();
     }
     else if (proceso_movido->quantum < quantum && strcmp(algoritmo_planificacion, "VRR") == 0)
     {
         queue_push(procesos_ready_con_prioridad, proceso_movido);
         sem_post(&algun_ready);
         log_info(kernel_logger, "PID: %u - Desbloqueado ", proceso_movido->pid);
-        log_info(kernel_logger, "PID: %u - Estado Anterior: BLOQ - Estado Actual: READY", proceso_movido->pid);
-        log_obligatorio_ready(procesos_ready_con_prioridad);
+        log_info(kernel_logger, "PID: %u - Estado Anterior: BLOQ - Estado Actual: READY_PRIO", proceso_movido->pid);
+        log_obligatorio_ready_prioridad();
     }
     else
     {
@@ -434,15 +434,27 @@ char* crear_string_de_pids(t_queue *cola_ready) {
 }
 
 // Función para loguear la cola de ready
-void log_obligatorio_ready(t_queue *procesos_ready) {
+void log_obligatorio_ready() {
     // Crear el string con los PIDs de la cola de ready
     char *encolado_en_ready = crear_string_de_pids(procesos_ready);
-
+    
     // Loguear el mensaje con los PIDs
-    char *mensaje = string_from_format("Cola Ready / Ready Prioridad: %s", encolado_en_ready);
+    char *mensaje = string_from_format("Cola Ready: %s", encolado_en_ready);
     log_info(kernel_logger, "%s" , mensaje);
 
     // Liberar memoria
     free(encolado_en_ready);
+    free(mensaje);
+}
+void log_obligatorio_ready_prioridad() {
+    // Crear el string con los PIDs de la cola de ready
+    char *encolado_en_ready_prio = crear_string_de_pids(procesos_ready_con_prioridad);
+    
+    // Loguear el mensaje con los PIDs
+    char *mensaje = string_from_format("Cola Ready Prioridad: %s", encolado_en_ready_prio);
+    log_info(kernel_logger, "%s" , mensaje);
+
+    // Liberar memoria
+    free(encolado_en_ready_prio);
     free(mensaje);
 }

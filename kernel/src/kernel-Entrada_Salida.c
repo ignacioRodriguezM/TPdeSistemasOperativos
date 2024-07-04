@@ -102,7 +102,7 @@ void atender_multiples_entrada_salida(int *socket_ptr)
                 sem_post(&planificacion_activa_semaforo);  
                 
                 _mover_de_cola_bloqueados_a_ready_o_aux(nombre_de_io, pid);
-                log_obligatorio_ready(procesos_ready);
+                
 
                 //log_info(kernel_logger, "Cola Ready: %s", procesos_ready->elements);
                 mover_a_io_si_hay_algun_proceso_encolado(nombre_de_io); //verificar si hay algun proceso en su cola de bloqueados, si hay, lo manda a "ejecutar" en la io
@@ -138,14 +138,14 @@ void _mover_de_cola_bloqueados_a_ready_o_aux(char* nombre_de_io, uint16_t pid){
             else if(pcb_que_cumplio_tarea_io ->quantum == quantum){
                 queue_push(procesos_ready, pcb_que_cumplio_tarea_io);
                 log_info(kernel_logger, "PID: %u - Estado Anterior: BLOQUEADO - Estado Actual: READY", pid);
-                log_obligatorio_ready(procesos_ready);
+                log_obligatorio_ready();
             }
             else if(pcb_que_cumplio_tarea_io ->quantum < quantum)
             {
                 queue_push(procesos_ready_con_prioridad, pcb_que_cumplio_tarea_io);
                 log_info(kernel_logger, "PID: %u - Estado Anterior: BLOQUEADO - Estado Actual: READY_PRIO", pid);
                 // log_info(kernel_logger, "Cola Ready procesos_con_prioridad_ready: [<LISTA DE PIDS>]");
-                log_obligatorio_ready(procesos_ready_con_prioridad);
+                log_obligatorio_ready_prioridad();
             }
             else{
                 log_error(kernel_log_debug, "ERROR EL QUANTUM DEL PROCESO A DESBLOQUEAR POR IO NO ESTA BIEN");
