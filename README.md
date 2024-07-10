@@ -78,6 +78,9 @@ git clone https://github.com/sisoputnfrba/so-deploy.git
 cd so-deploy
 ./deploy.sh -r=release -p=utils -p=kernel -p=cpu -p=memoria -p=entradasalida "tp-{año}-{cuatri}-{grupo}"
 ```
+```para que ande todo bien
+sudo mv tp-2024-1c-SOn-mbulos/scripts_kernel/ /
+```
 
 El mismo se encargará de instalar las Commons, clonar el repositorio del grupo
 y compilar el proyecto en la máquina remota.
