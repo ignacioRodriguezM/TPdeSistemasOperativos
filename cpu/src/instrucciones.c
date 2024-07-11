@@ -2,6 +2,8 @@
 
 void SET(void *registro, void *parametro, uint8_t tam_registro)
 {
+    PC_registro++;
+
     if (tam_registro == sizeof(uint8_t))
     {
         uint8_t valor = *(uint8_t *)parametro;
@@ -13,7 +15,6 @@ void SET(void *registro, void *parametro, uint8_t tam_registro)
         *(uint32_t *)registro = valor;
     }
 
-    PC_registro++;
 }
 
 void SUM(void *registroDestino, void *registroOrigen, uint8_t tamDestino, uint8_t tamOrigen)

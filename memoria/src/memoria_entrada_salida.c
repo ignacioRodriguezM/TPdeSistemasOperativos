@@ -109,6 +109,8 @@ void manejar_write(int fd_io)
 
         memcpy(registroDatos + offset, direccion_fisica, tamanio_de_direccion);
 
+        mem_hexdump(direccion_fisica, tamanio_de_direccion);
+
         offset += tamanio_de_direccion;
 
     }
