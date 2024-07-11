@@ -235,7 +235,6 @@ void _manejar_wait()
     extraer_y_actualizar_pcb_en_excecute(buffer_recibido);
     // [nombre_recurso]
     char *nombre_recurso_recibido = extraer_string_al_buffer(buffer_recibido);
-
     sem_wait(&planificacion_activa_semaforo);
     sem_post(&planificacion_activa_semaforo);
 
@@ -432,7 +431,7 @@ void _manejar_bloqueo()
         {
             temporal_stop(timer_quantum);
             uint16_t quantum_usado = temporal_gettime(timer_quantum);
-            if (quantum_usado != quantum)
+            if (quantum_usado != quantum && quantum_usado < quantum)
             {
                 PCB *pcb_que_ejecuto_menos_quantum = (PCB *)queue_peek(procesos_excec);
                 pcb_que_ejecuto_menos_quantum->quantum -= quantum_usado;
