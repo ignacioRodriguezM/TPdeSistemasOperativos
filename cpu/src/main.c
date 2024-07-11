@@ -11,6 +11,8 @@ int main (){
     CANTIDAD_ENTRADAS_TLB = config_valores.cantidad_entradas_TLB;
     ALGORITMO_TLB = config_valores.algoritmo_TLB;
 
+    interrupt_flag = true;
+
     inicializar_tlb();
     inicializar_diccionarios();
 

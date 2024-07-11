@@ -25,9 +25,11 @@ void ejecutar_ciclo_de_cpu()
         {
             if(desalojo){
                 _desalojar_proceso();
+                desalojo = false;
             }
             if(interrupcion_de_usuarios){
                 _desalojar_proceso_interrumpido_por_usuario();
+                interrupcion_de_usuarios = false;
             }
             bloq_flag = false;
             aviso_de_interrupt = false;

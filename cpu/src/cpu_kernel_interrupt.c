@@ -9,6 +9,9 @@ void atender_cpu_kernel_interrupt (){
             case FIN_QUANTUM:
                 t_buffer* buff_vacio = recibir_buffer_sin_cod_op(fd_kernel_interrupt);
                 if(interrupt_flag){
+                    char* resp = extraer_string_al_buffer(buff_vacio);
+                    log_trace(cpu_log_debug, "%s", resp);
+                    free(resp);
                     desalojo = true;
                     aviso_de_interrupt = true;
                 }

@@ -11,6 +11,7 @@ void esperar(uint16_t *quantum)
 void _enviar_interrupcion_quantum()
 {
     t_buffer *buff = crear_buffer();
+    cargar_string_al_buffer(buff, "Termino el quantum");
     t_paquete *paq = crear_paquete(FIN_QUANTUM, buff);
     enviar_paquete(paq, fd_cpu_interrupt);
     destruir_paquete(paq);
@@ -137,6 +138,9 @@ void mover_procesos_de_ready_a_excecute()
 
                 log_info(kernel_logger, "PID: %u - Estado Anterior: READY - Estado Actual: EXCEC", proceso_movido->pid);
                 enviar_paquete(a_enviar, fd_cpu_dispatch);
+
+
+
                 if (strcmp(algoritmo_planificacion, "RR") == 0)
                 {
                     manejar_quantum(proceso_movido);
