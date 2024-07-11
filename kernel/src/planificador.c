@@ -405,7 +405,7 @@ void borrar_pcbs_en_exit()
 {
     while (procesos_exit->elements->elements_count != 0)
     {
-        PCB *a_borrar = (PCB *)queue_pop(procesos_excec);
+        PCB *a_borrar = (PCB *)queue_pop(procesos_exit);
         free(a_borrar);
     }
 }
