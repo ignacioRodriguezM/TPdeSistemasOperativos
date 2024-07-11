@@ -18,8 +18,8 @@ void _enviar_interrupcion_quantum()
 }
 void manejar_quantum(PCB *proceso)
 {
-
-    pthread_create(&hilo_quantum, NULL, (void *)esperar, (uint16_t *)&(proceso->quantum));
+    uint16_t auxiliar = proceso->quantum;
+    pthread_create(&hilo_quantum, NULL, (void *)esperar, (uint16_t *)&auxiliar);
     pthread_detach(hilo_quantum);
     if (strcmp(algoritmo_planificacion, "VRR") == 0)
     {

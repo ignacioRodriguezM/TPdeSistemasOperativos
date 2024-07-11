@@ -18,9 +18,6 @@ void atender_kernel_cpu_dispatch()
             _manejar_out_of_memory();
             break;
 
-        case INVALID_WRITE:
-
-            break;
         case LLAMADA_A_IO:
 
             _manejar_bloqueo();
@@ -155,6 +152,9 @@ void _manejar_desalojo()
     t_buffer *buffer_recibido = recibir_buffer_sin_cod_op(fd_cpu_dispatch);
     extraer_y_actualizar_pcb_en_excecute(buffer_recibido);
 
+    PCB *pcb_a_editar = (PCB *)queue_peek(procesos_excec);
+    pcb_a_editar->quantum = quantum;
+
     mover_de_excec_a_ready();
 
     destruir_buffer(buffer_recibido);
@@ -268,7 +268,7 @@ void _manejar_wait()
                     {
                         temporal_stop(timer_quantum);
                         uint16_t quantum_usado = temporal_gettime(timer_quantum);
-                        if (quantum_usado != quantum)
+                        if (quantum_usado != quantum && quantum_usado < quantum)
                         {
                             PCB *pcb_que_ejecuto_menos_quantum = (PCB *)queue_peek(procesos_excec);
                             pcb_que_ejecuto_menos_quantum->quantum -= quantum_usado;
