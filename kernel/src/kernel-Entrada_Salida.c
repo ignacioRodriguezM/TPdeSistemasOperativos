@@ -161,7 +161,7 @@ void _mover_de_cola_bloqueados_a_ready_o_aux(char* nombre_de_io, uint16_t pid){
             free(operacion_a_realizar);
 
             
-            free(pcb_que_cumplio_tarea_io->operacion_de_io_por_la_que_fue_bloqueado);
+            destruir_buffer(pcb_que_cumplio_tarea_io->operacion_de_io_por_la_que_fue_bloqueado);
 
             break;
         }
