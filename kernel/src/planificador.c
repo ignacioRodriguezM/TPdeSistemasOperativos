@@ -384,7 +384,7 @@ void liberar_recursos_asignados(PCB *pcb)
         {
             if (strcmp(recursos[j]->nombre, pcb->recursos_asignados[i]) == 0)
             {
-
+                
                 pthread_mutex_lock(&mutex_recursos);
                 recursos[j]->instancias++;
                 pthread_mutex_unlock(&mutex_recursos);
@@ -398,7 +398,9 @@ void liberar_recursos_asignados(PCB *pcb)
                 break;
             }
         }
+        free(pcb->recursos_asignados[i]);
     }
+    free(pcb->recursos_asignados);
     log_trace(kernel_log_debug, "Se liberaron recursos asignados, si los tenia");
 }
 
