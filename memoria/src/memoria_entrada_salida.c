@@ -50,6 +50,9 @@ void manejar_read(int fd_io)
 
     // Leer las direcciones y los datos del buffer y escribirlos en la memoria
     void *datos_a_escribir;
+    bool primera_dir = true;
+    uint32_t dir;
+    uint16_t tamanio_total = 0;
     for (int i = 0; i < cantidad_de_direcciones; i++)
     {
         uint8_t tamanio_de_direccion = extraer_uint8_al_buffer(buffer_recibido);
@@ -57,7 +60,11 @@ void manejar_read(int fd_io)
         uint32_t desplazamiento = extraer_uint32_al_buffer(buffer_recibido);
 
         datos_a_escribir = extraer_choclo_al_buffer(buffer_recibido);
-
+        if(primera_dir)
+        {
+            dir = marco * tam_pagina + desplazamiento;
+            primera_dir = false;
+        }
         // Calcular la dirección física
         void *direccion_fisica = memoria_usuario + (marco * tam_pagina) + desplazamiento;
 
@@ -65,8 +72,11 @@ void manejar_read(int fd_io)
         memcpy(direccion_fisica, datos_a_escribir, tamanio_de_direccion);
 
         free(datos_a_escribir);
+        tamanio_total += tamanio_de_direccion;
     }
+    uint16_t pid = extraer_uint16_al_buffer(buffer_recibido);
 
+    log_info(memoria_logger, "PID: %u - Accion: Escribir - Direccion Fisica: %u - Tamaño: %u", pid, dir, tamanio_total);
     destruir_buffer(buffer_recibido);
 
     esperarMilisegundos(retardo_respuesta);
@@ -97,6 +107,10 @@ void manejar_write(int fd_io)
     uint8_t cantidad_de_direcciones = extraer_uint8_al_buffer(buffer_recibido);
 
     uint8_t offset = 0;
+    void *datos_a_escribir;
+    bool primera_dir = true;
+    uint32_t dir;
+    uint16_t tamanio_total = 0;
     for (int i = 0; i < cantidad_de_direcciones; i++)
     {
 
@@ -104,6 +118,11 @@ void manejar_write(int fd_io)
         uint16_t marco = extraer_uint16_al_buffer(buffer_recibido);
         uint32_t desplazamiento = extraer_uint32_al_buffer(buffer_recibido);
 
+        if(primera_dir)
+        {
+            dir = marco * tam_pagina + desplazamiento;
+            primera_dir = false;
+        }
         // Calcular la dirección física
         void *direccion_fisica = memoria_usuario + (marco * tam_pagina) + desplazamiento;
 
@@ -112,9 +131,11 @@ void manejar_write(int fd_io)
         mem_hexdump(direccion_fisica, tamanio_de_direccion);
 
         offset += tamanio_de_direccion;
-
+        tamanio_total += tamanio_de_direccion;
     }
+    uint16_t pid = extraer_uint16_al_buffer(buffer_recibido);
 
+    log_info(memoria_logger, "PID: %u - Accion: Leer - Direccion Fisica: %u - Tamaño: %u", pid, dir, tamanio_total);
     destruir_buffer(buffer_recibido);
 
     esperarMilisegundos(retardo_respuesta);
