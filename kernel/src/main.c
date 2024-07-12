@@ -71,6 +71,7 @@ int main()
     borrar_pcbs_en_exit();
     finalizar_colas_sin_bloqueados();
     string_array_destroy(config_valores.recursos);
+    string_array_destroy(config_valores.instancias_recursos);
     config_destroy(config_valores.config);
 
     return 0;

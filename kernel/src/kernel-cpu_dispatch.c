@@ -654,12 +654,14 @@ void _manejar_bloqueo()
             mandar_a_io_o_cola_bloqueados(nombre_interfaz);
         }
     }
+
     else
     {
-        free(nombre_interfaz);
-        free(operacion_a_realizar);
         _mandar_de_excec_a_exit("INVALID_INTERFACE");
     }
+
+    free(nombre_interfaz);
+    free(operacion_a_realizar);
 
     destruir_buffer(buffer_recibido);
 }
@@ -699,7 +701,7 @@ void mandar_a_io_o_cola_bloqueados(char *nombre_interfaz)
 
             enviar_paquete(a_enviar_a_io, colas_bloqueados[i]->fd);
 
-            free(a_enviar_a_io);
+            destruir_paquete(a_enviar_a_io);
 
             break;
         }

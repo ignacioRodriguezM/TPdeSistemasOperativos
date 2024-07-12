@@ -267,7 +267,8 @@ void mover_a_io_si_hay_algun_proceso_encolado(char *nombre_io) // verificar si h
 
             enviar_paquete(a_enviar_a_io, colas_bloqueados[i]->fd);
 
-            free(a_enviar_a_io);
+            destruir_paquete(a_enviar_a_io);
+           
             pthread_mutex_unlock(&mutex_procesos);
 
             break;

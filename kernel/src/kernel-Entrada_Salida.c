@@ -155,14 +155,6 @@ void _mover_de_cola_bloqueados_a_ready_o_aux(char* nombre_de_io, uint16_t pid){
 
             sem_post(&algun_ready);
 
-            char* nombre_interfaz = extraer_string_al_buffer(pcb_que_cumplio_tarea_io->operacion_de_io_por_la_que_fue_bloqueado);
-            char* operacion_a_realizar = extraer_string_al_buffer(pcb_que_cumplio_tarea_io->operacion_de_io_por_la_que_fue_bloqueado);
-            free(nombre_interfaz);
-            free(operacion_a_realizar);
-
-            
-            destruir_buffer(pcb_que_cumplio_tarea_io->operacion_de_io_por_la_que_fue_bloqueado);
-
             break;
         }
     }
