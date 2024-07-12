@@ -400,7 +400,12 @@ void liberar_recursos_asignados(PCB *pcb)
         }
         free(pcb->recursos_asignados[i]);
     }
-    free(pcb->recursos_asignados);
+
+    if(pcb->cantidad_recursos_asignados > 0)
+    {
+        free(pcb->recursos_asignados);
+    }
+    
     log_trace(kernel_log_debug, "Se liberaron recursos asignados, si los tenia");
 }
 

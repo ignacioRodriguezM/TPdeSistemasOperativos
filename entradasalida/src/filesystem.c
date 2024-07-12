@@ -66,6 +66,7 @@ void compactar_hacia_archivo(char *nombre_del_archivo)
 
     actualizar_archivo_bitmap(bitmap);
 
+    free(bitmap->bitarray);
     bitarray_destroy(bitmap);
 
     free(puntero_buffer);
@@ -535,6 +536,7 @@ void _crear_archivo_que_contiene_el_bitmap(char *ruta)
 
     printf("Archivo '%s' creado con tamaño %lu bytes.\n", ruta, bitmap->size);
 
+    free(bitmap->bitarray);
     bitarray_destroy(bitmap);
     fclose(archivo);
 }

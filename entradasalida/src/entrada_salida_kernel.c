@@ -281,6 +281,7 @@ void caso_io_fs_create(t_buffer *buffer_recibido)
     }
 
     // Liberar memoria
+    free(bitmap->bitarray);
     bitarray_destroy(bitmap);
 
     log_trace(entrada_salida_log_debug, "PID: %d - Crear archivo: %s", pid, nombre_del_archivo);
@@ -288,6 +289,9 @@ void caso_io_fs_create(t_buffer *buffer_recibido)
     enviar_confirmacion_a_kernel(pid);
 
     destruir_buffer(buffer_recibido);
+
+    free(nombre_del_archivo);
+
 }
 
 void caso_io_fs_delete(t_buffer *buffer_recibido)
@@ -311,6 +315,7 @@ void caso_io_fs_delete(t_buffer *buffer_recibido)
 
     liberar_bloques_del_bitmap(bitmap, info_archivo.bloque_inicial, bloques_ocupados);
     actualizar_archivo_bitmap(bitmap);
+    free(bitmap->bitarray);
     bitarray_destroy(bitmap);
 
     borrar_archivo_metadata(nombre_del_archivo);
@@ -355,6 +360,7 @@ void caso_io_fs_truncate(t_buffer *buffer_recibido)
             marcar_bloques_ocupados(bitmap, ultimo_bloque, cantidad_bloques_a_ocupar);
 
             actualizar_archivo_bitmap(bitmap);
+            free(bitmap->bitarray);
             bitarray_destroy(bitmap);
 
             actualizar_archivo_metadata(nombre_del_archivo, info_archivo.bloque_inicial, nuevo_tamanio);
@@ -382,7 +388,9 @@ void caso_io_fs_truncate(t_buffer *buffer_recibido)
                 marcar_bloques_ocupados(bitmap_actualizado, ultimo_bloquev2, cantidad_bloques_a_ocupar);
 
                 actualizar_archivo_bitmap(bitmap_actualizado);
+                free(bitmap_actualizado->bitarray);
                 bitarray_destroy(bitmap_actualizado);
+                free(bitmap->bitarray);
                 bitarray_destroy(bitmap);
 
                 actualizar_archivo_metadata(nombre_del_archivo, info_archivo_actualizada.bloque_inicial, nuevo_tamanio);
@@ -394,6 +402,7 @@ void caso_io_fs_truncate(t_buffer *buffer_recibido)
         int cantidad_bloques_a_liberar = bloques_ocupados - nuevo_tam_en_bloques;
         liberar_bloques_del_bitmap(bitmap, (info_archivo.bloque_inicial + nuevo_tam_en_bloques), cantidad_bloques_a_liberar);
         actualizar_archivo_bitmap(bitmap);
+        free(bitmap->bitarray);
         bitarray_destroy(bitmap);
 
 
@@ -403,6 +412,7 @@ void caso_io_fs_truncate(t_buffer *buffer_recibido)
     {
         log_error(entrada_salida_log_debug, "El tamanio al que se quiere truncar es el tamanio actual");
         actualizar_archivo_bitmap(bitmap);
+        free(bitmap->bitarray);
         bitarray_destroy(bitmap);
 
         actualizar_archivo_metadata(nombre_del_archivo, info_archivo.bloque_inicial, nuevo_tamanio); 
@@ -465,12 +475,6 @@ void caso_io_fs_write(t_buffer *buffer_recibido)
 
         METADATA info_archivo = leer_metadata(nombre_archivo);
 
-        t_bitarray *bitmap = leer_bitmap();
-        if (bitmap == NULL)
-        {
-            return;
-        }
-
         if (puntero + tamanio_a_escribir > info_archivo.tam_bytes)
         {
             log_error(entrada_salida_logger, "Error: La escritura excede el tamaño del archivo.");
@@ -502,9 +506,12 @@ void caso_io_fs_write(t_buffer *buffer_recibido)
         log_trace(entrada_salida_log_debug, "PID: %d - Escribir Archivo: %s - Tamanio a Escribir: %d - Puntero archivo: %d", pid, nombre_archivo, tamanio_a_escribir, puntero);
 
         free(mensaje_de_respuesta);
+
+        destruir_buffer(recibido);
+
+        free(nombre_archivo);
     }
 
-    // destruir_buffer(recibido);
 
     enviar_confirmacion_a_kernel(pid);
 
@@ -527,13 +534,6 @@ void caso_io_fs_read(t_buffer *buffer_recibido)
 
     METADATA info_archivo = leer_metadata(nombre_archivo);
    
-
-    t_bitarray *bitmap = leer_bitmap();
-    if (bitmap == NULL)
-    {
-        return;
-    }
-
     if (puntero + tamanio_a_copiar > info_archivo.tam_bytes)
     {
         log_error(entrada_salida_logger, "Error: La lectura excede el tamaño del archivo.");
@@ -612,5 +612,7 @@ void caso_io_fs_read(t_buffer *buffer_recibido)
         free(mensaje_de_respuesta);
     }
     
+    
     destruir_buffer(buffer_recibido);
+    free(nombre_archivo);
 }
