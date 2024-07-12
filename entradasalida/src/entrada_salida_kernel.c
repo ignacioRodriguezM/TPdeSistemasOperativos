@@ -149,11 +149,14 @@ void caso_io_stdin_read(t_buffer *buffer_recibido)
 
         dato += tam_a_escribir_por_pagina;
     }
-
+    
+    cargar_uint16_t_al_buffer(buffer_a_enviar_a_memoria,pid);
+    
     free(mensaje);
     destruir_buffer(buffer_recibido);
 
     log_info(entrada_salida_logger, "PID: %u - Operacion: IO_STDIN_READ", pid);
+
 
     t_paquete *a_enviar_a_memoria = crear_paquete(ESCRITURA, buffer_a_enviar_a_memoria);
 

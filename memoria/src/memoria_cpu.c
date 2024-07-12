@@ -87,13 +87,16 @@ void _acceder_a_tabla_de_pagina()
 
     esperarMilisegundos(retardo_respuesta);
 
-
+    log_info(memoria_logger, "PID: %u - Pagina: %u - Marco: %u", pid_recibido, pagina_a_consultar, marco_respuesta);
+    
     t_buffer *buffer_a_enviar = crear_buffer(); //[instruccion]
     cargar_uint16_al_buffer(buffer_a_enviar, marco_respuesta);
 
     t_paquete *a_enviar = crear_paquete(ACCESO_A_TABLA_DE_PAG, buffer_a_enviar);
     enviar_paquete(a_enviar, fd_cpu);
     destruir_paquete(a_enviar);
+
+    
 }
 
 void _solicitud_de_proxima_instruccion(){
@@ -148,20 +151,29 @@ void _leer_una_determinada_direccion (){
     uint8_t cantidad_de_direcciones = extraer_uint8_al_buffer(buffer_recibido);
     
     uint8_t offset = 0;
+    bool primera_dir = true;
+    uint32_t dir;
+    uint16_t tamanio_total = 0;
     for (int i = 0; i < cantidad_de_direcciones ; i++){
     
         uint8_t tamanio_de_direccion = extraer_uint8_al_buffer(buffer_recibido);
         uint16_t marco = extraer_uint16_al_buffer(buffer_recibido);
         uint32_t desplazamiento = extraer_uint32_al_buffer(buffer_recibido);
-        
+         if(primera_dir)
+        {
+            dir = marco * tam_pagina + desplazamiento;
+            primera_dir = false;
+        }
         // Calcular la dirección física
         void *direccion_fisica = memoria_usuario + (marco * tam_pagina) + desplazamiento;
 
         memcpy(registroDatos + offset, direccion_fisica, tamanio_de_direccion);
 
         offset += tamanio_de_direccion;
+        tamanio_total += tamanio_de_direccion;
     }
-    
+    uint16_t pid = extraer_uint16_al_buffer(buffer_recibido);
+    log_info(memoria_logger, "PID: %u - Accion: Leer - Direccion Fisica: %u - Tamaño: %u", pid, dir, tamanio_total);
     destruir_buffer(buffer_recibido);  
     
     esperarMilisegundos(retardo_respuesta);
@@ -195,11 +207,19 @@ void _escribir_una_determinada_direccion() {
     
     // Leer las direcciones y los datos del buffer y escribirlos en la memoria
     void* datos_a_escribir;
+    bool primera_dir = true;
+    uint32_t dir;
+    uint16_t tamanio_total = 0;
     for (int i = 0; i < cantidad_de_direcciones; i++) {
         uint8_t tamanio_de_direccion = extraer_uint8_al_buffer(buffer_recibido);
         uint16_t marco = extraer_uint16_al_buffer(buffer_recibido);
         uint32_t desplazamiento = extraer_uint32_al_buffer(buffer_recibido);
 
+        if(primera_dir)
+        {
+            dir = marco * tam_pagina + desplazamiento;
+            primera_dir = false;
+        }
         
         datos_a_escribir = extraer_choclo_al_buffer(buffer_recibido);
 
@@ -210,9 +230,11 @@ void _escribir_una_determinada_direccion() {
         memcpy(direccion_fisica, datos_a_escribir, tamanio_de_direccion);
 
         free(datos_a_escribir);
-        
+        tamanio_total += tamanio_de_direccion;
     }
+    uint16_t pid = extraer_uint16_al_buffer(buffer_recibido);
 
+    log_info(memoria_logger, "PID: %u - Accion: Escribir - Direccion Fisica: %u - Tamaño a escribir: %u", pid, dir, tamanio_total);
     destruir_buffer(buffer_recibido);
 
     esperarMilisegundos(retardo_respuesta);

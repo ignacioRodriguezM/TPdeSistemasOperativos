@@ -98,7 +98,7 @@ int main()
         retraso_compactacion = config_valores.retraso_compactacion;
         tamanio_bitarray_en_bytes = division_entera_redondear_arriba(cantidad_de_bloques, 8); // 8 bits son 1 byte.
 
-        archivos.lista_archivos = list_create(); // ARREGLAR EN CASO DE QUE EXISTAN ARCHIVOS DE UNA EJKECCUCION PREVIA
+        archivos.lista_archivos = list_create();
 
         // CARGAR ESTRUCTURAS PASADAS O INICIALIZARLAS
         inicializar_estructuras_filesystem();
@@ -122,16 +122,17 @@ int main()
 
         // agregar Mas cosas
 
+        for (int i = 0; i < archivos.cantidad_archivos; i++)
+        {
+            void *a_borrar = list_remove(archivos.lista_archivos, 0);
+            free(a_borrar);
+        }
+
+        list_destroy(archivos.lista_archivos);
+
         break;
     }
 
-    for (int i = 0; i < archivos.cantidad_archivos; i++)
-    {
-        void *a_borrar = list_remove(archivos.lista_archivos, i);
-        free(a_borrar);
-    }
-
-    list_destroy(archivos.lista_archivos);
     config_destroy(config_valores.config);
 
     return 0;

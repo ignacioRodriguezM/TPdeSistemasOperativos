@@ -134,21 +134,19 @@ void _mover_de_cola_bloqueados_a_ready_o_aux(char* nombre_de_io, uint16_t pid){
             PCB* pcb_que_cumplio_tarea_io = (PCB *)queue_pop(colas_bloqueados[i]->cola);
             if(pcb_que_cumplio_tarea_io->pid != pid){
                 log_error(kernel_log_debug, "ERROR, el pid del proceso que finalizo en IO no coincide con el de su proceso");
+                return;
             }
-            else if(pcb_que_cumplio_tarea_io ->quantum == quantum){
+            if(pcb_que_cumplio_tarea_io ->quantum == quantum){
                 queue_push(procesos_ready, pcb_que_cumplio_tarea_io);
                 log_info(kernel_logger, "PID: %u - Estado Anterior: BLOQUEADO - Estado Actual: READY", pid);
                 log_obligatorio_ready();
             }
-            else if(pcb_que_cumplio_tarea_io ->quantum < quantum)
+            else
             {
                 queue_push(procesos_ready_con_prioridad, pcb_que_cumplio_tarea_io);
                 log_info(kernel_logger, "PID: %u - Estado Anterior: BLOQUEADO - Estado Actual: READY_PRIO", pid);
-                // log_info(kernel_logger, "Cola Ready procesos_con_prioridad_ready: [<LISTA DE PIDS>]");
+                
                 log_obligatorio_ready_prioridad();
-            }
-            else{
-                log_error(kernel_log_debug, "ERROR EL QUANTUM DEL PROCESO A DESBLOQUEAR POR IO NO ESTA BIEN");
             }
             pthread_mutex_unlock(&mutex_procesos);
 

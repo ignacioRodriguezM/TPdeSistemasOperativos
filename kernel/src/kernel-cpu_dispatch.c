@@ -706,6 +706,7 @@ void mandar_a_io_o_cola_bloqueados(char *nombre_interfaz)
             sem_wait(&planificacion_activa_semaforo);
             sem_post(&planificacion_activa_semaforo);
             // [nombre io][operacion][pid]
+            
             t_paquete *a_enviar_a_io = crear_paquete(TAREA, pcb_a_editar->operacion_de_io_por_la_que_fue_bloqueado);
 
             enviar_paquete(a_enviar_a_io, colas_bloqueados[i]->fd);
