@@ -13,7 +13,7 @@ void atender_entrada_salida_kernel()
             // [nombre io][operacion]
             char *nombre_io_llegado_del_kernel = extraer_string_al_buffer(buffer_recibido);
             char *operacion_a_realizar = extraer_string_al_buffer(buffer_recibido);
-
+            
             if (strcmp(nombre_io_llegado_del_kernel, nombre) != 0)
             {
                 log_error(entrada_salida_log_debug, "ME LLEGO UNA OPERACION QUE NO DEBIA, YA QUE NO ESTA A MI NOMBRE");
@@ -286,6 +286,8 @@ void caso_io_fs_create(t_buffer *buffer_recibido)
     log_trace(entrada_salida_log_debug, "PID: %d - Crear archivo: %s", pid, nombre_del_archivo);
 
     enviar_confirmacion_a_kernel(pid);
+
+    destruir_buffer(buffer_recibido);
 }
 
 void caso_io_fs_delete(t_buffer *buffer_recibido)
@@ -320,6 +322,8 @@ void caso_io_fs_delete(t_buffer *buffer_recibido)
     free(nombre_del_archivo);
 
     enviar_confirmacion_a_kernel(pid);
+
+    destruir_buffer(buffer_recibido);
 }
 
 void caso_io_fs_truncate(t_buffer *buffer_recibido)
@@ -409,6 +413,8 @@ void caso_io_fs_truncate(t_buffer *buffer_recibido)
     free(nombre_del_archivo);
 
     enviar_confirmacion_a_kernel(pid);
+
+    destruir_buffer(buffer_recibido);
 }
 void caso_io_fs_write(t_buffer *buffer_recibido)
 {
@@ -605,4 +611,6 @@ void caso_io_fs_read(t_buffer *buffer_recibido)
 
         free(mensaje_de_respuesta);
     }
+    
+    destruir_buffer(buffer_recibido);
 }

@@ -542,6 +542,8 @@ void _manejar_bloqueo()
             cargar_string_al_buffer(pcb_a_editar->operacion_de_io_por_la_que_fue_bloqueado, nombre_del_archivo);
 
             mandar_a_io_o_cola_bloqueados(nombre_interfaz);
+
+            free(nombre_del_archivo);
         }
         else if (strcmp(operacion_a_realizar, "IO_FS_DELETE") == 0)
         {
@@ -557,6 +559,8 @@ void _manejar_bloqueo()
             cargar_string_al_buffer(pcb_a_editar->operacion_de_io_por_la_que_fue_bloqueado, nombre_del_archivo);
 
             mandar_a_io_o_cola_bloqueados(nombre_interfaz);
+
+            free(nombre_del_archivo);
 
         }
         else if (strcmp(operacion_a_realizar, "IO_FS_TRUNCATE") == 0)
@@ -578,6 +582,8 @@ void _manejar_bloqueo()
             cargar_uint8_al_buffer(pcb_a_editar->operacion_de_io_por_la_que_fue_bloqueado, tamanio);
 
             mandar_a_io_o_cola_bloqueados(nombre_interfaz);
+
+            free(nombre_del_archivo);
 
         }
         else if (strcmp(operacion_a_realizar, "IO_FS_WRITE") == 0)
@@ -614,6 +620,8 @@ void _manejar_bloqueo()
             }
 
             mandar_a_io_o_cola_bloqueados(nombre_interfaz);
+
+            free(nombre_del_archivo);
             
         }
         else if (strcmp(operacion_a_realizar, "IO_FS_READ") == 0)
@@ -652,6 +660,7 @@ void _manejar_bloqueo()
             }
 
             mandar_a_io_o_cola_bloqueados(nombre_interfaz);
+            free(nombre_del_archivo);
         }
     }
 
