@@ -283,7 +283,7 @@ void caso_io_fs_create(t_buffer *buffer_recibido)
     // Liberar memoria
     bitarray_destroy(bitmap);
 
-    log_info(entrada_salida_logger, "PID: %d - Crear archivo: %s", pid, nombre_del_archivo);
+    log_trace(entrada_salida_log_debug, "PID: %d - Crear archivo: %s", pid, nombre_del_archivo);
 
     enviar_confirmacion_a_kernel(pid);
 }
@@ -313,7 +313,7 @@ void caso_io_fs_delete(t_buffer *buffer_recibido)
 
     borrar_archivo_metadata(nombre_del_archivo);
 
-    log_info(entrada_salida_logger, "PID: %d - Eliminar archivo: %s", pid, nombre_del_archivo);
+    log_trace(entrada_salida_log_debug, "PID: %d - Eliminar archivo: %s", pid, nombre_del_archivo);
 
     quitar_de_archivos(nombre_del_archivo);
 
@@ -404,7 +404,7 @@ void caso_io_fs_truncate(t_buffer *buffer_recibido)
         actualizar_archivo_metadata(nombre_del_archivo, info_archivo.bloque_inicial, nuevo_tamanio); 
     }
 
-    log_info(entrada_salida_logger, "PID: %d - Truncar archivo: %s - %u", pid, nombre_del_archivo, nuevo_tamanio);
+    log_trace(entrada_salida_log_debug, "PID: %d - Truncar archivo: %s - %u", pid, nombre_del_archivo, nuevo_tamanio);
 
     free(nombre_del_archivo);
 
@@ -493,7 +493,7 @@ void caso_io_fs_write(t_buffer *buffer_recibido)
         // Liberar memoria
         // free(datos_memoria);
 
-        log_info(entrada_salida_logger, "PID: %d - Escribir Archivo: %s - Tamanio Archivo: %d - Puntero archivo: %d", pid, nombre_archivo, info_archivo.tam_bytes, puntero);
+        log_trace(entrada_salida_log_debug, "PID: %d - Escribir Archivo: %s - Tamanio a Escribir: %d - Puntero archivo: %d", pid, nombre_archivo, tamanio_a_escribir, puntero);
 
         free(mensaje_de_respuesta);
     }
@@ -514,6 +514,10 @@ void caso_io_fs_read(t_buffer *buffer_recibido)
     uint8_t cantidad_de_direcciones = extraer_uint8_al_buffer(buffer_recibido);
 
     // [TAM_A_leer] [MARCO] [DESPLAZAMIENTO] .. [TAM_A_leer] [MARCO] [DESPLAZAMIENTO] [DATO] .....
+
+
+    log_trace(entrada_salida_log_debug, "PID: %d - Leer Archivo: %s - Tamanio a Leer: %d - Puntero archivo: %d", pid, nombre_archivo, tamanio_a_copiar, puntero);
+
 
     METADATA info_archivo = leer_metadata(nombre_archivo);
    
