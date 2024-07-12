@@ -365,6 +365,7 @@ void caso_io_fs_truncate(t_buffer *buffer_recibido)
             {
                 log_trace(entrada_salida_log_debug, "PID: %u - Inicio de Compactacion", pid);
                 compactar_hacia_archivo(nombre_del_archivo);
+                esperarMilisegundos(retraso_compactacion);
                 log_trace(entrada_salida_log_debug, "PID: %u - Fin de Compactacion", pid);
 
                 METADATA info_archivo_actualizada = leer_metadata(nombre_del_archivo);

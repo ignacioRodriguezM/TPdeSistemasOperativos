@@ -39,6 +39,8 @@ extern int cantidad_de_bloques;
 extern int tamanio_bitarray_en_bytes;
 extern char* path_base;
 
+extern uint16_t retraso_compactacion;
+
 extern Archivos archivos;
 
 #endif

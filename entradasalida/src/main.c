@@ -95,6 +95,7 @@ int main()
         tamanio_de_bloque = config_valores.block_size;
         cantidad_de_bloques = config_valores.block_count;
         path_base = config_valores.path_base_dialfs;
+        retraso_compactacion = config_valores.retraso_compactacion;
         tamanio_bitarray_en_bytes = division_entera_redondear_arriba(cantidad_de_bloques, 8); // 8 bits son 1 byte.
 
         archivos.lista_archivos = list_create(); // ARREGLAR EN CASO DE QUE EXISTAN ARCHIVOS DE UNA EJKECCUCION PREVIA

@@ -26,6 +26,8 @@ int cantidad_de_bloques;
 int tamanio_bitarray_en_bytes;
 char* path_base;
 
+uint16_t retraso_compactacion;
+
 Archivos archivos;
 
 #endif
