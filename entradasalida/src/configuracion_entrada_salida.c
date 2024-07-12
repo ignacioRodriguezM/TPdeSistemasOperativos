@@ -58,7 +58,7 @@ APP_config cargar_configuracion_entrada_salida (void)
             config_valores.path_base_dialfs                 =       config_get_string_value(config,"PATH_BASE_DIALFS");
             config_valores.block_size                       =       config_get_int_value(config,"BLOCK_SIZE");
             config_valores.block_count                      =       config_get_int_value(config,"BLOCK_COUNT");
-
+            config_valores.retraso_compactacion             =       config_get_int_value(config,"RETRASO_COMPACTACION");
             break;
         
 

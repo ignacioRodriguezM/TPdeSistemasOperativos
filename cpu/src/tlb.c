@@ -9,7 +9,7 @@ void inicializar_tlb()
 
 void finalizar_tlb()
 {
-    queue_destroy_and_destroy_elements(TLB);
+    // queue_destroy_and_destroy_elements(TLB);
 }
 
 uint16_t consultar_tlb(uint16_t pid, uint16_t pagina)

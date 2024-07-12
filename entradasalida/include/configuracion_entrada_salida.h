@@ -13,7 +13,7 @@
     char* path_base_dialfs;                //Path a partir del cual van a encontrarse los archivos de DialFS.
     uint16_t block_size;                   //Tamaño de los bloques del FS
     uint16_t block_count;                  //Cantidad de bloques del FS
-
+    uint16_t retraso_compactacion;
     t_config* config;
 
 }APP_config;
