@@ -13,7 +13,7 @@ void atender_entrada_salida_kernel()
             // [nombre io][operacion]
             char *nombre_io_llegado_del_kernel = extraer_string_al_buffer(buffer_recibido);
             char *operacion_a_realizar = extraer_string_al_buffer(buffer_recibido);
-            
+
             if (strcmp(nombre_io_llegado_del_kernel, nombre) != 0)
             {
                 log_error(entrada_salida_log_debug, "ME LLEGO UNA OPERACION QUE NO DEBIA, YA QUE NO ESTA A MI NOMBRE");
@@ -289,9 +289,6 @@ void caso_io_fs_create(t_buffer *buffer_recibido)
     enviar_confirmacion_a_kernel(pid);
 
     destruir_buffer(buffer_recibido);
-
-    free(nombre_del_archivo);
-
 }
 
 void caso_io_fs_delete(t_buffer *buffer_recibido)
@@ -405,7 +402,6 @@ void caso_io_fs_truncate(t_buffer *buffer_recibido)
         free(bitmap->bitarray);
         bitarray_destroy(bitmap);
 
-
         actualizar_archivo_metadata(nombre_del_archivo, info_archivo.bloque_inicial, nuevo_tamanio);
     }
     else
@@ -415,7 +411,7 @@ void caso_io_fs_truncate(t_buffer *buffer_recibido)
         free(bitmap->bitarray);
         bitarray_destroy(bitmap);
 
-        actualizar_archivo_metadata(nombre_del_archivo, info_archivo.bloque_inicial, nuevo_tamanio); 
+        actualizar_archivo_metadata(nombre_del_archivo, info_archivo.bloque_inicial, nuevo_tamanio);
     }
 
     log_trace(entrada_salida_log_debug, "PID: %d - Truncar archivo: %s - %u", pid, nombre_del_archivo, nuevo_tamanio);
@@ -512,9 +508,7 @@ void caso_io_fs_write(t_buffer *buffer_recibido)
         free(nombre_archivo);
     }
 
-
     enviar_confirmacion_a_kernel(pid);
-
 }
 
 void caso_io_fs_read(t_buffer *buffer_recibido)
@@ -528,12 +522,10 @@ void caso_io_fs_read(t_buffer *buffer_recibido)
 
     // [TAM_A_leer] [MARCO] [DESPLAZAMIENTO] .. [TAM_A_leer] [MARCO] [DESPLAZAMIENTO] [DATO] .....
 
-
     log_trace(entrada_salida_log_debug, "PID: %d - Leer Archivo: %s - Tamanio a Leer: %d - Puntero archivo: %d", pid, nombre_archivo, tamanio_a_copiar, puntero);
 
-
     METADATA info_archivo = leer_metadata(nombre_archivo);
-   
+
     if (puntero + tamanio_a_copiar > info_archivo.tam_bytes)
     {
         log_error(entrada_salida_logger, "Error: La lectura excede el tamaño del archivo.");
@@ -564,7 +556,6 @@ void caso_io_fs_read(t_buffer *buffer_recibido)
     }
     fread(datos_leidos, 1, tamanio_a_copiar, archivo_bloques);
     fclose(archivo_bloques);
-
 
     // Preparar el buffer para enviar a memoria
     t_buffer *buffer_a_enviar_a_memoria = crear_buffer();
@@ -611,8 +602,7 @@ void caso_io_fs_read(t_buffer *buffer_recibido)
 
         free(mensaje_de_respuesta);
     }
-    
-    
+
     destruir_buffer(buffer_recibido);
     free(nombre_archivo);
 }

@@ -40,7 +40,6 @@ void compactar_hacia_archivo(char *nombre_del_archivo)
     int *puntero_buffer = malloc(sizeof(int));
     *puntero_buffer = 0;
 
-    
     for (int i = 0; i < archivos.cantidad_archivos; i++)
     {
         char *string_a_comparar = (char *)list_get(archivos.lista_archivos, i);
@@ -74,7 +73,7 @@ void compactar_hacia_archivo(char *nombre_del_archivo)
     char full_path[256];
     snprintf(full_path, sizeof(full_path), "%sbloques.dat", path_base);
     FILE *archivo_bloques = fopen(full_path, "wb");
-    
+
     if (archivo_bloques == NULL)
     {
         perror("Error al abrir el archivo");
@@ -450,7 +449,8 @@ void _cargar_archivos_de_ejecuciones_anteriores()
     DIR *dir = opendir(directorio);
 
     // Verificar si se pudo abrir el directorio
-    if (dir == NULL) {
+    if (dir == NULL)
+    {
         perror("No se pudo abrir el directorio");
         return;
     }
@@ -459,13 +459,14 @@ void _cargar_archivos_de_ejecuciones_anteriores()
     struct dirent *entrada;
 
     // Leer y listar las entradas del directorio
-    while ((entrada = readdir(dir)) != NULL) {
+    while ((entrada = readdir(dir)) != NULL)
+    {
         // Imprimir el nombre de cada archivo/directorio
-        if(strcmp(entrada->d_name, "bitmap.dat") != 0 && strcmp(entrada->d_name, "bloques.dat") != 0
-            && strcmp(entrada->d_name, ".") != 0 && strcmp(entrada->d_name, "..") != 0)
+        if (strcmp(entrada->d_name, "bitmap.dat") != 0 && strcmp(entrada->d_name, "bloques.dat") != 0 && strcmp(entrada->d_name, ".") != 0 && strcmp(entrada->d_name, "..") != 0)
         {
-            char* nombre_de_archivo = malloc(strlen(entrada->d_name) + 1);
-             if (nombre_de_archivo == NULL) {
+            char *nombre_de_archivo = malloc(strlen(entrada->d_name) + 1);
+            if (nombre_de_archivo == NULL)
+            {
                 perror("No se pudo asignar memoria");
                 closedir(dir);
                 exit(EXIT_FAILURE);
@@ -479,9 +480,7 @@ void _cargar_archivos_de_ejecuciones_anteriores()
             list_add(archivos.lista_archivos, nombre_de_archivo);
 
             log_trace(entrada_salida_log_debug, "Se carga el archivo <%s> de una ejecucion anterior", nombre_de_archivo);
-
         }
-        
     }
 
     // Cerrar el directorio

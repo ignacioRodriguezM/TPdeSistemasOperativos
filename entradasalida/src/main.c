@@ -52,12 +52,12 @@ int main()
         pthread_join(hilo_kernel_stdin, NULL);
 
         // Atender los mensajes de MEMORIA
-        //pthread_t hilo_memoria_stdin;
-        //pthread_create(&hilo_memoria_stdin, NULL, (void *)atender_entrada_salida_memoria, NULL);
-        //pthread_join(hilo_memoria_stdin, NULL);
+        // pthread_t hilo_memoria_stdin;
+        // pthread_create(&hilo_memoria_stdin, NULL, (void *)atender_entrada_salida_memoria, NULL);
+        // pthread_join(hilo_memoria_stdin, NULL);
 
         break;
-        
+
     case STDOUT:
         nombre = config_valores.nombre_identificador;
         tipo_interfaz = config_valores.tipo_interfaz;
@@ -81,9 +81,9 @@ int main()
         pthread_join(hilo_kernel_stdout, NULL);
 
         // Atender los mensajes de MEMORIA
-        //pthread_t hilo_memoria_stdout;
-        //pthread_create(&hilo_memoria_stdout, NULL, (void *)atender_entrada_salida_memoria, NULL);
-        //pthread_join(hilo_memoria_stdout, NULL);
+        // pthread_t hilo_memoria_stdout;
+        // pthread_create(&hilo_memoria_stdout, NULL, (void *)atender_entrada_salida_memoria, NULL);
+        // pthread_join(hilo_memoria_stdout, NULL);
 
         break;
 
@@ -100,7 +100,7 @@ int main()
 
         archivos.lista_archivos = list_create(); // ARREGLAR EN CASO DE QUE EXISTAN ARCHIVOS DE UNA EJKECCUCION PREVIA
 
-        //CARGAR ESTRUCTURAS PASADAS O INICIALIZARLAS
+        // CARGAR ESTRUCTURAS PASADAS O INICIALIZARLAS
         inicializar_estructuras_filesystem();
 
         // Conectarse como cliente a Kernel
@@ -119,12 +119,20 @@ int main()
         pthread_t hilo_kernel_dialfs;
         pthread_create(&hilo_kernel_dialfs, NULL, (void *)atender_entrada_salida_kernel, NULL);
         pthread_join(hilo_kernel_dialfs, NULL);
-        
-        //agregar Mas cosas
+
+        // agregar Mas cosas
 
         break;
     }
 
+    for (int i = 0; i < archivos.cantidad_archivos; i++)
+    {
+        void *a_borrar = list_remove(archivos.lista_archivos, i);
+        free(a_borrar);
+    }
+
+    list_destroy(archivos.lista_archivos);
     config_destroy(config_valores.config);
+
     return 0;
 }
