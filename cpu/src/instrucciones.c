@@ -392,6 +392,7 @@ void *obtener_string_de_memoria(Direcciones direcciones_fisicas, uint8_t tamanio
         cargar_uint16_al_buffer(solicitud_de_lectura, direcciones_fisicas.direcciones[i].numero_pagina);
         cargar_uint32_al_buffer(solicitud_de_lectura, direcciones_fisicas.direcciones[i].desplazamiento);
     }
+    cargar_uint16_al_buffer(solicitud_de_lectura, PID);
 
     t_paquete *a_enviar = crear_paquete(LECTURA, solicitud_de_lectura);
 
@@ -446,6 +447,7 @@ void escribir_string_en_memoria(Direcciones direcciones_fisicas, void *string_a_
 
         datos += direcciones_fisicas.direcciones[i].tamanio;
     }
+    cargar_uint16_al_buffer(solicitud_de_escritura, PID);
 
     t_paquete *a_enviar = crear_paquete(ESCRITURA, solicitud_de_escritura);
     enviar_paquete(a_enviar, fd_memoria);
