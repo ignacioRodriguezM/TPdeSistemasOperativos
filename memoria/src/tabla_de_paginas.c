@@ -48,7 +48,7 @@ void crear_tabla_de_paginas(Proceso *proceso)
     proceso->tabla_de_paginas = malloc(sizeof(Tabla_paginas *));
     proceso->cantidad_paginas = 0;
 
-    log_info(memoria_logger, "PID: %u - Tamaño: %d ", proceso->pid, proceso->cantidad_paginas);
+    log_info(memoria_logger, "PID: %u - Tamaño: %d ", proceso->PID, proceso->cantidad_paginas);
     
 }
 

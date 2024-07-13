@@ -709,14 +709,18 @@ void mandar_a_io_o_cola_bloqueados(char *nombre_interfaz)
             
             t_paquete *a_enviar_a_io = crear_paquete(TAREA, pcb_a_editar->operacion_de_io_por_la_que_fue_bloqueado);
 
+            mover_de_excec_a_cola_bloqueado(nombre_interfaz);
+            log_info(kernel_logger, "PID: %u - Bloqueado por: INTERFAZ : %s", pcb_a_editar->pid, nombre_interfaz);
+
             enviar_paquete(a_enviar_a_io, colas_bloqueados[i]->fd);
 
             destruir_paquete(a_enviar_a_io);
 
-            break;
+            return;
         }
     }
 
     mover_de_excec_a_cola_bloqueado(nombre_interfaz);
     log_info(kernel_logger, "PID: %u - Bloqueado por: INTERFAZ : %s", pcb_a_editar->pid, nombre_interfaz);
+    
 }

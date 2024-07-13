@@ -261,7 +261,9 @@ void MOV_IN(void *registroDatos, void *registroDireccion, uint8_t tamanio_de_reg
         cargar_uint16_al_buffer(solicitud_de_lectura, direcciones_fisicas.direcciones[i].numero_pagina);
         cargar_uint32_al_buffer(solicitud_de_lectura, direcciones_fisicas.direcciones[i].desplazamiento);
     }
-    cargar_uint16_t_al_buffer(solicitud_de_lectura,PID);
+
+    cargar_uint16_al_buffer(solicitud_de_lectura, PID);
+    
     t_paquete *a_enviar = crear_paquete(LECTURA, solicitud_de_lectura);
 
     enviar_paquete(a_enviar, fd_memoria);
@@ -345,7 +347,8 @@ void MOV_OUT(void *registroDireccion, void *registroDatos, uint8_t tamanio_de_re
 
         datos += direcciones_fisicas.direcciones[i].tamanio;
     }
-    cargar_uint16_t_al_buffer(solicitud_de_escritura,PID);
+    cargar_uint16_al_buffer(solicitud_de_escritura,PID);
+    
 
     t_paquete *a_enviar = crear_paquete(ESCRITURA, solicitud_de_escritura);
     enviar_paquete(a_enviar, fd_memoria);

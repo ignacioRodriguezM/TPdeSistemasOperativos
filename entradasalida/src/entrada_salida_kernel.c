@@ -150,7 +150,7 @@ void caso_io_stdin_read(t_buffer *buffer_recibido)
         dato += tam_a_escribir_por_pagina;
     }
     
-    cargar_uint16_t_al_buffer(buffer_a_enviar_a_memoria,pid);
+    cargar_uint16_al_buffer(buffer_a_enviar_a_memoria, pid);
     
     free(mensaje);
     destruir_buffer(buffer_recibido);
@@ -205,6 +205,8 @@ void caso_io_stdout_write(t_buffer *buffer_recibido)
         cargar_uint16_al_buffer(buffer_a_enviar_a_memoria, numero_de_pagina);
         cargar_uint32_al_buffer(buffer_a_enviar_a_memoria, desplazamiento);
     }
+
+    cargar_uint16_al_buffer(buffer_a_enviar_a_memoria, pid);
 
     destruir_buffer(buffer_recibido);
 

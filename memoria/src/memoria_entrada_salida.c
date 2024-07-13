@@ -107,7 +107,7 @@ void manejar_write(int fd_io)
     uint8_t cantidad_de_direcciones = extraer_uint8_al_buffer(buffer_recibido);
 
     uint8_t offset = 0;
-    void *datos_a_escribir;
+    
     bool primera_dir = true;
     uint32_t dir;
     uint16_t tamanio_total = 0;

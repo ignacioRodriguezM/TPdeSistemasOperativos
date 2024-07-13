@@ -141,12 +141,20 @@ void _mover_de_cola_bloqueados_a_ready_o_aux(char* nombre_de_io, uint16_t pid){
                 log_info(kernel_logger, "PID: %u - Estado Anterior: BLOQUEADO - Estado Actual: READY", pid);
                 log_obligatorio_ready();
             }
-            else
+            else if(pcb_que_cumplio_tarea_io->quantum < quantum)
             {
                 queue_push(procesos_ready_con_prioridad, pcb_que_cumplio_tarea_io);
                 log_info(kernel_logger, "PID: %u - Estado Anterior: BLOQUEADO - Estado Actual: READY_PRIO", pid);
                 
                 log_obligatorio_ready_prioridad();
+            }
+            else
+            {   
+                log_error(kernel_log_debug, "Tiene quantum extranio el PID %u", pcb_que_cumplio_tarea_io->pid);
+                pcb_que_cumplio_tarea_io->quantum = quantum;
+                queue_push(procesos_ready, pcb_que_cumplio_tarea_io);
+                log_info(kernel_logger, "PID: %u - Estado Anterior: BLOQUEADO - Estado Actual: READY", pid);
+                log_obligatorio_ready();
             }
             pthread_mutex_unlock(&mutex_procesos);
 
