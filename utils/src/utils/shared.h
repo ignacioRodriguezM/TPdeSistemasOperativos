@@ -136,4 +136,5 @@ t_buffer* recibir_buffer_sin_cod_op (int socket);
 
 void esperarMilisegundos(uint16_t milisegundos);
 
+
 #endif

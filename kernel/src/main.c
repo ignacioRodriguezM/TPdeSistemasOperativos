@@ -23,8 +23,7 @@ int main()
     sem_init(&grado_multiprogramacion_semaforo, 0, grado_multiprogramacion);
 
     planificacion_activa = false;
-    uint16_t aux = config_valores.quantum;
-    quantum = aux;
+    quantum = config_valores.quantum;
     inicializar_colas_sin_bloqueados(); // INICIALIZA LAS COLAS "NORMALES"
 
     iniciar_planificador_de_largo_plazo();

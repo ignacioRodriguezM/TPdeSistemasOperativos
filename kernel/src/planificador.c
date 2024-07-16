@@ -4,7 +4,9 @@
 
 void esperar(uint16_t *quantum)
 {
-    esperarMilisegundos(*quantum);
+    uint16_t aux = *quantum;
+    log_trace(kernel_log_debug, "Inicio quantum");
+    usleep(aux * 1000);
     log_trace(kernel_log_debug, "Fin quantum");
     _enviar_interrupcion_quantum();
 }

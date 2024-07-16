@@ -5,7 +5,7 @@
 {
     char* nombre_identificador;
     interfaces_io tipo_interfaz;                   //Indica el tipo de Interfaz de I/O que estamos creando. GENERICA / STDIN / STDOUT / DIALFS   
-    uint8_t tiempo_unidad_trabajo;        //Tiempo en milisegundos que dura cada unidad de trabajo
+    uint16_t tiempo_unidad_trabajo;        //Tiempo en milisegundos que dura cada unidad de trabajo
     char* ip_kernel;                    //IP a la cual se deberá conectar con el Kernel
     char* puerto_kernel;                   //Puerto al cual se deberá conectar con el Kernel
     char* ip_memoria;                      //IP a la cual se deberá conectar con la Memoria

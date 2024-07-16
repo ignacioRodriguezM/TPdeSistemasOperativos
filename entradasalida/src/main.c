@@ -51,17 +51,11 @@ int main()
         pthread_create(&hilo_kernel_stdin, NULL, (void *)atender_entrada_salida_kernel, NULL);
         pthread_join(hilo_kernel_stdin, NULL);
 
-        // Atender los mensajes de MEMORIA
-        // pthread_t hilo_memoria_stdin;
-        // pthread_create(&hilo_memoria_stdin, NULL, (void *)atender_entrada_salida_memoria, NULL);
-        // pthread_join(hilo_memoria_stdin, NULL);
-
         break;
 
     case STDOUT:
         nombre = config_valores.nombre_identificador;
         tipo_interfaz = config_valores.tipo_interfaz;
-        tiempo_unidad_trabajo = config_valores.tiempo_unidad_trabajo;
 
         // Conectarse como cliente a Kernel
         log_info(entrada_salida_logger, "Conectandose a kernel...");
@@ -79,11 +73,6 @@ int main()
         pthread_t hilo_kernel_stdout;
         pthread_create(&hilo_kernel_stdout, NULL, (void *)atender_entrada_salida_kernel, NULL);
         pthread_join(hilo_kernel_stdout, NULL);
-
-        // Atender los mensajes de MEMORIA
-        // pthread_t hilo_memoria_stdout;
-        // pthread_create(&hilo_memoria_stdout, NULL, (void *)atender_entrada_salida_memoria, NULL);
-        // pthread_join(hilo_memoria_stdout, NULL);
 
         break;
 

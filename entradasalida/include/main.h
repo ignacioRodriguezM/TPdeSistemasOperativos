@@ -18,7 +18,7 @@ int fd_kernel;
 
 char* nombre;
 interfaces_io tipo_interfaz;
-uint8_t tiempo_unidad_trabajo;
+uint16_t tiempo_unidad_trabajo;
 
 // FS
 int tamanio_de_bloque;
