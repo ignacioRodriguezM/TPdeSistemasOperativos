@@ -5,8 +5,10 @@
 void esperar(uint16_t *quantum)
 {
     uint16_t aux = *quantum;
+    unsigned int microsegundos = (unsigned int)aux * 1000;
+    
     log_trace(kernel_log_debug, "Inicio quantum");
-    usleep(aux * 1000);
+    while(usleep(microsegundos) == -1);
     log_trace(kernel_log_debug, "Fin quantum");
     _enviar_interrupcion_quantum();
 }
@@ -20,8 +22,7 @@ void _enviar_interrupcion_quantum()
 }
 void manejar_quantum(PCB *proceso)
 {
-    uint16_t auxiliar = proceso->quantum;
-    pthread_create(&hilo_quantum, NULL, (void *)esperar, (uint16_t *)&auxiliar);
+    pthread_create(&hilo_quantum, NULL, (void *)esperar, (uint16_t *)&(proceso->quantum));
     pthread_detach(hilo_quantum);
     if (strcmp(algoritmo_planificacion, "VRR") == 0)
     {
