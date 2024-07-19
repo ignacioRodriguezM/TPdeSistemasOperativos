@@ -431,10 +431,25 @@ void _manejar_bloqueo()
         {
             temporal_stop(timer_quantum);
             uint16_t quantum_usado = temporal_gettime(timer_quantum);
-            if (quantum_usado != quantum && quantum_usado < quantum)
+
+            PCB *pcb_que_ejecuto = (PCB *)queue_peek(procesos_excec);
+            if(pcb_que_ejecuto->quantum < quantum)
             {
-                PCB *pcb_que_ejecuto_menos_quantum = (PCB *)queue_peek(procesos_excec);
-                pcb_que_ejecuto_menos_quantum->quantum -= quantum_usado;
+                if(quantum_usado < pcb_que_ejecuto->quantum)
+                {
+                    pcb_que_ejecuto->quantum -= quantum_usado;
+                }
+                else
+                {
+                    pcb_que_ejecuto->quantum = quantum;
+                }
+            }
+            else
+            {
+                if (quantum_usado < quantum)
+                {
+                    pcb_que_ejecuto->quantum -= quantum_usado;
+                }
             }
             temporal_destroy(timer_quantum);
         }
