@@ -341,6 +341,7 @@ bool buscar_en_cola(int pid_a_finalizar, t_queue *cola, char *nombre_cola)
 void enviar_interrupcion_a_cpu()
 {
     t_buffer *buff = crear_buffer();
+    cargar_string_al_buffer(buff, "INTERRUPTED_BY_USER");
     t_paquete *paq = crear_paquete(INTERRUPTED_BY_USER, buff);
     enviar_paquete(paq, fd_cpu_interrupt);
     destruir_paquete(paq);

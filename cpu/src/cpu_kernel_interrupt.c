@@ -20,6 +20,9 @@ void atender_cpu_kernel_interrupt (){
             case INTERRUPTED_BY_USER:
                 t_buffer* buff_vacio2 = recibir_buffer_sin_cod_op(fd_kernel_interrupt);
                 if(interrupt_flag){
+                    char* resp2 = extraer_string_al_buffer(buff_vacio2);
+                    log_trace(cpu_log_debug, "%s", resp2);
+                    free(resp2);
                     interrupcion_de_usuarios = true;
                     aviso_de_interrupt = true;
                 }
