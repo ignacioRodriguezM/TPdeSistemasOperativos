@@ -454,6 +454,8 @@ void caso_io_fs_write(t_buffer *buffer_recibido)
         cargar_uint32_al_buffer(buffer_a_enviar_a_memoria, desplazamiento);
     }
 
+    cargar_uint16_al_buffer(buffer_a_enviar_a_memoria, pid);
+
     destruir_buffer(buffer_recibido);
 
     log_info(entrada_salida_logger, "PID: %u - Operacion: IO_FS_WRITE", pid);
@@ -583,6 +585,8 @@ void caso_io_fs_read(t_buffer *buffer_recibido)
 
         dato_pos += tam_a_escribir_por_pagina;
     }
+
+    cargar_uint16_al_buffer(buffer_a_enviar_a_memoria, pid);
 
     // Enviar datos a memoria
     t_paquete *a_enviar_a_memoria = crear_paquete(ESCRITURA, buffer_a_enviar_a_memoria);

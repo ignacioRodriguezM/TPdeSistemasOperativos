@@ -45,6 +45,7 @@ void _extraer_contexto_de_ejecucion()
     t_buffer *buffer_recibido = recibir_buffer_sin_cod_op(fd_kernel_dispatch);
     // EXTRAIGO EN ORDEN [PID] [PC] [QUANTUUM] [REGISTROS]
     PID = extraer_uint16_al_buffer(buffer_recibido);
+    log_trace(cpu_log_debug, "LLEGO EL PROCESO : %u", PID);
     PC_registro = extraer_uint32_al_buffer(buffer_recibido);
     AX_registro = extraer_uint8_al_buffer(buffer_recibido);
     BX_registro = extraer_uint8_al_buffer(buffer_recibido);
