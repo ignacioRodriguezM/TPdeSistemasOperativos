@@ -182,6 +182,12 @@ void caso_io_stdin_read(t_buffer *buffer_recibido)
     }
 }
 
+void _asegurar_caracter_nulo(char *cadena, size_t longitud) {
+    if (cadena[longitud - 1] != '\0') {
+        cadena[longitud - 1] = '\0';
+    }
+}
+
 void caso_io_stdout_write(t_buffer *buffer_recibido)
 {
     uint16_t pid = extraer_uint16_al_buffer(buffer_recibido);
@@ -226,6 +232,10 @@ void caso_io_stdout_write(t_buffer *buffer_recibido)
         t_buffer *recibido = recibir_buffer_sin_cod_op(fd_memoria);
 
         void *mensaje_de_respuesta = extraer_choclo_al_buffer(recibido);
+
+        mensaje_de_respuesta = realloc(mensaje_de_respuesta, tamanio + 1);
+        
+        _asegurar_caracter_nulo((char*) mensaje_de_respuesta, tamanio + 1);
         log_trace(entrada_salida_log_debug, "RESPUESTA MEMORIA : %s", (char *)mensaje_de_respuesta);
 
         printf("\n %s \n", (char *)mensaje_de_respuesta);
