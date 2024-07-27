@@ -1,9 +1,6 @@
 # nombres-integrantes
 Ignacio Rodriguez
 Nicolas Rey
-Nicolas Reinoso
-Juan Cruz Scollo
-Ignacio Vila
 
 # PROTOCOLO-COMUNICACIONES
 Iniciar Memoria/
